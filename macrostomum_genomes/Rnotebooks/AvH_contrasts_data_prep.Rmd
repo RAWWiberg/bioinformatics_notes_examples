@@ -1,0 +1,137 @@
+---
+title: "AvH contrasts"
+author: "R. Axel W. Wiberg"
+date: "14.02.2021" # Most recent changes made.
+output:
+  html_document:
+    df_print: paged
+editor_options: 
+  chunk_output_type: console
+---
+
+# 0. Load packages
+```{r}
+library(here)
+library(ggplot2)
+library(reshape)
+library(DESeq2)
+source(here::here("rscripts","ggplot_theme.R"))
+se <- function(x) {sqrt(var(x, na.rm = TRUE))/sqrt(length(x))}
+```
+
+
+# 1. Prepare data for A vs. H contrast: M. cliftonense
+```{r}
+treatments<-c("A","H")
+reps<-c("1","2","3","4")
+
+all_quant_count<-list()
+all_quant_tpm<-list()
+all_quant_id<-list()
+all_quant_len<-list()
+all_quant<-data.frame()
+treatment<-"A"
+rep<-"1"
+for(treatment in treatments){
+  for(rep in reps){
+    salmon_quant<-read.table(here::here("AvH_contrasts/Maccli",
+                                        paste("Maccli_",treatment,"_",rep,"_quant.sf",sep="")),
+                           header=TRUE)
+    # Sort by gene name so that they will all be in the correct order
+    salmon_quant<-salmon_quant[order(salmon_quant$Name),]
+
+    # Add treat and rep columns
+    salmon_quant$treat<-rep(treatment,nrow(salmon_quant))
+    salmon_quant$rep<-rep(rep,nrow(salmon_quant))
+    all_quant<-rbind(all_quant,salmon_quant)
+  
+    # Make matrices of counts, TPM, and gene IDs
+    all_quant_count[[paste(rep,"_",treatment,sep="")]]<-round(salmon_quant$NumReads)
+    all_quant_tpm[[paste(rep,"_",treatment,sep="")]]<-salmon_quant$TPM
+    all_quant_id[[paste(rep,"_",treatment,sep="")]]<-salmon_quant$Name
+    all_quant_len[[paste(rep,"_",treatment,sep="")]]<-salmon_quant$Length
+  }
+}
+# Now we make the big count and tpm matrices
+count_dat<-do.call(cbind,all_quant_count[names(all_quant_count)])
+tpm_dat<-do.call(cbind,all_quant_tpm[names(all_quant_tpm)])
+len_dat<-all_quant_len[[1]]
+
+# name the rows with transcript IDs
+row.names(count_dat)<-all_quant_id[[1]]
+row.names(tpm_dat)<-all_quant_id[[1]]
+names(len_dat)<-all_quant_id[[1]]
+
+all_quant <- as.data.frame(all_quant)
+# Save the count matrix
+write.table(count_dat,here::here("rdata/AvH_contrasts","Maccli_raw_counts.csv"),
+            col.names = TRUE,row.names = TRUE,quote=FALSE,sep="\t")
+
+# Save the tpm matrix
+write.table(tpm_dat,here::here("rdata/AvH_contrasts","Maccli_tpm.csv"),
+            col.names = TRUE,row.names = TRUE,quote=FALSE,sep="\t")
+
+# Save the full salmon data frame
+write.table(all_quant,here::here("rdata/AvH_contrasts","Maccli_all_quant.tab"),
+            col.names = TRUE,row.names = FALSE,sep="\t",quote=FALSE)
+```
+
+
+
+# 2. Prepare data for A vs. H contrast: M. hystrix
+```{r}
+treatments<-c("A","H")
+reps<-c("1","2","3") # Note that there are only 3 replicates for Machtx
+
+all_quant_count<-list()
+all_quant_tpm<-list()
+all_quant_id<-list()
+all_quant_len<-list()
+all_quant<-data.frame()
+treatment<-"A"
+rep<-"1"
+for(treatment in treatments){
+  for(rep in reps){
+    salmon_quant<-read.table(here::here("AvH_contrasts/Machtx",
+                                        paste("/Machtx_",treatment,"_",rep,"_quant.sf",sep="")),
+                           header=TRUE)
+    # Sort by gene name so that they will all be in the correct order
+    salmon_quant<-salmon_quant[order(salmon_quant$Name),]
+
+    # Add treat and rep columns
+    salmon_quant$treat<-rep(treatment,nrow(salmon_quant))
+    salmon_quant$rep<-rep(rep,nrow(salmon_quant))
+    all_quant<-rbind(all_quant,salmon_quant)
+  
+    # Make matrices of counts, TPM, and gene IDs
+    all_quant_count[[paste(rep,"_",treatment,sep="")]]<-round(salmon_quant$NumReads)
+    all_quant_tpm[[paste(rep,"_",treatment,sep="")]]<-salmon_quant$TPM
+    all_quant_id[[paste(rep,"_",treatment,sep="")]]<-salmon_quant$Name
+    all_quant_len[[paste(rep,"_",treatment,sep="")]]<-salmon_quant$Length
+  }
+}
+# Now we make the big count and tpm matrices
+count_dat<-do.call(cbind,all_quant_count[names(all_quant_count)])
+tpm_dat<-do.call(cbind,all_quant_tpm[names(all_quant_tpm)])
+len_dat<-all_quant_len[[1]]
+
+# name the rows with transcript IDs
+row.names(count_dat)<-all_quant_id[[1]]
+row.names(tpm_dat)<-all_quant_id[[1]]
+names(len_dat)<-all_quant_id[[1]]
+
+all_quant <- as.data.frame(all_quant)
+
+# Save the count matrix
+write.table(count_dat,here::here("rdata/AvH_contrasts","Machtx_raw_counts.csv"),
+            col.names = TRUE,row.names = TRUE,quote=FALSE,sep="\t")
+
+# Save the tpm matrix
+write.table(tpm_dat,here::here("rdata/AvH_contrasts","Machtx_tpm.csv"),
+            col.names = TRUE,row.names = TRUE,quote=FALSE,sep="\t")
+
+# Save the full salmon data frame
+write.table(all_quant,here::here("rdata/AvH_contrasts","Machtx_all_quant.tab"),
+            col.names = TRUE,row.names = FALSE,sep="\t",quote=FALSE)
+```
+

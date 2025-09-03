@@ -1,0 +1,441 @@
+---
+title: "Annotation statistics"
+author: "R. Axel W. Wiberg"
+date: "14.04.2023" # Most recent changes made.
+output:
+  html_document:
+    df_print: paged
+editor_options: 
+  chunk_output_type: console
+---
+
+This notebook details the assessments of the genome annotation.
+It also contains an analysis of SL trans-splicing.
+
+# 0. Load libraries and functions
+```{r}
+library("here")
+library("ggplot2")
+source(here::here("rscripts","ggplot_theme.R"))
+```
+
+
+# 1. Annotation stats
+
+Here I load and summarise the statistics for the annotations of M. cliftonense and M. hystrix.
+
+I also summarise statistics for the annotation available from M. lignano for comparison.
+
+## 1.1 At the transcript level.
+
+M. cliftonense
+```{r}
+annotation_stats<-read.table(here::here("rdata/annotation","Maccli_GV23d_v2_rnm.gff3.transcripts.stats"),
+                            header=TRUE)
+annotation_stats$valid<-as.factor(annotation_stats$valid)
+head(annotation_stats)
+# N transcripts
+nrow(annotation_stats)
+# Total transcript length
+sum(annotation_stats$transcript_length)
+# Average transcript length
+mean(annotation_stats$transcript_length)
+# Maximum transcript length
+max(annotation_stats$transcript_length)
+# Minimum transcript length
+min(annotation_stats$transcript_length)
+
+# Mean # exons and mean exon length across transcripts
+mean(annotation_stats$N_exons)
+sum(annotation_stats$total_exon_length)/sum(annotation_stats$N_exons)
+
+# Mean # introns and mean intron length across transcripts
+mean(annotation_stats$N_introns)
+sum(annotation_stats$total_intron_length)/sum(annotation_stats$N_introns)
+
+# Plot of the distribution of transcript lengths
+ggplot()+
+  geom_histogram(data=annotation_stats,aes(x=transcript_length))+
+  geom_vline(xintercept = mean(annotation_stats$transcript_length),
+             linetype="dashed",colour="red")+
+  geom_vline(xintercept = median(annotation_stats$transcript_length),
+             linetype="dashed",colour="darkred")+
+  scale_x_log10("Transcript length (nt)")+
+  ylab("Count")+
+  my.theme
+
+# Plot of the distribution of CDS lengths
+ggplot()+
+  geom_histogram(data=annotation_stats,aes(CDS_length))+
+  geom_vline(xintercept = mean(annotation_stats$CDS_length),
+             linetype="dashed",colour="red")+
+  geom_vline(xintercept = median(annotation_stats$CDS_length),
+             linetype="dashed",colour="darkred")+
+  scale_x_log10("CDS length (nt)")+
+  ylab("Count")+
+  my.theme
+
+# Compare CDS lengths between valid and invalid
+# "valid" are defined as CDSs with lengths that are a multiple of 3
+tapply(annotation_stats$transcript_id,INDEX=list(annotation_stats$valid),length)
+kruskal.test(annotation_stats$CDS_length~annotation_stats$valid)
+ggplot()+
+  geom_boxplot(data=annotation_stats,aes(x=valid,y=CDS_length),width=0.25)+
+  scale_y_log10("CDS length (nt)")+
+  xlab("")+
+  my.theme
+
+```
+
+M. hystrix
+```{r}
+annotation_stats<-read.table(here::here("rdata/annotation","Machtx_SR1_v2_rnm.gff3.transcripts.stats"),
+                             header=TRUE)
+annotation_stats$valid<-as.factor(annotation_stats$valid)
+head(annotation_stats)
+# N transcripts
+nrow(annotation_stats)
+# Total transcript length
+sum(annotation_stats$transcript_length)
+# Average transcript length
+mean(annotation_stats$transcript_length)
+# Maximum transcript length
+max(annotation_stats$transcript_length)
+# Minimum transcript length
+min(annotation_stats$transcript_length)
+
+# Mean # exons and mean exon length across transcripts
+mean(annotation_stats$N_exons)
+sum(annotation_stats$total_exon_length)/sum(annotation_stats$N_exons)
+
+# Mean # introns and mean intron length across transcripts
+mean(annotation_stats$N_introns)
+sum(annotation_stats$total_intron_length)/sum(annotation_stats$N_introns)
+
+# Plot of the distribution of transcript lengths
+ggplot()+
+  geom_histogram(data=annotation_stats,aes(x=transcript_length))+
+  geom_vline(xintercept = mean(annotation_stats$transcript_length),
+             linetype="dashed",colour="red")+
+  geom_vline(xintercept = median(annotation_stats$transcript_length),
+             linetype="dashed",colour="darkred")+
+  scale_x_log10("Transcript length (nt)")+
+  ylab("Count")+
+  my.theme
+
+# Plot of the distribution of CDS lengths
+ggplot()+
+  geom_histogram(data=annotation_stats,aes(CDS_length))+
+  geom_vline(xintercept = mean(annotation_stats$CDS_length),
+             linetype="dashed",colour="red")+
+  geom_vline(xintercept = median(annotation_stats$CDS_length),
+             linetype="dashed",colour="darkred")+
+  scale_x_log10("CDS length (nt)")+
+  ylab("Count")+
+  my.theme
+
+# Compare CDS lengths between valid and invalid
+# "valid" are defined as CDSs with lengths that are a multiple of 3
+tapply(annotation_stats$transcript_id,INDEX=list(annotation_stats$valid),length)
+kruskal.test(annotation_stats$CDS_length~annotation_stats$valid)
+ggplot()+
+  geom_boxplot(data=annotation_stats,aes(x=valid,y=CDS_length))+
+  scale_y_log10("CDS length (nt)")+
+  xlab("")+
+  my.theme
+
+```
+
+M. lignano
+```{r}
+annotation_stats<-read.table(
+  here::here("rdata/annotation","Mlig_RNA_3_7_DV1.v3.coregenes.fa.stats"),
+                 header=TRUE)
+head(annotation_stats)
+# N transcripts
+nrow(annotation_stats)
+# Total transcript length
+sum(annotation_stats$length)
+# Average transcript length
+mean(annotation_stats$length)
+# Maximum transcript length
+max(annotation_stats$length)
+# Minimum transcript length
+min(annotation_stats$length)
+
+# Plot of the distribution of transcript lengths
+ggplot()+
+  geom_histogram(data=annotation_stats,aes(x=length))+
+  geom_vline(xintercept = mean(annotation_stats$length),
+             linetype="dashed",colour="red")+
+  geom_vline(xintercept = median(annotation_stats$length),
+             linetype="dashed",colour="darkred")+
+  scale_x_log10("Transcript length (nt)")+
+  ylab("Count")+
+  my.theme
+```
+
+## 1.2 At the gene level.
+
+M. cliftonense
+```{r}
+annotation_stats<-read.table(here::here("rdata/annotation","Maccli_GV23d_v2_rnm.gff3.genes.stats"),
+                             header=TRUE)
+# N genes
+nrow(annotation_stats)
+# Total transcript length
+sum(annotation_stats$gene_length)
+# Average transcript length
+mean(annotation_stats$gene_length)
+# Maximum transcript length
+max(annotation_stats$gene_length)
+# Minimum transcript length
+min(annotation_stats$gene_length)
+
+# Mean # transcripts across genes
+mean(annotation_stats$N_transcripts)
+
+# Mean # exons and exon length across genes
+mean(annotation_stats$N_exons)
+sum(annotation_stats$total_exon_length)/sum(annotation_stats$N_exons)
+
+# Mean # introns and mean intron length across genes
+mean(annotation_stats$N_introns)
+sum(annotation_stats$total_intron_length)/sum(annotation_stats$N_introns)
+
+```
+M. hystrix
+```{r}
+annotation_stats<-read.table(here::here("rdata/annotation","Machtx_SR1_v2_rnm.gff3.genes.stats"),
+                             header=TRUE)
+# N genes
+nrow(annotation_stats)
+# Total transcript length
+sum(annotation_stats$gene_length)
+# Average transcript length
+mean(annotation_stats$gene_length)
+# Maximum transcript length
+max(annotation_stats$gene_length)
+# Minimum transcript length
+min(annotation_stats$gene_length)
+
+# Mean # transcripts across genes
+mean(annotation_stats$N_transcripts)
+
+# Mean # exons and exon length across genes
+mean(annotation_stats$N_exons)
+sum(annotation_stats$total_exon_length)/sum(annotation_stats$N_exons)
+
+# Mean # introns and mean intron length across genes
+mean(annotation_stats$N_introns)
+sum(annotation_stats$total_intron_length)/sum(annotation_stats$N_introns)
+```
+M. lignano
+```{r}
+annotation_stats<-read.table(
+  here::here("rdata/annotation","Mlig_RNA_3_7_DV1.v3.coregenes.bestORF.gff3.genes.stats"),
+                 header=TRUE)
+head(annotation_stats)
+# N transcripts
+nrow(annotation_stats)
+# Total transcript length
+sum(annotation_stats$gene_length)
+# Average transcript length
+mean(annotation_stats$gene_length)
+# Maximum transcript length
+max(annotation_stats$gene_length)
+# Minimum transcript length
+min(annotation_stats$gene_length)
+
+# Mean # exons and mean exon length across transcripts
+mean(annotation_stats$N_exons)
+sum(annotation_stats$total_exon_length)/sum(annotation_stats$N_exons)
+
+# Mean # introns and mean intron length across transcripts
+mean(annotation_stats$N_introns)
+sum(annotation_stats$total_intron_length)/sum(annotation_stats$N_introns)
+
+# Plot of the distribution of transcript lengths
+ggplot()+
+  geom_histogram(data=annotation_stats,aes(x=transcript_length))+
+  geom_vline(xintercept = mean(annotation_stats$transcript_length),
+             linetype="dashed",colour="red")+
+  geom_vline(xintercept = median(annotation_stats$transcript_length),
+             linetype="dashed",colour="darkred")+
+  scale_x_log10("Transcript length (nt)")+
+  ylab("Count")+
+  my.theme
+
+# Plot of the distribution of CDS lengths
+ggplot()+
+  geom_histogram(data=annotation_stats,aes(CDS_length))+
+  geom_vline(xintercept = mean(annotation_stats$CDS_length),
+             linetype="dashed",colour="red")+
+  geom_vline(xintercept = median(annotation_stats$CDS_length),
+             linetype="dashed",colour="darkred")+
+  scale_x_log10("CDS length (nt)")+
+  ylab("Count")+
+  my.theme
+
+# Compare CDS lengths between valid and invalid
+# "valid" are defined as CDSs with lengths that are a multiple of 3
+tapply(annotation_stats$transcript_id,INDEX=list(annotation_stats$valid),length)
+kruskal.test(annotation_stats$CDS_length~annotation_stats$valid)
+ggplot()+
+  geom_boxplot(data=annotation_stats,aes(x=valid,y=CDS_length))+
+  scale_y_log10("CDS length (nt)")+
+  xlab("")+
+  my.theme
+```
+
+# 2. BUSCO completeness
+
+BUSCO results from among annotated transcripts of all three species
+```{r}
+busco_dat<-read.table(here::here("rdata/annotation","busco_annotated_genes.csv"),
+                      header=FALSE,sep=",")
+colnames(busco_dat)<-c("sp","set","perc")
+ggplot()+
+  geom_bar(data=busco_dat[!(busco_dat$set%in%c("Total","Complete")),],
+           aes(x=sp,y=perc,fill=set),stat="identity",position="stack",width=0.5)+
+  scale_fill_manual("",
+                    breaks = c("Complete_S","Complete_D","Fragmented","Missing"),
+                    labels = c("Complete (single-copy)","Complete (duplicated)","Fragmented","Missing"),
+                    values=c("darkblue","lightblue","yellow","red"))+
+  scale_x_discrete("",labels=c("M.cliftonense","M. hystrix","M. lignano"))+
+  ylab("BUSCO Genes (%)")+
+  theme(axis.text.x=element_text(size=16,angle=90,hjust=1,vjust=0.5),
+        axis.text.y=element_text(size=16,angle=90,hjust=0.5,vjust=0),
+        axis.title=element_text(size=16),
+        legend.text = element_text(size=16))
+```
+
+
+# 2. Trans-splicing
+
+Here I evaluate the extent of SL trans-splicing.
+
+Load either the `*_cov_min10.tab` or `*_cov_min100.tab` file.
+
+M. cliftonense
+```{r}
+SL_regions_genes_overlaps<-read.table(
+  here::here("rdata/trans_splicing","Maccli_GV23d_v2_overlaps_cov_min10.tab"),header=FALSE)
+
+colnames(SL_regions_genes_overlaps)<-c("chr","start","end","transcript","score","strand",
+                                       "chr_SL","start_SL","end_SL","overlap_l")
+SL_regions_genes_overlaps$gene<-gsub(".t.*","",SL_regions_genes_overlaps$transcript)
+head(SL_regions_genes_overlaps)
+
+# Because the overalps are based on transcripts, I need to load the transcript to gene map.
+genes<-read.table(here::here("assemblies","Maccli_GV23d_v2_rnm_trans2gene_slm.txt"),header=FALSE)
+colnames(genes)<-c("transcript","gene")
+
+# How many genes have >= 1 SL peak
+length(unique(SL_regions_genes_overlaps$gene))
+(length(unique(SL_regions_genes_overlaps$gene))/length(unique(genes$gene)))*100
+
+# Here I loop through the transcripts and compute the distance of the SL peak from the start of the transcript
+# I print the ID of all genes where an SL peak occurs further than 100bp from the start (translation) of a transcript
+SL_regions_genes_overlaps$dist<-vector(length=nrow(SL_regions_genes_overlaps))
+for(g in 1:nrow(SL_regions_genes_overlaps)){
+  gene<-SL_regions_genes_overlaps$gene[g]
+  peak_loc<-SL_regions_genes_overlaps$start_SL[g]+(
+    (SL_regions_genes_overlaps$end_SL[g]-SL_regions_genes_overlaps$start_SL[g])/2)
+  if(SL_regions_genes_overlaps$strand[g] == "+"){
+    peak_start<-SL_regions_genes_overlaps$start_SL[g]
+    dist<-peak_loc - SL_regions_genes_overlaps$start[g]
+    SL_regions_genes_overlaps
+    # feature is on + strand, SL peak start should be within 100bp of gene start
+    if(abs(dist) > 100){
+      cat(gene,": ",dist,"\n")
+      }
+  }else{
+    peak_start<-SL_regions_genes_overlaps$end_SL[g]
+    # feature is on + strand, SL peak end should be within 100bp of gene end
+    dist<-peak_loc - SL_regions_genes_overlaps$end[g]
+    #dist<-peak_start - SL_regions_genes_overlaps$end[g]
+    if(abs(dist) > 100){
+      cat(gene,": ",dist,"\n")
+    }
+  }
+  SL_regions_genes_overlaps$dist[g]<-dist
+}
+
+head(SL_regions_genes_overlaps)
+# How many have SL locations > 100bp away from start
+nrow(SL_regions_genes_overlaps[which(abs(SL_regions_genes_overlaps$dist)>100),])
+(nrow(SL_regions_genes_overlaps[which(abs(SL_regions_genes_overlaps$dist)>100),])/length(unique(genes$gene)))*100
+
+# Get the mean number of SL peaks for each gene.
+n_SL_peaks_gene<-tapply(SL_regions_genes_overlaps$transcript,INDEX=list(SL_regions_genes_overlaps$gene),
+       function(x){length(x)/length(unique(x))})
+
+# How many have more than 1 SL peak (possibly immature mRNAs from poly-cistronic genes)
+length(n_SL_peaks_gene[which(n_SL_peaks_gene>1)])
+(length(n_SL_peaks_gene[which(n_SL_peaks_gene>1)])/length(unique(genes$gene)))*100
+```
+
+M. hystrix
+```{r}
+SL_regions_genes_overlaps<-read.table(
+  here::here("rdata/trans_splicing","Machtx_SR1_v2_overlaps_cov_min10.tab"),header=FALSE)
+colnames(SL_regions_genes_overlaps)<-c("chr","start","end","transcript","score","strand",
+                                       "chr_SL","start_SL","end_SL","overlap_l")
+SL_regions_genes_overlaps$gene<-gsub("g.t.*","g",SL_regions_genes_overlaps$transcript)
+head(SL_regions_genes_overlaps)
+
+# Because the overalps are based on transcripts, I need to load the transcript to gene map.
+genes<-read.table(
+  here::here("assemblies","Machtx_SR1_v2_rnm_trans2gn_slm.txt"),header=FALSE)
+colnames(genes)<-c("transcript","gene")
+
+# How many genes have >= 1 SL peak
+length(unique(SL_regions_genes_overlaps$gene))
+(length(unique(SL_regions_genes_overlaps$gene))/length(unique(genes$gene)))*100
+# How many "transcripts" have >= 1 SL peak
+length(SL_regions_genes_overlaps$gene)
+(length(SL_regions_genes_overlaps$gene)/length(genes$gene))*100
+
+# Here I loop through the transcripts and compute the distance of the SL peak from the start of the transcript
+# I print the ID of all genes where an SL peak occurs further than 100bp from the start (translation) of a transcript
+SL_regions_genes_overlaps$dist<-vector(length=nrow(SL_regions_genes_overlaps))
+for(g in 1:nrow(SL_regions_genes_overlaps)){
+  gene<-SL_regions_genes_overlaps$gene[g]
+  peak_loc<-SL_regions_genes_overlaps$start_SL[g]+(
+    (SL_regions_genes_overlaps$end_SL[g]-SL_regions_genes_overlaps$start_SL[g])/2)
+  if(SL_regions_genes_overlaps$strand[g] == "+"){
+    peak_start<-SL_regions_genes_overlaps$start_SL[g]
+    dist<-peak_loc - SL_regions_genes_overlaps$start[g]
+    SL_regions_genes_overlaps
+    #dist<-peak_start - SL_regions_genes_overlaps$start[g]
+    # feature is on + strand, SL peak start should be within 100bp of gene start
+    if(abs(dist) > 100){
+      #
+      cat(gene,": ",dist,"\n")
+      }
+  }else{
+    peak_start<-SL_regions_genes_overlaps$end_SL[g]
+    # feature is on + strand, SL peak end should be within 100bp of gene end
+    dist<-peak_loc - SL_regions_genes_overlaps$end[g]
+    #dist<-peak_start - SL_regions_genes_overlaps$end[g]
+    if(abs(dist) > 100){
+      #
+      cat(gene,": ",dist,"\n")
+    }
+  }
+  SL_regions_genes_overlaps$dist[g]<-dist
+}
+
+head(SL_regions_genes_overlaps)
+# How many have SL locations > 100bp away from start
+nrow(SL_regions_genes_overlaps[which(abs(SL_regions_genes_overlaps$dist)>100),])
+(nrow(SL_regions_genes_overlaps[which(abs(SL_regions_genes_overlaps$dist)>100),])/length(unique(genes$gene)))*100
+
+# Get the mean number of SL peaks for each gene.
+n_SL_peaks_gene<-tapply(SL_regions_genes_overlaps$transcript,INDEX=list(SL_regions_genes_overlaps$gene),
+       function(x){length(x)/length(unique(x))})
+# How many have more than 1 SL peak (possibly immature mRNAs from poly-cistronic genes)
+length(n_SL_peaks_gene[which(n_SL_peaks_gene>1)])
+(length(n_SL_peaks_gene[which(n_SL_peaks_gene>1)])/length(unique(genes$gene)))*100
+```

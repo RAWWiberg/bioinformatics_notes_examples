@@ -1,0 +1,207 @@
+---
+title: "Positional RNA-Seq data prep"
+author: "R. Axel W. Wiberg"
+date: "14.04.2023" # Most recent changes made.
+output:
+  html_document:
+    df_print: paged
+editor_options: 
+  chunk_output_type: console
+---
+
+In this notebook I load all the indidivual salmon expression estimate files from each sample and output large tables.
+These tables are then used in separate analysis scripts
+
+These parts therefore only need to be done once. Then the matrices are saved and can be loaded complete.
+
+# 0. Load packages
+```{r}
+library(here)
+library(tximport)
+```
+
+# 1. Data prep for M. lignano
+```{r}
+samples<-expand.grid(sp="L",reps=c("1","2","3","4"),fragment=c("H","T","O","W"))
+samples$sample<-paste(samples$sp,samples$fragment,samples$reps,sep="")
+# Read in with tximport
+files<-list.files(here::here("positional_rnaseq/Maclig"),pattern="_quant.sf")
+files<-paste(here::here("positional_rnaseq/Maclig/"),files,sep="")
+
+all_quant_count<-list()
+all_quant_tpm<-list()
+all_quant_id<-list()
+all_quant_len<-list()
+all_quant<-data.frame()
+
+spp<-"Maclig"
+fragments<-c("H","T","O","W")
+reps<-c("1","2","3","4")
+for(fragment in fragments){
+  for(rep in reps){
+    # Read in the raw counts for the fragment
+    salmon_quant<-read.table(here::here("positional_rnaseq/Maclig",paste("L",fragment,rep,"_quant.sf",sep="")),
+                           header=TRUE)
+    # Sort by gene name to ensure that they will all be in the correct order
+    salmon_quant<-salmon_quant[order(salmon_quant$Name),]
+    
+    # Add fragment and rep columns
+    salmon_quant$frag<-rep(fragment,nrow(salmon_quant))
+    salmon_quant$rep<-rep(rep,nrow(salmon_quant))
+    all_quant<-rbind(all_quant,salmon_quant)
+    
+    # Store counts, TPM, and gene IDs in lists
+    all_quant_count[[paste(fragment,"_",rep,sep="")]]<-round(salmon_quant$NumReads)
+    all_quant_tpm[[paste(fragment,"_",rep,sep="")]]<-salmon_quant$TPM
+    all_quant_id[[paste(fragment,"_",rep,sep="")]]<-salmon_quant$Name
+    all_quant_len[[paste(fragment,"_",rep,sep="")]]<-salmon_quant$Length
+
+  }
+}
+
+# Now we make the big count and tpm matrices
+count_dat<-do.call(cbind,all_quant_count[names(all_quant_count)])
+tpm_dat<-do.call(cbind,all_quant_tpm[names(all_quant_tpm)])
+len_dat<-all_quant_len[[1]]
+
+# name the rows with transcript IDs
+row.names(count_dat)<-all_quant_id[[1]]
+row.names(tpm_dat)<-all_quant_id[[1]]
+names(len_dat)<-all_quant_id[[1]]
+
+all_quant <- as.data.frame(all_quant)
+
+# Save the count matrix
+write.table(count_dat,here::here("rdata/positional_rnaseq","Maclig_raw_counts.csv"),
+            col.names = TRUE,row.names = TRUE,quote=FALSE,sep="\t")
+
+# Save the tpm matrix
+write.table(tpm_dat,here::here("rdata/positional_rnaseq","Maclig_tpm.csv"),
+            col.names = TRUE,row.names = TRUE,quote=FALSE,sep="\t")
+
+# Save the full salmon data dataframe
+write.table(all_quant,here::here("rdata/positional_rnaseq","Maclig_salmon_data.csv"),
+            col.names = TRUE,row.names = FALSE,quote=FALSE,sep="\t")
+```
+
+
+# 2. Data prep for M. cliftonense
+```{r}
+all_quant_count<-list()
+all_quant_tpm<-list()
+all_quant_id<-list()
+all_quant_len<-list()
+all_quant<-data.frame()
+
+spp<-"Maccli"
+fragments<-c("H","T","O","W")
+reps<-c("1","2","3","4")
+for(fragment in fragments){
+  for(rep in reps){
+    # Read in the raw counts for the fragment
+    salmon_quant<-read.table(here::here("positional_rnaseq/Maccli",
+                                        paste("C",fragment,rep,"_quant.sf",sep="")),
+                           header=TRUE)
+    # Sort by gene name so that they will all be in the correct order
+    salmon_quant<-salmon_quant[order(salmon_quant$Name),]
+    
+    # Add fragment and rep columns
+    salmon_quant$frag<-rep(fragment,nrow(salmon_quant))
+    salmon_quant$rep<-rep(rep,nrow(salmon_quant))
+    all_quant<-rbind(all_quant,salmon_quant)
+    
+    # Store counts, TPM, and gene IDs in lists
+    all_quant_count[[paste(fragment,"_",rep,sep="")]]<-round(salmon_quant$NumReads)
+    all_quant_tpm[[paste(fragment,"_",rep,sep="")]]<-salmon_quant$TPM
+    all_quant_id[[paste(fragment,"_",rep,sep="")]]<-salmon_quant$Name
+    all_quant_len[[paste(fragment,"_",rep,sep="")]]<-salmon_quant$Length
+
+  }
+}
+
+# Now we make the big count and tpm matrices
+count_dat<-do.call(cbind,all_quant_count[names(all_quant_count)])
+tpm_dat<-do.call(cbind,all_quant_tpm[names(all_quant_tpm)])
+len_dat<-all_quant_len[[1]]
+
+# name the rows with transcript IDs
+row.names(count_dat)<-all_quant_id[[1]]
+row.names(tpm_dat)<-all_quant_id[[1]]
+names(len_dat)<-all_quant_id[[1]]
+
+all_quant <- as.data.frame(all_quant)
+
+# Save the count matrix
+write.table(count_dat,here::here("rdata/positional_rnaseq","Maccli_raw_counts.csv"),
+            col.names = TRUE,row.names = TRUE,quote=FALSE,sep="\t")
+
+# Save the tpm matrix
+write.table(tpm_dat,here::here("rdata/positional_rnaseq","Maccli_tpm.csv"),
+            col.names = TRUE,row.names = TRUE,quote=FALSE,sep="\t")
+
+# Save the full salmon data dataframe
+write.table(all_quant,here::here("rdata/positional_rnaseq","Maccli_salmon_data.csv"),
+            col.names = TRUE,row.names = FALSE,quote=FALSE,sep="\t")
+```
+
+# 3. Data prep for M. hystrix
+```{r}
+all_quant_count<-list()
+all_quant_tpm<-list()
+all_quant_id<-list()
+all_quant_len<-list()
+all_quant<-data.frame()
+
+spp<-"Machtx"
+fragments<-c("H","T","O","W")
+reps<-c("1","2","3","4")
+for(fragment in fragments){
+  for(rep in reps){
+    # Read in the raw counts for the fragment
+    salmon_quant<-read.table(here::here("positional_rnaseq/Machtx",
+                                        paste("H",fragment,rep,"_quant.sf",sep="")),
+                           header=TRUE)
+    # Sort by gene name so that they will all be in the correct order
+    salmon_quant<-salmon_quant[order(salmon_quant$Name),]
+    
+    # Add fragment and rep columns
+    salmon_quant$frag<-rep(fragment,nrow(salmon_quant))
+    salmon_quant$rep<-rep(rep,nrow(salmon_quant))
+    all_quant<-rbind(all_quant,salmon_quant)
+    
+    # Store counts, TPM, and gene IDs in lists
+    all_quant_count[[paste(fragment,"_",rep,sep="")]]<-round(salmon_quant$NumReads)
+    all_quant_tpm[[paste(fragment,"_",rep,sep="")]]<-salmon_quant$TPM
+    all_quant_id[[paste(fragment,"_",rep,sep="")]]<-salmon_quant$Name
+    all_quant_len[[paste(fragment,"_",rep,sep="")]]<-salmon_quant$Length
+
+  }
+}
+
+# Now we make the big count and tpm matrices
+count_dat<-do.call(cbind,all_quant_count[names(all_quant_count)])
+tpm_dat<-do.call(cbind,all_quant_tpm[names(all_quant_tpm)])
+len_dat<-all_quant_len[[1]]
+
+# name the rows with transcript IDs
+row.names(count_dat)<-all_quant_id[[1]]
+row.names(tpm_dat)<-all_quant_id[[1]]
+names(len_dat)<-all_quant_id[[1]]
+
+all_quant <- as.data.frame(all_quant)
+
+# Save the count matrix
+write.table(count_dat,here::here("rdata/positional_rnaseq","Machtx_raw_counts.csv"),
+            col.names = TRUE,row.names = TRUE,quote=FALSE,sep="\t")
+
+# Save the tpm matrix
+write.table(tpm_dat,here::here("rdata/positional_rnaseq","Machtx_tpm.csv"),
+            col.names = TRUE,row.names = TRUE,quote=FALSE,sep="\t")
+
+# Save the full salmon data dataframe
+write.table(all_quant,here::here("rdata/positional_rnaseq","Machtx_salmon_data.csv"),
+            col.names = TRUE,row.names = FALSE,quote=FALSE,sep="\t")
+```
+
+
+

@@ -1,7 +1,7 @@
 
 This repository contains a small portfolio of examples of my bioinformatics notes and pipelines.
 
-# 1. Macrostomum genome assembly and annotation
+## 1. Macrostomum genome assembly and annotation
 
 This project formed the backbone of my analyses for the publication:
 
@@ -25,4 +25,4 @@ This browser is not accessible to the public, but I detail my approach with a se
 [Genome browser set up](./macrostomum_genomes/alcedo_admin_JBrowse_sequenceserver.md)
 
 
-# 2.
+## 2.

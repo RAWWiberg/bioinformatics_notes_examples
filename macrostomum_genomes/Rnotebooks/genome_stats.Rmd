@@ -1,0 +1,344 @@
+---
+title: "Genome assembly statistics"
+author: "R. Axel W. Wiberg"
+date: "03.02.2023" # Most recent changes made.
+output:
+  html_document:
+    df_print: paged
+editor_options: 
+  chunk_output_type: console
+---
+
+This notebook details the assessments of various steps of the genome assembly pipeline.
+
+# 0. Load libraries and functions
+```{r,warning=FALSE,message=FALSE,eval=TRUE,echo=TRUE,results='hide'}
+library(here)
+library(ggplot2)
+library(reshape)
+library(ape)
+library(phytools)
+source(here("rscripts","ggplot_theme.R"))
+se <- function(x) {sqrt(var(x, na.rm = TRUE))/sqrt(length(x))}
+```
+
+# 1. Stats from purge_haplotigs procedure
+
+Here I plot the coverage stats used for determining thresholds for Purge Haplotigs.
+
+M. cliftonense
+```{r}
+purge_cov_hist<-read.table(here::here("rdata/assembly/purge_haplotigs",
+                                "Maccli_23b-7d.contigs_readsmapped_nomult.bam.histogram.csv"),
+                           header=FALSE,sep=",")
+# The coloured regions here define the thresholds used for purging.
+# These are simply picked by eye.
+cli_cov_hist<-ggplot()+
+  geom_bar(data=purge_cov_hist,aes(x=V1,y=V2/100000),stat="identity")+
+  geom_ribbon(aes(x=seq(-1,5),ymin=0,ymax=100),fill="salmon1",alpha=1/3)+
+  geom_vline(xintercept = c(5,55,190),linetype="dashed")+
+  geom_ribbon(aes(x=seq(5,55),ymin=0,ymax=100),fill="paleturquoise1",alpha=1/3)+
+  geom_ribbon(aes(x=seq(55,190),ymin=0,ymax=100),fill="palegreen1",alpha=1/3)+
+  geom_ribbon(aes(x=seq(190,201),ymin=0,ymax=100),fill="salmon1",alpha=1/3)+
+  scale_x_continuous("Coverage")+
+  scale_y_continuous(expression(paste("Count (x",10^6,")",sep="")))+
+  ggtitle(expression(italic("M. cliftonense")))+
+  my.theme+theme(axis.text=element_text(size=16),
+                 axis.title = element_text(size=16))
+cli_cov_hist
+```
+
+M. hystrix
+```{r}
+purge_cov_hist<-read.table(here("rdata/assembly/purge_haplotigs",
+                                "Machtx_SR1.contigs_readsmapped_nomult.bam.histogram.csv"),
+                           header=FALSE,sep=",")
+htx_cov_hist<-ggplot()+
+  geom_bar(data=purge_cov_hist,aes(x=V1,y=V2/100000),stat="identity")+
+  geom_ribbon(aes(x=seq(-1,2),ymin=0,ymax=100),fill="salmon1",alpha=1/3)+
+  geom_vline(xintercept = c(2,22,190),linetype="dashed")+
+  geom_ribbon(aes(x=seq(2,22),ymin=0,ymax=100),fill="paleturquoise1",alpha=1/3)+
+  geom_ribbon(aes(x=seq(22,190),ymin=0,ymax=100),fill="palegreen1",alpha=1/3)+
+  geom_ribbon(aes(x=seq(190,201),ymin=0,ymax=100),fill="salmon1",alpha=1/3)+
+  scale_x_continuous("Coverage")+
+  scale_y_continuous(expression(paste("Count (x",10^6,")",sep="")))+
+  ggtitle(expression(italic("M. hystrix")))+
+  my.theme+theme(axis.text=element_text(size=16),
+                 axis.title = element_text(size=16))
+htx_cov_hist
+```
+
+Plot coverage histograms together.
+```{r}
+cowplot::plot_grid(cli_cov_hist,htx_cov_hist,ncol=1)
+```
+
+# 2. Statistics from arrow polishing
+Here I look at assembly quality metrics after each iteration of arrow polishing
+```{r}
+arrow_stats<-read.table(here("rdata/assembly","arrow_polishing_stats.csv"),sep="\t",header=TRUE)
+arrow_stats<-as.data.frame(arrow_stats)
+head(arrow_stats)
+arrow_stats$Length2<-arrow_stats$Length/1000000
+arrow_stats_m<-melt(arrow_stats,
+                    id.vars = c("Species","Iteration"),
+                    measure.vars = c("Length2","N50","N75","N_Predicted_Genes"))
+```
+
+white = M. hystrix, 
+black = M. cliftonense
+```{r}
+length_plot<-ggplot()+
+  geom_line(data=arrow_stats,aes(x=Iteration,y=Length2,linetype=Species))+
+  geom_point(data=arrow_stats,aes(x=Iteration,y=Length2,fill=Species),shape=21,size=3)+
+  scale_x_continuous(breaks=c(0,1,2,3,4,5,6,7,8,9,10),labels =c("0","","2","","4","","6","","8","","10"))+
+  scale_y_continuous("Length (Mb)",limits=c(0,230))+
+  scale_fill_manual("",values=c("black","white"),guide="none")+
+  scale_linetype_discrete("",guide="none")+
+  my.theme+theme(strip.text.y = element_text(angle=0),
+                 axis.title.x = element_text(size=16),
+                 axis.title.y = element_text(angle=0,size=16,vjust=0.5),
+                 axis.text = element_text(size=16))
+length_plot
+
+N50_plot<-ggplot()+
+  geom_line(data=arrow_stats,aes(x=Iteration,y=N50/1000000,linetype=Species))+
+  geom_point(data=arrow_stats,aes(x=Iteration,y=N50/1000000,fill=Species),shape=21,size=3)+
+  scale_x_continuous(breaks=c(0,1,2,3,4,5,6,7,8,9,10),labels =c("0","","2","","4","","6","","8","","10"))+
+  scale_y_continuous("N50 (Mb)",limits=c(0,20))+
+  scale_fill_manual("",values=c("black","white"),guide="none")+
+  scale_linetype_discrete("",guide="none")+
+  my.theme+theme(strip.text.y = element_text(angle=0),
+                 axis.title.x = element_text(size=16),
+                 axis.title.y = element_text(angle=0,size=16,vjust=0.5),
+                 axis.text = element_text(size=16))
+N50_plot
+
+N75_plot<-ggplot()+
+  geom_line(data=arrow_stats,aes(x=Iteration,y=N75/1000000,linetype=Species))+
+  geom_point(data=arrow_stats,aes(x=Iteration,y=N75/1000000,fill=Species),shape=21,size=3)+
+  scale_x_continuous(breaks=c(0,1,2,3,4,5,6,7,8,9,10),labels =c("0","","2","","4","","6","","8","","10"))+
+  scale_y_continuous("N75 (Mb)",limits=c(0,10))+
+  scale_fill_manual("",values=c("black","white"),guide="none")+
+  scale_linetype_discrete("",guide="none")+
+  my.theme+theme(strip.text.y = element_text(angle=0),
+                 axis.title.x = element_text(size=16),
+                 axis.title.y = element_text(angle=0,size=16,vjust=0.5),
+                 axis.text = element_text(size=16))
+N75_plot
+
+Ngenes_plot<-ggplot()+
+  geom_line(data=arrow_stats,aes(x=Iteration,y=N_Predicted_Genes/1000,linetype=Species))+
+  geom_point(data=arrow_stats,aes(x=Iteration,y=N_Predicted_Genes/1000,fill=Species),shape=21,size=3)+
+  scale_x_continuous(breaks=c(0,1,2,3,4,5,6,7,8,9,10),labels =c("0","","2","","4","","6","","8","","10"))+
+  scale_y_continuous("# predicted genes\n(x1000)",limits=c(0,70))+
+  scale_fill_manual("",values=c("black","white"),guide="none")+
+  scale_linetype_discrete("",guide="none")+
+  my.theme+theme(strip.text.y = element_text(angle=0),
+                 axis.title.x = element_text(size=16),
+                 axis.title.y = element_text(angle=0,size=16,vjust=0.5),
+                 axis.text = element_text(size=16))
+Ngenes_plot
+```
+
+Plot them all together
+```{r}
+cowplot::plot_grid(length_plot,N50_plot,N75_plot,Ngenes_plot,ncol=1,align = "hv")
+```
+
+Plot the BUSCO results from each iteration
+```{r}
+head(arrow_stats)
+arrow_busco_stats_m<-melt(arrow_stats,
+                    id.vars = c("Species","Iteration"),
+                    measure.vars = c("Missing","Fragmented","Duplicated","Single.copy"))
+arrow_busco_stats_m$value<-arrow_busco_stats_m$value/954
+head(arrow_busco_stats_m)
+arrow_busco_stats_m$variable<-factor(arrow_busco_stats_m$variable,
+                                     levels=c("Missing","Fragmented","Duplicated","Single.copy"))
+ggplot()+
+  geom_bar(data=arrow_busco_stats_m,aes(x=Iteration,y=value,fill=variable),stat="identity")+
+  scale_x_continuous(breaks=seq(0,9),labels=as.character(c("raw",seq(1,9))))+
+  facet_grid(.~Species)+
+  ylab("BUSCO Score (%)")+
+  scale_fill_manual("",values=c("red","yellow","skyblue","blue"))+
+  my.theme
+```
+
+
+# 3. Stats from pilon polishing
+Here I look at assembly quality metrics after each iteration of pilon polishing
+```{r}
+pilon_stats<-read.table(here("rdata/assembly","pilon_polishing_stats.csv"),sep="\t",header=TRUE)
+pilon_stats<-as.data.frame(pilon_stats)
+head(pilon_stats)
+pilon_stats$N_reads_mapped2<-pilon_stats$N_reads_mapped/1000000
+pilon_stats_m<-melt(pilon_stats,
+                    id.vars = c("Species","Iteration"),
+                    measure.vars = c("perc_reads_mapped","N_Changes","N_SNPs","Insertions_fixed","Deletions_fixed"))
+```
+
+white = M. hystrix, 
+black = M. cliftonense
+```{r}
+perc_reads_plot<-ggplot()+
+  geom_point(data=pilon_stats_m[pilon_stats_m$variable=="perc_reads_mapped",],
+             aes(x=Iteration,y=value,fill=Species),shape=21,size=3,position=position_jitter(width=0.2))+
+  geom_line(data=pilon_stats_m[pilon_stats_m$variable=="perc_reads_mapped",],
+            aes(x=Iteration,y=value,linetype=Species))+
+  scale_x_continuous(breaks=c(0,1,2,3,4,5,6,7,8,9,10),labels =c("0","","2","","4","","6","","8","","10"))+
+  scale_y_continuous("% of\nReads\nMapped",limits=c(1,100))+
+  scale_fill_manual("",values=c("black","white"),guide=FALSE)+
+  scale_linetype_discrete("",guide=FALSE)+
+  my.theme+theme(strip.text.y = element_text(angle=0),
+                 axis.title.x = element_text(size=16),
+                 axis.title.y = element_text(angle=0,size=16,vjust=0.5),
+                 axis.text = element_text(size=16),
+                 legend.text = element_text(size=16))
+
+n_changes_plot<-ggplot()+
+  geom_point(data=pilon_stats_m[pilon_stats_m$variable=="N_Changes",],
+             aes(x=Iteration,y=value/1000,fill=Species),shape=21,size=3,position=position_jitter(width=0.2))+
+  geom_line(data=pilon_stats_m[pilon_stats_m$variable=="N_Changes",],
+            aes(x=Iteration,y=value/1000,linetype=Species))+
+  scale_x_continuous(breaks=c(0,1,2,3,4,5,6,7,8,9,10),labels =c("0","","2","","4","","6","","8","","10"))+
+  scale_y_continuous("# of\nChanges\n(x1000)")+
+  scale_fill_manual("",values=c("black","white"),guide=FALSE)+
+  scale_linetype_discrete("",guide=FALSE)+
+  my.theme+theme(strip.text.y = element_text(angle=0),
+                 axis.title.x = element_text(size=16),
+                 axis.title.y = element_text(angle=0,size=16,vjust=0.5),
+                 axis.text = element_text(size=16),
+                 legend.text = element_text(size=16))
+
+n_snps_plot<-ggplot()+
+  geom_point(data=pilon_stats_m[pilon_stats_m$variable=="N_SNPs",],
+             aes(x=Iteration,y=value/1000,fill=Species),shape=21,size=3,position=position_jitter(width=0.2))+
+  geom_line(data=pilon_stats_m[pilon_stats_m$variable=="N_SNPs",],
+            aes(x=Iteration,y=value/1000,linetype=Species))+
+  scale_x_continuous(breaks=c(0,1,2,3,4,5,6,7,8,9,10),labels =c("0","","2","","4","","6","","8","","10"))+
+  scale_y_continuous("# of Single\nNucleotide\nErrors Fixed\n(x1000)")+
+  scale_fill_manual("",values=c("black","white"),guide=FALSE)+
+  scale_linetype_discrete("",guide=FALSE)+
+  my.theme+theme(strip.text.y = element_text(angle=0),
+                 axis.title.x = element_text(size=16),
+                 axis.title.y = element_text(angle=0,size=16,vjust=0.5),
+                 axis.text = element_text(size=16),
+                 legend.text = element_text(size=16))
+
+n_in_plot<-ggplot()+
+  geom_point(data=pilon_stats_m[pilon_stats_m$variable=="Insertions_fixed",],
+             aes(x=Iteration,y=value/1000,fill=Species),shape=21,size=3,position=position_jitter(width=0.2))+
+  geom_line(data=pilon_stats_m[pilon_stats_m$variable=="Insertions_fixed",],
+            aes(x=Iteration,y=value/1000,linetype=Species))+
+  scale_x_continuous(breaks=c(0,1,2,3,4,5,6,7,8,9,10),labels =c("0","","2","","4","","6","","8","","10"))+
+  scale_fill_manual("",values=c("black","white"),guide=FALSE)+
+  scale_linetype_discrete("",guide=FALSE)+
+  scale_y_continuous("# of Insertion\nErrors Fixed\n(x1000)")+
+  my.theme+theme(strip.text.y = element_text(angle=0),
+                 axis.title.x = element_text(size=16),
+                 axis.title.y = element_text(angle=0,size=16,vjust=0.5),
+                 axis.text = element_text(size=16),
+                 legend.text = element_text(size=16))
+
+n_del_plot<-ggplot()+
+  geom_point(data=pilon_stats_m[pilon_stats_m$variable=="Deletions_fixed",],
+             aes(x=Iteration,y=value/1000,fill=Species),shape=21,size=3,position=position_jitter(width=0.2))+
+  geom_line(data=pilon_stats_m[pilon_stats_m$variable=="Deletions_fixed",],
+            aes(x=Iteration,y=value/1000,linetype=Species))+
+  scale_x_continuous(breaks=c(0,1,2,3,4,5,6,7,8,9,10),labels =c("0","","2","","4","","6","","8","","10"))+
+  scale_fill_manual("",values=c("black","white"),guide=FALSE)+
+  scale_linetype_discrete("",guide=FALSE)+
+  scale_y_continuous("# of Deletion\nErrors Fixed\n(x1000)")+
+  my.theme+theme(strip.text.y = element_text(angle=0),
+                 axis.title.x = element_text(size=16),
+                 axis.title.y = element_text(angle=0,size=16,vjust=0.5),
+                 axis.text = element_text(size=16),
+                 legend.text = element_text(size=16))
+```
+
+Plot them all together
+Figure S3B
+```{r}
+cowplot::plot_grid(perc_reads_plot,n_changes_plot,n_snps_plot,n_in_plot,n_del_plot,ncol=1,align = "hv")
+```
+
+
+
+# 4. Stats Final assembly (after removing mt genome)
+Here I look at assembly quality metrics from the final genome assembly (excluding the mtGenome)
+M. cliftonense
+```{r}
+tig_stats<-read.table(here("rdata/assembly","Maccli_GV23d_v2.rptsftmsk.fasta.stats"),header=TRUE)
+tig_stats<-tig_stats[order(tig_stats$length,decreasing = TRUE),]
+tig_stats$cum_len<-cumsum(tig_stats$length)/sum(tig_stats$length)
+n50<-max(tig_stats$length[which(tig_stats$cum_len>=0.5)])
+
+# Print:
+# Total length
+# N contigs
+# Mean contig length
+# N50
+# Max contig length
+# Min contig length
+cat(sum(tig_stats$length),"\n",
+    nrow(tig_stats),"\n",
+    mean(tig_stats$length),"\n",
+    n50,"\n",
+    max(tig_stats$length),"\n",
+    min(tig_stats$length))
+# The L90
+nrow(tig_stats[which(tig_stats$cum_len<=0.9),])
+
+# What is the proportion of sites masked by repeatmasker (lower_case) in the final assembly.
+tig_stats$prop_masked<-tig_stats$lower_count/tig_stats$length
+sum(tig_stats$lower_count)/sum(tig_stats$length)*100
+```
+
+M. hystrix
+```{r}
+tig_stats<-read.table(here("rdata/assembly","Machtx_SR1_v2.rptsftmsk.fasta.stats"),header=TRUE)
+tig_stats<-tig_stats[order(tig_stats$length,decreasing = TRUE),]
+tig_stats$cum_len<-cumsum(tig_stats$length)/sum(tig_stats$length)
+n50<-max(tig_stats$length[which(tig_stats$cum_len>=0.5)])
+# Print:
+# Total length
+# N contigs
+# Mean contig length
+# N50
+# Max contig length
+# Min contig length
+cat(sum(tig_stats$length),"\n",
+    nrow(tig_stats),"\n",
+    mean(tig_stats$length),"\n",
+    n50,"\n",
+    max(tig_stats$length),"\n",
+    min(tig_stats$length))
+# The L90
+nrow(tig_stats[which(tig_stats$cum_len<=0.9),])
+
+# What is the proportion of sites masked by repeatmasker (lower_case) in the final assembly.
+tig_stats$prop_masked<-tig_stats$lower_count/tig_stats$length
+sum(tig_stats$lower_count)/sum(tig_stats$length)*100
+```
+
+BUSCO scores of final assemblies
+```{r}
+busco_dat<-read.table(here::here("rdata/assembly","busco_assembly.csv"),header=FALSE,sep=",")
+colnames(busco_dat)<-c("sp","set","perc")
+ggplot()+
+  geom_bar(data=busco_dat[!(busco_dat$set%in%c("Total","Complete")),],
+           aes(x=sp,y=perc,fill=set),stat="identity",position="stack",width=0.5)+
+  scale_fill_manual("",
+                    breaks = c("Complete_S","Complete_D","Fragmented","Missing"),
+                    labels = c("Complete (single-copy)","Complete (duplicated)","Fragmented","Missing"),
+                    values=c("darkblue","lightblue","yellow","red"))+
+  scale_x_discrete("",labels=c("M.cliftonense","M. hystrix","M. lignano"))+
+  ylab("BUSCO Genes (%)")+
+  theme(axis.text.x=element_text(size=16,angle=90,hjust=1,vjust=0.5),
+        axis.text.y=element_text(size=16,angle=90,hjust=0.5,vjust=0),
+        axis.title=element_text(size=16),
+        legend.text = element_text(size=16))
+```
+
+

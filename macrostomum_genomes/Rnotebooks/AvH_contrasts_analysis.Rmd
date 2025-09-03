@@ -1,0 +1,1011 @@
+---
+title: "AvH contrasts"
+author: "R. Axel W. Wiberg"
+date: "14.02.2021" # Most recent changes made.
+output:
+  html_document:
+    df_print: paged
+editor_options: 
+  chunk_output_type: console
+---
+
+#0. Load packages
+```{r}
+library(here)
+library(ggplot2)
+library(reshape)
+library(ape)
+library(phytools)
+library(DESeq2)
+library(NOISeq)
+source(here::here("rscripts","ggplot_theme.R"))
+se <- function(x) {sqrt(var(x, na.rm = TRUE))/sqrt(length(x))}
+```
+
+
+#1. Run DESEq2 A vs. H contrast: Maccli
+## 1.1. Load data
+```{r}
+count_dat<-read.table(here::here("rdata/AvH_contrasts","Maccli_raw_counts.csv"),
+                      header=TRUE,sep="\t")
+tpm_dat<-read.table(here::here("rdata/AvH_contrasts","Maccli_tpm.csv"),
+                      header=TRUE,sep="\t")
+```
+
+## 1.2. Make the big count matrix
+```{r}
+# Need to make a matrix of just the counts
+big_all_quant_count<-count_dat[,1:ncol(count_dat)]
+```
+
+## 1.3. Differential expression analysis with DESeq2
+There are several options for differential expression analysis, here we are just using DESeq2
+First we filter the data a little bit: 
+We keep only genes where at least one sample has count data.
+i.e. we remove all genes that have 0 counts in all samples...
+```{r}
+big_all_quant_count1<-big_all_quant_count[apply(big_all_quant_count,1,function(x){sum(x>0)>1}),]
+```
+
+Then we collect the treatment information from the column names of the count matrix and store it separately.
+We will need this later.
+```{r}
+condition<-gsub("^X\\d+_","",colnames(big_all_quant_count1))
+coldata<-data.frame("condition"=condition)
+head(big_all_quant_count1,2)
+```
+
+Then we re-name the column names to have just numbers, so they are the same as the rownames of the "coldata" table.
+```{r}
+colnames(big_all_quant_count1)<-seq(1,ncol(big_all_quant_count1))
+```
+
+Make sure the sample information maps to the count data. 
+i.e. that row names of coldata are all represented among the column names of the count matrix
+```{r}
+rownames(coldata)<-colnames(big_all_quant_count1)
+all(rownames(coldata) %in% colnames(big_all_quant_count1))
+```
+
+Rearrange the count data so that it matches the sample information data. 
+This is not strictly necessary here because they way I have loaded the data ensures the correct order. 
+But it is important that the columns of the count matrix are in the correct order with respect to the rows in coldata
+```{r}
+big_all_quant_count1 <- big_all_quant_count1[,rownames(coldata)]
+all(rownames(coldata) == colnames(big_all_quant_count1))
+```
+
+Now we make a DESeq formatted dataset from the count data and the treatment information.
+We also need to give the model design. In this case we want to estimate expression as a function of "condition" (i.e. treatment)
+```{r}
+dds<-DESeqDataSetFromMatrix(countData=big_all_quant_count1,colData=coldata,design= ~ condition)
+dds<-estimateSizeFactors(dds)
+
+# Save the normalised counts as a table
+normalised_counts<-as.data.frame(counts(dds,normalized=TRUE))
+colnames(normalised_counts)<-paste(coldata$condition,"_",seq(1,4),sep="")
+normalised_counts$gene<-row.names(normalised_counts)
+write.table(normalised_counts,
+            here::here("rdata/AvH_contrasts","Maccli_deseq2_normalised_counts.tab"),
+            col.names = TRUE,row.names = FALSE,sep="\t",quote=FALSE)
+```
+
+Do some minimal filtering to remove rows with total counts < 10
+```{r}
+keep<-rowSums(counts(dds)) >= 10
+dds<-dds[keep,]
+```
+
+Now we run DESeq2
+```{r}
+dds<-estimateDispersions(dds)
+dds
+dds<-DESeq(dds)
+plotDispEsts(dds)
+```
+
+Now we ask how many are DE at a certain alpha threshhold. 
+Here we can either ask to include the independentFiltering or not.
+```{r}
+res<-results(dds,alpha=0.05,contrast=c("condition","A","H"),independentFiltering = FALSE)
+# "up" = higher in adults
+# "down" = higher in hatchlings
+res_data<-as.data.frame(res)
+res_data$gene<-row.names(res_data)
+res_data$expr<-rep("0",nrow(res_data))
+res_data$expr[which(res_data$padj<0.05)]<-ifelse((res_data$log2FoldChange[which(res_data$padj<0.05)]<0),
+                                                 "UpinH","UpinA")
+tapply(res_data$gene,INDEX = list(res_data$expr),length)
+# Save this table as the genes with differential expression between A and H
+write.table(res_data,
+            here::here("rdata/AvH_contrasts","Maccli_AvH.tab"),
+            col.names = TRUE,row.names = FALSE,quote=FALSE,sep="\t")
+```
+
+
+## 1.5 Plotting
+```{r}
+res_data<-read.table(here::here("rdata/AvH_contrasts","Maccli_AvH.tab"),
+                     header=TRUE,sep="\t")
+breaks<-seq(-20,20,5)
+labels<-as.character(breaks)
+labels[seq(2,length(labels),2)]<-""
+logfc_plot_Maccli<-ggplot()+
+  geom_histogram(data=res_data[which(res_data$expr=="0"),],
+                 aes(x=log2FoldChange),fill="grey70",alpha=1/2,binwidth = 0.5)+
+  # Higher expression in hatchlings
+  geom_histogram(data=res_data[which(res_data$expr=="UpinH"),],
+                 aes(x=log2FoldChange),fill="blue",alpha=1/2,binwidth = 0.5)+
+  # Higher expression in adults
+  geom_histogram(data=res_data[which(res_data$expr=="UpinA"),],
+                 aes(x=log2FoldChange),fill="red",alpha=1/2,binwidth = 0.5)+
+  geom_vline(aes(xintercept=0),colour="black",linetype="dashed")+
+  geom_text(aes(x=c(-10,10),y=c(Inf,Inf),label=c("Higher in H","Higher in A")),vjust=1,size=5)+
+  scale_x_continuous(expression(paste(log[2],"(Fold Change)",sep="")),
+                     limits=c(-20,20),
+                     breaks=breaks,labels=labels)+
+  ylab("Count")+
+  ggtitle(expression(italic("M. cliftonense")))+
+  my.theme+theme(panel.grid.major = element_blank(),
+                 axis.text = element_text(size=20),
+                 axis.title = element_text(size=20),
+                 legend.text = element_text(size=20),
+                 legend.title = element_text(size=20),
+                 legend.key.size = unit(2,"cm"),
+                 panel.background = element_rect(fill=NA,colour="black"))
+logfc_plot_Maccli
+```
+
+
+# 2. Run DESEq2 A vs. H contrast: Machtx
+## 1.1. Load data
+```{r}
+count_dat<-read.table(here::here("rdata/AvH_contrasts","Machtx_raw_counts.csv"),
+                      header=TRUE,sep="\t")
+tpm_dat<-read.table(here::here("rdata/AvH_contrasts","Machtx_tpm.csv"),
+                      header=TRUE,sep="\t")
+```
+
+## 1.2. Make the big count matrix
+```{r}
+# Need to make a matrix of just the counts
+big_all_quant_count<-count_dat[,1:ncol(count_dat)]
+```
+
+## 1.3. Differential expression analysis with DESeq2
+There are several options for differential expression analysis, here we are just using DESeq2
+First we filter the data a little bit: 
+We keep only genes where at least one sample has count data.
+i.e. we remove all genes that have 0 counts in all samples...
+```{r}
+big_all_quant_count1<-big_all_quant_count[apply(big_all_quant_count,1,function(x){sum(x>0)>1}),]
+```
+
+Then we collect the treatment information from the column names of the count matrix and store it separately.
+We will need this later.
+```{r}
+condition<-gsub("^X\\d+_","",colnames(big_all_quant_count1))
+coldata<-data.frame("condition"=condition)
+head(big_all_quant_count1,2)
+```
+
+Then we re-name the column names to have just numbers, so they are the same as the rownames of the "coldata" table.
+```{r}
+colnames(big_all_quant_count1)<-seq(1,ncol(big_all_quant_count1))
+```
+
+Make sure the sample information maps to the count data. 
+i.e. that row names of coldata are all represented among the column names of the count matrix
+```{r}
+rownames(coldata)<-colnames(big_all_quant_count1)
+all(rownames(coldata) %in% colnames(big_all_quant_count1))
+```
+
+Rearrange the count data so that it matches the sample information data. 
+This is not strictly necessary here because they way I have loaded the data ensures the correct order. 
+But it is important that the columns of the count matrix are in the correct order with respect to the rows in coldata
+```{r}
+big_all_quant_count1 <- big_all_quant_count1[,rownames(coldata)]
+all(rownames(coldata) == colnames(big_all_quant_count1))
+```
+
+Now we make a DESeqw formatted dataset from the count data and the treatment information.
+We also need to give the model design. In this case we want to estimate expression as a function of "condition" (i.e. treatment)
+```{r}
+dds<-DESeqDataSetFromMatrix(countData=big_all_quant_count1,colData=coldata,design= ~ condition)
+dds<-estimateSizeFactors(dds)
+
+# Save the normalised counts as a table
+normalised_counts<-as.data.frame(counts(dds,normalized=TRUE))
+colnames(normalised_counts)<-paste(coldata$condition,"_",seq(1,3),sep="")
+normalised_counts$gene<-row.names(normalised_counts)
+nrow(normalised_counts)
+write.table(normalised_counts,
+            here::here("rdata/AvH_contrasts","Machtx_deseq2_normalised_counts.tab"),
+            col.names = TRUE,row.names = FALSE,sep="\t",quote=FALSE)
+```
+
+Do some minimal filtering to remove rows with total counts < 10
+```{r}
+keep<-rowSums(counts(dds)) >= 10
+dds<-dds[keep,]
+```
+
+Now we run DESeq2
+```{r}
+dds<-estimateDispersions(dds)
+dds
+dds<-DESeq(dds)
+plotDispEsts(dds)
+```
+
+Now we ask how many are DE at a certain alpha threshhold. 
+Here we can either ask to include the independentFiltering or not.
+```{r}
+res<-results(dds,alpha=0.05,contrast=c("condition","A","H"),independentFiltering = FALSE)
+# "up" = higher in adults
+# "down" = higher in hatchlings
+res_data<-as.data.frame(res)
+res_data$gene<-row.names(res_data)
+res_data$expr<-rep("0",nrow(res_data))
+res_data$expr[which(res_data$padj<0.05)]<-ifelse((res_data$log2FoldChange[which(res_data$padj<0.05)]<0),
+                                                 "UpinH","UpinA")
+tapply(res_data$gene,INDEX = list(res_data$expr),length)
+# Save this table as the genes with differential expression between A and H
+write.table(res_data,
+            here::here("rdata/AvH_contrasts","Machtx_AvH.tab"),
+            col.names = TRUE,row.names = FALSE,quote=FALSE,sep="\t")
+```
+
+## 2.5 Plotting
+```{r}
+res_data<-read.table(here::here("rdata/AvH_contrasts","Machtx_AvH.tab"),
+                     header=TRUE,sep="\t")
+
+breaks<-seq(-20,20,5)
+labels<-as.character(breaks)
+labels[seq(2,length(labels),2)]<-""
+logfc_plot_Machtx<-ggplot()+
+  geom_histogram(data=res_data[which(res_data$expr=="0"),],
+                 aes(x=log2FoldChange),fill="grey70",alpha=1/2,binwidth = 0.5)+
+  # Higher expression in hatchlings
+  geom_histogram(data=res_data[which(res_data$expr=="UpinH"),],
+                 aes(x=log2FoldChange),fill="blue",alpha=1/2,binwidth = 0.5)+
+  # Higher expression in adults
+  geom_histogram(data=res_data[which(res_data$expr=="UpinA"),],
+                 aes(x=log2FoldChange),fill="red",alpha=1/2,binwidth = 0.5)+
+  geom_vline(aes(xintercept=0),colour="black",linetype="dashed")+
+  geom_text(aes(x=c(-10,10),y=c(Inf,Inf),label=c("Higher in H","Higher in A")),vjust=1,size=5)+
+  scale_x_continuous(expression(paste(log[2],"(Fold Change)",sep="")),
+                     limits=c(-20,20),
+                     breaks=breaks,labels=labels)+
+  ylab("Count")+
+  ggtitle(expression(italic("M. hystrix")))+
+  my.theme+theme(panel.grid.major = element_blank(),
+                 axis.text = element_text(size=20),
+                 axis.title = element_text(size=20),
+                 legend.text = element_text(size=20),
+                 legend.title = element_text(size=20),
+                 legend.key.size = unit(2,"cm"),
+                 panel.background = element_rect(fill=NA,colour="black"))
+logfc_plot_Machtx
+```
+
+
+# 3. Integrate expression data with synteny-based Orthogroups
+```{r}
+# Load orthogroup data
+orthotab<-read.table(here::here("rdata/orthologs","mac_orths_dups3-cs5-alpha0.7.poff.tsv"),
+                     sep="\t",header=TRUE)
+colnames(orthotab)<-c("n_spp","n_genes","alg_conn","maccli_genes","machtx_genes","maclig_genes")
+orthotab$og<-paste("OG",c(0,seq(1:(nrow(orthotab)-1))),sep="")
+rownames(orthotab)<-orthotab$og
+head(orthotab)
+
+# Load A v. H results
+machtx_res_data<-read.table(here::here("rdata/AvH_contrasts","Machtx_AvH.tab"),
+                     header=TRUE,sep="\t")
+maccli_res_data<-read.table(here::here("rdata/AvH_contrasts","Maccli_AvH.tab"),
+                     header=TRUE,sep="\t")
+maclig_res_data<-read.table(here::here("rdata/AvH_contrasts","Maclig_AvH.tab"),
+                     header=TRUE,sep="\t")
+all_res_dat<-rbind(machtx_res_data,maccli_res_data,maclig_res_data)
+row.names(all_res_dat)<-all_res_dat$gene
+
+annotator<-function(og,ogs,sp,sp_ann){
+  genes<-unlist(strsplit(ogs[og,paste(sp,"_genes",sep="")],","))
+  annotations<-sp_ann$expr[match(genes,sp_ann$gene)]
+  return(paste(annotations,collapse=","))
+}
+
+anns<-sapply(orthotab$og,annotator,ogs=orthotab,sp="maccli",sp_ann=maccli_res_data)
+orthotab$maccli_avh_ann<-anns
+anns<-sapply(orthotab$og,annotator,ogs=orthotab,sp="maclig",sp_ann=maclig_res_data)
+orthotab$maclig_avh_ann<-anns
+anns<-sapply(orthotab$og,annotator,ogs=orthotab,sp="machtx",sp_ann=machtx_res_data)
+orthotab$machtx_avh_ann<-anns
+
+head(orthotab)
+# Label the 1-to-1 OGs
+orthotab$og_t<-vector(length=nrow(orthotab))
+orthotab$og_t[which(orthotab$n_spp==3 & orthotab$n_genes==3)]<-"1-to-1"
+
+# Summarise all unique annotations for the og
+orthotab$ann<-apply(orthotab[,c("maccli_avh_ann","maclig_avh_ann","machtx_avh_ann")],
+                                          MARGIN = 1,function(x){paste(unique(x),collapse=",")})
+
+# Are the annotation strings the same across species.
+# i.e. the same number of genes in each species, the same annotations for these
+orthotab$same_ann<-apply(orthotab[,c("maccli_avh_ann","maclig_avh_ann","machtx_avh_ann")],
+                    MARGIN = 1,function(x){length(unique(x))==1})
+
+
+# Is there a single, unique, annotation category for the OG, regardless of the number of genes in each species
+orthotab$same_uniq_ann<-apply(orthotab[,c("maccli_avh_ann","maclig_avh_ann","machtx_avh_ann")],
+                    MARGIN = 1,function(x){length(unique(unlist(strsplit(paste(x,collapse=","),","))))==1})
+
+head(orthotab)
+head(orthotab[which(orthotab$same_uniq_ann),])
+
+# Save this table
+write.table(orthotab,
+            here::here("rdata/orthologs","mac_orths_dups3-cs5-alpha0.7.poff.AvHexpr.tsv"),
+            quote=FALSE,row.names=FALSE,col.names=TRUE,sep="\t")
+```
+
+How many  are "Up in A" in all species
+```{r}
+orthotab<-read.table(
+  here::here("rdata/orthologs","mac_orths_dups3-cs5-alpha0.7.poff.AvHexpr.tsv"),
+                             header=TRUE,sep="\t")
+
+table(orthotab$maccli_avh_ann[which(orthotab$og_t=="1-to-1")],orthotab$maclig_avh_ann[which(orthotab$og_t=="1-to-1")])
+table(orthotab$maccli_avh_ann[which(orthotab$og_t=="1-to-1")],orthotab$machtx_avh_ann[which(orthotab$og_t=="1-to-1")])
+table(orthotab$maclig_avh_ann[which(orthotab$og_t=="1-to-1")],orthotab$machtx_avh_ann[which(orthotab$og_t=="1-to-1")])
+
+# How many have the same annotations across all 3 species
+ann_counts<-tapply(orthotab$og,INDEX = list(orthotab$ann),length)
+ann_counts[which(ann_counts>10)]
+#tapply(ogs$og[which(ogs$same_ann==TRUE)],INDEX = list(ogs$ann[which(ogs$same_ann==TRUE)]),length)
+
+#head(ogs[which(ogs$ann=="Testis" & ogs$og_t=="1-to-1"),], n=50)
+
+# strict
+ann_counts<-tapply(orthotab$og[which(orthotab$og_t=="1-to-1" & orthotab$same_ann)],
+                   INDEX = list(orthotab$ann[which(orthotab$og_t=="1-to-1" & orthotab$same_ann)]),length)
+ann_counts
+ann_counts[which(ann_counts>10)]
+unname(cbind(names(ann_counts),ann_counts))
+
+# same ann, same n seqs
+ann_counts<-tapply(orthotab$og[which(orthotab$same_ann)],INDEX = list(orthotab$ann[which(orthotab$same_ann)]),length)
+ann_counts
+ann_counts[which(ann_counts>10)]
+unname(cbind(names(ann_counts),ann_counts))
+
+# same ann
+ann_counts<-tapply(orthotab$og[which(orthotab$same_uniq_ann)],
+                   INDEX = list(orthotab$ann[which(orthotab$same_uniq_ann)]),length)
+ann_counts
+ann_counts[which(ann_counts>10)]
+
+
+p_maclig<-tapply(maclig_res_data$gene,INDEX = list(maclig_res_data$expr),length)
+p_maclig<-p_maclig/sum(p_maclig)
+
+p_maccli<-tapply(maccli_res_data$gene,INDEX = list(maccli_res_data$expr),length)
+p_maccli<-p_maccli/sum(p_maccli)
+
+p_machtx<-tapply(machtx_res_data$gene,INDEX = list(machtx_res_data$expr),length)
+p_machtx<-p_machtx/sum(p_machtx)
+
+strict<-c(383,33,8,2407,177)
+c_t<-chisq.test(strict,p = p_maclig)
+c_t
+c_t$expected
+c_t<-chisq.test(strict,p = p_maccli)
+c_t
+c_t$expected
+c_t<-chisq.test(strict,p = p_machtx)
+c_t
+c_t$expected
+
+```
+
+
+# 4. Compare to positional data for all species
+```{r}
+# Load A v. H and positional results + combine them
+# Then test for a deviation
+machtx_avh_res_data<-read.table(
+  here::here("rdata/AvH_contrasts","Machtx_AvH.tab"),
+                     header=TRUE,sep="\t")
+machtx_pos_res_data<-read.table(
+  here::here("rdata/positional_rnaseq","Machtx_all_DESeq2Results_reduced.tab"),
+                         sep="\t",header=TRUE)
+# Rename Ovary 1 + Ovary 2 > Ovary
+machtx_pos_res_data$annotation2<-gsub("Ovary 1|Ovary 2","Ovary",machtx_pos_res_data$annotation)
+
+# Are reproduction-related genes more likely to be "Up-in-A"
+machtx_pos_res_data$avh<-machtx_avh_res_data$expr[match(machtx_pos_res_data$gene,machtx_avh_res_data$gene)]
+avh_pos_tab<-tapply(machtx_pos_res_data$gene[which(machtx_pos_res_data$avh=="UpinA")],
+                    INDEX=list(machtx_pos_res_data$avh[which(machtx_pos_res_data$avh=="UpinA")],
+                               machtx_pos_res_data$annotation2[which(machtx_pos_res_data$avh=="UpinA")]),length)
+pos_tab<-tapply(machtx_pos_res_data$gene,
+                    INDEX=list(machtx_pos_res_data$annotation2),length)
+avh_pos_tab<-avh_pos_tab[1,!(names(avh_pos_tab[1,]) %in% c("Other"))]
+pos_tab<-pos_tab[!(names(pos_tab) %in% c("Other"))]
+avh_pos_tab/pos_tab
+pos_tab
+p<-pos_tab/sum(pos_tab)
+p
+c_t<-chisq.test(avh_pos_tab,p = p)
+avh_pos_tab
+c_t$expected
+c_t$residuals
+c_t
+
+maccli_avh_res_data<-read.table(here::here("rdata/AvH_contrasts","Maccli_AvH.tab"),
+                     header=TRUE,sep="\t")
+maccli_pos_res_data<-read.table(
+  here::here("rdata/positional_rnaseq","Maccli_all_DESeq2Results_reduced.tab"),
+                         sep="\t",header=TRUE)
+# Rename Ovary 1 + Ovary 2 > Ovary
+maccli_pos_res_data$annotation2<-gsub("Ovary 1|Ovary 2","Ovary",maccli_pos_res_data$annotation)
+
+maccli_pos_res_data$avh<-maccli_avh_res_data$expr[match(maccli_pos_res_data$gene,maccli_avh_res_data$gene)]
+avh_pos_tab<-tapply(maccli_pos_res_data$gene[which(maccli_pos_res_data$avh=="UpinA")],
+                    INDEX=list(maccli_pos_res_data$avh[which(maccli_pos_res_data$avh=="UpinA")],
+                               maccli_pos_res_data$annotation2[which(maccli_pos_res_data$avh=="UpinA")]),length)
+pos_tab<-tapply(maccli_pos_res_data$gene,
+                    INDEX=list(maccli_pos_res_data$annotation2),length)
+avh_pos_tab<-avh_pos_tab[1,!(names(avh_pos_tab[1,]) %in% c("Other"))]
+pos_tab<-pos_tab[!(names(pos_tab) %in% c("Other"))]
+avh_pos_tab/pos_tab
+pos_tab
+p<-pos_tab/sum(pos_tab)
+p
+c_t<-chisq.test(avh_pos_tab,p = p)
+avh_pos_tab
+c_t$expected
+c_t$residuals
+c_t
+
+maclig_avh_res_data<-read.table(here::here("rdata/AvH_contrasts","Maclig_AvH.tab"),
+                     header=TRUE,sep="\t")
+maclig_pos_res_data<-read.table(here::here("rdata/positional_rnaseq","Maclig_all_DESeq2Results_reduced.tab"),
+                         sep="\t",header=TRUE)
+# Rename Ovary 1 + Ovary 2 > Ovary
+maclig_pos_res_data$annotation2<-gsub("Ovary 1|Ovary 2","Ovary",maclig_pos_res_data$annotation)
+
+maclig_pos_res_data$avh<-maclig_avh_res_data$expr[match(maclig_pos_res_data$gene,maclig_avh_res_data$gene)]
+avh_pos_tab<-tapply(maclig_pos_res_data$gene[which(maclig_pos_res_data$avh=="UpinA")],
+                    INDEX=list(maclig_pos_res_data$avh[which(maclig_pos_res_data$avh=="UpinA")],
+                               maclig_pos_res_data$annotation2[which(maclig_pos_res_data$avh=="UpinA")]),length)
+pos_tab<-tapply(maclig_pos_res_data$gene,
+                    INDEX=list(maclig_pos_res_data$annotation2),length)
+avh_pos_tab<-avh_pos_tab[1,!(names(avh_pos_tab[1,]) %in% c("Other"))]
+pos_tab<-pos_tab[!(names(pos_tab) %in% c("Other"))]
+avh_pos_tab/pos_tab
+pos_tab
+p<-pos_tab/sum(pos_tab)
+p
+c_t<-chisq.test(avh_pos_tab,p = p)
+avh_pos_tab
+c_t$expected
+c_t$residuals
+c_t
+
+
+# Are reproduction-related genes *less* likely to be "Up-in-H"
+# Machtx
+machtx_pos_res_data$avh<-machtx_avh_res_data$expr[match(machtx_pos_res_data$gene,machtx_avh_res_data$gene)]
+avh_pos_tab<-tapply(machtx_pos_res_data$gene[which(machtx_pos_res_data$avh=="UpinH")],
+                    INDEX=list(machtx_pos_res_data$avh[which(machtx_pos_res_data$avh=="UpinH")],
+                               machtx_pos_res_data$annotation2[which(machtx_pos_res_data$avh=="UpinH")]),length)
+pos_tab<-tapply(machtx_pos_res_data$gene,
+                    INDEX=list(machtx_pos_res_data$annotation2),length)
+avh_pos_tab<-avh_pos_tab[1,!(names(avh_pos_tab[1,]) %in% c("Other"))]
+pos_tab<-pos_tab[!(names(pos_tab) %in% c("Other"))]
+avh_pos_tab/pos_tab
+pos_tab
+p<-pos_tab/sum(pos_tab)
+p
+c_t<-chisq.test(avh_pos_tab,p = p)
+avh_pos_tab
+c_t$expected
+c_t$residuals
+c_t
+
+# Maccli
+maccli_pos_res_data$avh<-maccli_avh_res_data$expr[match(maccli_pos_res_data$gene,maccli_avh_res_data$gene)]
+avh_pos_tab<-tapply(maccli_pos_res_data$gene[which(maccli_pos_res_data$avh=="UpinH")],
+                    INDEX=list(maccli_pos_res_data$avh[which(maccli_pos_res_data$avh=="UpinH")],
+                               maccli_pos_res_data$annotation2[which(maccli_pos_res_data$avh=="UpinH")]),length)
+pos_tab<-tapply(maccli_pos_res_data$gene,
+                    INDEX=list(maccli_pos_res_data$annotation2),length)
+avh_pos_tab<-avh_pos_tab[1,!(names(avh_pos_tab[1,]) %in% c("Other"))]
+pos_tab<-pos_tab[!(names(pos_tab) %in% c("Other"))]
+avh_pos_tab/pos_tab
+pos_tab
+p<-pos_tab/sum(pos_tab)
+p
+c_t<-chisq.test(avh_pos_tab,p = p)
+avh_pos_tab
+c_t$expected
+c_t$residuals
+c_t
+
+maclig_pos_res_data$avh<-maclig_avh_res_data$expr[match(maclig_pos_res_data$gene,maclig_avh_res_data$gene)]
+avh_pos_tab<-tapply(maclig_pos_res_data$gene[which(maclig_pos_res_data$avh=="UpinH")],
+                    INDEX=list(maclig_pos_res_data$avh[which(maclig_pos_res_data$avh=="UpinH")],
+                               maclig_pos_res_data$annotation2[which(maclig_pos_res_data$avh=="UpinH")]),length)
+pos_tab<-tapply(maclig_pos_res_data$gene,
+                    INDEX=list(maclig_pos_res_data$annotation2),length)
+avh_pos_tab<-avh_pos_tab[1,!(names(avh_pos_tab[1,]) %in% c("Other"))]
+pos_tab<-pos_tab[!(names(pos_tab) %in% c("Other"))]
+avh_pos_tab/pos_tab
+pos_tab
+p<-pos_tab/sum(pos_tab)
+p
+c_t<-chisq.test(avh_pos_tab,p = p)
+avh_pos_tab
+c_t$expected
+c_t$residuals
+c_t
+```
+
+
+# 5. Plot the TPM in adults and hatchlings for all genes, 
+1) highlight those that are sig in each species
+2) highlight the reproduction-related categories for each species
+
+M. lignano
+```{r}
+res_data<-read.table(here::here("rdata/AvH_contrasts","Maclig_AvH.tab"),
+                      header=TRUE,sep="\t")
+pos_res_data<-read.table(here::here("rdata/positional_rnaseq","Maclig_all_DESeq2Results_reduced.tab"),
+                      header=TRUE,sep="\t")
+
+all_quant<-read.table(here::here("rdata/AvH_contrasts","Maclig_all_quant.tab"),
+                      header=TRUE,sep="\t")
+normalised_counts<-read.table(here::here("rdata/AvH_contrasts",
+                                         "Maclig_deseq2_normalised_counts.tab"),
+                              header=TRUE,sep="\t")
+normalised_counts_m<-melt(normalised_counts,
+                          measure.vars = c("A_1","A_2","A_3","A_4","H_1","H_2","H_3","H_4"),id.vars = c("gene"))
+colnames(normalised_counts_m)<-c("gene","sample","norm_cnt")
+normalised_counts_m<-cbind(normalised_counts_m,do.call(rbind,strsplit(as.character(normalised_counts_m$sample),"_")))
+colnames(normalised_counts_m)<-c("Name","sample","norm_cnt","treat","rep")
+
+#Collect the names of the genes that had an adjusted p-value < 0.05.
+top_genes<-res_data[which(res_data$padj<0.05),]
+row.names(top_genes)<-top_genes$gene
+nrow(top_genes[which(abs(top_genes$log2FoldChange)>2),])
+
+AvH_top_all_quant<-normalised_counts_m[
+  which(as.character(normalised_counts_m$Name) %in% as.character(top_genes$gene)),]
+head(AvH_top_all_quant)
+AvH_top_all_quant$Name<-factor(AvH_top_all_quant$Name)
+AvH_top_all_quant$treat<-factor(AvH_top_all_quant$treat)
+top1<-row.names(top_genes)[c(1)]
+AvH_top_all_quant[which(AvH_top_all_quant$Name %in% top1),]
+```
+
+Now collect the data for all the "background" genes 
+(i.e. all genes that were not detected as differentially expressed), we will plot these separately below.
+```{r}
+AvH_bkgr_all_quant<-normalised_counts_m[
+  which(!(as.character(normalised_counts_m$Name) %in% as.character(top_genes$gene))),]
+AvH_bkgr_all_quant$Name<-factor(AvH_bkgr_all_quant$Name)
+AvH_bkgr_all_quant$treat<-factor(AvH_bkgr_all_quant$treat)
+```
+
+Log2() transform all TPM values (add a fudge factor to deal with TPM = 0)
+```{r}
+head(AvH_top_all_quant)
+AvH_top_all_quant$norm_cnt2<-log2(AvH_top_all_quant$norm_cnt+0.1)
+AvH_bkgr_all_quant$norm_cnt2<-log2(AvH_bkgr_all_quant$norm_cnt+0.1)
+```
+
+Summarise to mean log2(TPM+0.1) for each treatment (octets and pairs)
+```{r}
+AvH_top_avg_treat_tpm2<-tapply(AvH_top_all_quant$norm_cnt,
+                                 INDEX=list(AvH_top_all_quant$Name,AvH_top_all_quant$treat),mean,na.rm=TRUE)
+AvH_top_avg_treat_tpm2<-as.data.frame(AvH_top_avg_treat_tpm2)
+AvH_top_avg_treat_tpm2$p<-top_genes$padj[match(top_genes$gene,rownames(AvH_top_avg_treat_tpm2))]
+AvH_top_avg_treat_tpm2$A<-log(AvH_top_avg_treat_tpm2$A+0.1)
+AvH_top_avg_treat_tpm2$H<-log(AvH_top_avg_treat_tpm2$H+0.1)
+
+AvH_bkgr_avg_treat_tpm2<-tapply(AvH_bkgr_all_quant$norm_cnt,
+                                  INDEX=list(AvH_bkgr_all_quant$Name,AvH_bkgr_all_quant$treat),mean,na.rm=TRUE)
+AvH_bkgr_avg_treat_tpm2<-as.data.frame(AvH_bkgr_avg_treat_tpm2)
+AvH_bkgr_avg_treat_tpm2$A<-log(AvH_bkgr_avg_treat_tpm2$A+0.1)
+AvH_bkgr_avg_treat_tpm2$H<-log(AvH_bkgr_avg_treat_tpm2$H+0.1)
+
+# if diff < 0 then TPM in H is higher than TPM in A
+AvH_top_avg_treat_tpm2_pos<-AvH_top_avg_treat_tpm2[which(AvH_top_avg_treat_tpm2$A-AvH_top_avg_treat_tpm2$H<0),]
+AvH_top_avg_treat_tpm2_pos<-AvH_top_avg_treat_tpm2_pos[order(AvH_top_avg_treat_tpm2$A-AvH_top_avg_treat_tpm2$H,
+                                                             decreasing = TRUE),]
+
+# Sanity check
+top_genes[which(top_genes$gene %in% row.names(head(AvH_top_avg_treat_tpm2_pos))),]
+ggplot()+
+  geom_point(data=AvH_top_all_quant[which(AvH_top_all_quant$Name %in% row.names(head(AvH_top_avg_treat_tpm2_pos))),],
+             aes(x=treat,y=norm_cnt2),position=position_jitter(width = 0.1))+
+  facet_wrap(Name~.)
+# log2FC < 0 means higher expression in H -> UpinH
+g<-"Mlig011803.g1"
+g<-"Mlig024191.g1"
+g<-"Mlig000001.g5"
+res_data[which(res_data$gene==g),]
+AvH_top_avg_treat_tpm2[which(row.names(AvH_top_avg_treat_tpm2)==g),]
+ggplot()+
+  geom_point(data=AvH_top_all_quant[which(AvH_top_all_quant$Name == g),],
+             aes(x=treat,y=norm_cnt2),position=position_jitter(width = 0.1))+
+  facet_wrap(Name~.)
+```
+
+Plot the data: TPM H vs TPM A
+```{r}
+breaks<-seq(-20,20,2.5)
+labels<-as.character(breaks)
+labels[seq(2,length(labels),2)]<-""
+
+AvH_plot_deseq2_Maclig<-ggplot()+
+  geom_point(data=AvH_bkgr_avg_treat_tpm2,aes(x=A,y=H),size=0.1,colour="grey70")+
+  geom_point(data=AvH_top_avg_treat_tpm2[
+    which(row.names(AvH_top_avg_treat_tpm2) %in% res_data$gene[which(res_data$expr=="UpinA")]),],
+             aes(x=A,y=H),colour="red",size=0.5)+
+  geom_point(data=AvH_top_avg_treat_tpm2[
+    which(row.names(AvH_top_avg_treat_tpm2) %in% res_data$gene[which(res_data$expr=="UpinH")]),],
+             aes(x=A,y=H),colour="blue",size=0.5)+
+  geom_abline(slope = 1,intercept = 0,colour="black",linewidth=0.5,linetype="dashed")+
+  scale_x_continuous(limits = c(-3,20),
+                     breaks=breaks,
+                     labels=labels)+
+  scale_y_continuous(limits = c(-3,20),
+                     breaks=breaks,
+                     labels=labels,expand = c(0,0))+
+  scale_colour_continuous(expression(paste("-log"[10],"(p)")),high="#fff7bc",low="#d95f0e",
+                          breaks=seq(0,0.05,0.01))+
+  xlab(expression(atop("Adults",
+                       log[2] ("normalised counts" + 0.1))))+
+  ylab(expression(atop("Hatchlings",
+                       log[2] ("normalised counts" + 0.1))))+
+  ggtitle(expression(paste(italic(M.)," ",italic(lignano))))+
+  my.theme+theme(panel.grid.major = element_blank(),
+                 axis.text = element_text(size=20),
+                 axis.title = element_text(size=20),
+                 legend.text = element_text(size=20),
+                 legend.title = element_text(size=20),
+                 legend.key.size = unit(2,"cm"),
+                 panel.background = element_rect(fill=NA,colour="black"))
+AvH_plot_deseq2_Maclig
+
+AvH_bkgr_avg_treat_tpm2$avh<-res_data$expr[match(rownames(AvH_bkgr_avg_treat_tpm2),res_data$gene)]
+AvH_bkgr_avg_treat_tpm2$pos<-pos_res_data$annotation[match(rownames(AvH_bkgr_avg_treat_tpm2),pos_res_data$gene)]
+AvH_bkgr_avg_treat_tpm2$p<-1
+AvH_top_avg_treat_tpm2$avh<-res_data$expr[match(rownames(AvH_top_avg_treat_tpm2),res_data$gene)]
+AvH_top_avg_treat_tpm2$pos<-pos_res_data$annotation[match(rownames(AvH_top_avg_treat_tpm2),pos_res_data$gene)]
+AvH<-rbind(AvH_bkgr_avg_treat_tpm2,AvH_top_avg_treat_tpm2)
+AvH<-AvH[which(!is.na(AvH$avh) & !is.na(AvH$pos)),]
+AvH$pos<-gsub("Ovary 2","Ovary 1",AvH$pos)
+AvH$pos<-gsub("Ovary 1","Ovary",AvH$pos)
+AvH<-AvH[which(AvH$pos!="Other"),]
+AvH_plot_deseq2_pos_Maclig<-ggplot()+
+  geom_point(data=AvH,
+             aes(x=A,y=H,colour=paste(avh,pos,sep="-")),size=0.5)+
+  geom_abline(slope = 1,intercept = 0,colour="black",linewidth=0.5,linetype="dashed")+
+  scale_x_continuous(limits = c(-3,20),
+                     breaks=breaks,
+                     labels=labels)+
+  scale_y_continuous(limits = c(-3,20),
+                     breaks=breaks,
+                     labels=labels,expand = c(0,0))+
+  scale_colour_manual(values=c("#999999","#999999","#999999","#999999",
+                                        "red","orange","green","blue",
+                                        "red","orange","green","blue"),guide="none")+
+  xlab(expression(atop("Adults",
+                       log[2] ("normalised counts" + 0.1))))+
+  ylab(expression(atop("Hatchlings",
+                       log[2] ("normalised counts" + 0.1))))+
+  ggtitle(expression(paste(italic(M.)," ",italic(lignano))))+
+  my.theme+theme(panel.grid.major = element_blank(),
+                 axis.text = element_text(size=20),
+                 axis.title = element_text(size=20),
+                 panel.background = element_rect(fill=NA,colour="black"))+
+  facet_wrap(pos~.)
+AvH_plot_deseq2_pos_Maclig
+```
+
+
+M. cliftonense
+```{r}
+res_data<-read.table(here::here("rdata/AvH_contrasts","Maccli_AvH.tab"),
+                      header=TRUE,sep="\t")
+pos_res_data<-read.table(here::here("rdata/positional_rnaseq","Maccli_all_DESeq2Results_reduced.tab"),
+                      header=TRUE,sep="\t")
+
+all_quant<-read.table(here::here("rdata/AvH_contrasts","Maccli_all_quant.tab"),
+                      header=TRUE,sep="\t")
+normalised_counts<-read.table(here::here("rdata/AvH_contrasts",
+                                         "Maccli_deseq2_normalised_counts.tab"),
+                              header=TRUE,sep="\t")
+normalised_counts_m<-melt(normalised_counts,
+                          measure.vars = c("A_1","A_2","A_3","A_4","H_1","H_2","H_3","H_4"),id.vars = c("gene"))
+colnames(normalised_counts_m)<-c("gene","sample","norm_cnt")
+normalised_counts_m<-cbind(normalised_counts_m,do.call(rbind,strsplit(as.character(normalised_counts_m$sample),"_")))
+colnames(normalised_counts_m)<-c("Name","sample","norm_cnt","treat","rep")
+head(normalised_counts_m)
+
+consistentA_maccli_OGs<-as.character(orthotab$og[
+  which(apply(orthotab[,c(8,9,10)],MARGIN = 1,function(x){all(x == "UpinA")}))])
+consistentA_maccli_genes<-as.character(orthotab$maccli_genes[
+  which(orthotab$og %in% consistentA_maccli_OGs)])
+
+consistentH_maccli_OGs<-as.character(orthotab$og[
+  which(apply(orthotab[,c(8,9,10)],MARGIN = 1,function(x){all(x == "UpinH")}))])
+consistentH_maccli_genes<-as.character(orthotab$maccli_genes[
+  which(orthotab$og %in% consistentH_maccli_OGs)])
+
+
+#Collect the names of the genes that had an adjusted p-value < 0.05.
+top_genes<-res_data[which(res_data$padj<0.05),]
+row.names(top_genes)<-top_genes$gene
+AvH_top_all_quant<-normalised_counts_m[which(as.character(normalised_counts_m$Name) %in% top_genes$gene),]
+AvH_top_all_quant$Name<-factor(AvH_top_all_quant$Name)
+AvH_top_all_quant$treat<-factor(AvH_top_all_quant$treat)
+top1<-row.names(top_genes)[c(1)]
+AvH_top_all_quant[which(AvH_top_all_quant$Name %in% top1),]
+```
+
+Now collect the data for all the "background" genes 
+(i.e. all genes that were not detected as differentially expressed), we will plot these separately below.
+```{r}
+AvH_bkgr_all_quant<-normalised_counts_m[which(!(as.character(normalised_counts_m$Name) %in% top_genes$gene)),]
+AvH_bkgr_all_quant$Name<-factor(AvH_bkgr_all_quant$Name)
+AvH_bkgr_all_quant$treat<-factor(AvH_bkgr_all_quant$treat)
+```
+
+Log2() transform all normalised count values (add a fudge factor to deal with values of 0)
+```{r}
+AvH_top_all_quant$norm_cnt2<-log2(AvH_top_all_quant$norm_cnt+0.1)
+AvH_bkgr_all_quant$norm_cnt2<-log2(AvH_bkgr_all_quant$norm_cnt+0.1)
+```
+
+Summarise to mean log2(TPM+0.1) for each treatment (octets and pairs)
+```{r}
+AvH_top_avg_treat_tpm2<-tapply(AvH_top_all_quant$norm_cnt,
+                                 INDEX=list(AvH_top_all_quant$Name,AvH_top_all_quant$treat),mean,na.rm=TRUE)
+AvH_top_avg_treat_tpm2<-as.data.frame(AvH_top_avg_treat_tpm2)
+AvH_top_avg_treat_tpm2$p<-top_genes$padj[match(top_genes$gene,rownames(AvH_top_avg_treat_tpm2))]
+AvH_top_avg_treat_tpm2$A<-log(AvH_top_avg_treat_tpm2$A+0.1)
+AvH_top_avg_treat_tpm2$H<-log(AvH_top_avg_treat_tpm2$H+0.1)
+
+AvH_bkgr_avg_treat_tpm2<-tapply(AvH_bkgr_all_quant$norm_cnt,
+                                  INDEX=list(AvH_bkgr_all_quant$Name,AvH_bkgr_all_quant$treat),mean,na.rm=TRUE)
+AvH_bkgr_avg_treat_tpm2<-as.data.frame(AvH_bkgr_avg_treat_tpm2)
+AvH_bkgr_avg_treat_tpm2$A<-log(AvH_bkgr_avg_treat_tpm2$A+0.1)
+AvH_bkgr_avg_treat_tpm2$H<-log(AvH_bkgr_avg_treat_tpm2$H+0.1)
+```
+
+Plot the data: TPM H vs TPM A
+```{r}
+breaks<-seq(-20,20,2.5)
+labels<-as.character(breaks)
+labels[seq(2,length(labels),2)]<-""
+
+AvH_plot_deseq2_Maccli<-ggplot()+
+  geom_point(data=AvH_bkgr_avg_treat_tpm2,aes(x=A,y=H),size=0.1,colour="grey70")+
+  geom_point(data=AvH_top_avg_treat_tpm2[
+    which(row.names(AvH_top_avg_treat_tpm2) %in% res_data$gene[which(res_data$expr=="UpinA")]),],
+             aes(x=A,y=H),colour="red",size=0.5)+
+  geom_point(data=AvH_top_avg_treat_tpm2[
+    which(row.names(AvH_top_avg_treat_tpm2) %in% res_data$gene[which(res_data$expr=="UpinH")]),],
+             aes(x=A,y=H),colour="blue",size=0.5)+
+  geom_abline(slope = 1,intercept = 0,colour="black",linewidth=0.5,linetype="dashed")+
+  scale_x_continuous(limits = c(-3,20),
+                     breaks=breaks,
+                     labels=labels)+
+  scale_y_continuous(limits = c(-3,20),
+                     breaks=breaks,
+                     labels=labels,expand = c(0,0))+
+  xlab(expression(atop("Adults",
+                       log[2] ("normalised counts" + 0.1))))+
+  ylab(expression(atop("Hatchlings",
+                       log[2] ("normalised counts" + 0.1))))+
+  ggtitle(expression(paste(italic(M.)," ",italic(cliftonense))))+
+  my.theme+theme(panel.grid.major = element_blank(),
+                 axis.text = element_text(size=20),
+                 axis.title = element_text(size=20),
+                 legend.text = element_text(size=20),
+                 legend.title = element_text(size=20),
+                 legend.key.size = unit(2,"cm"),
+                 panel.background = element_rect(fill=NA,colour="black"))
+AvH_plot_deseq2_Maccli
+
+AvH_bkgr_avg_treat_tpm2$avh<-res_data$expr[match(rownames(AvH_bkgr_avg_treat_tpm2),res_data$gene)]
+AvH_bkgr_avg_treat_tpm2$pos<-pos_res_data$annotation[match(rownames(AvH_bkgr_avg_treat_tpm2),pos_res_data$gene)]
+AvH_bkgr_avg_treat_tpm2$p<-1
+AvH_top_avg_treat_tpm2$avh<-res_data$expr[match(rownames(AvH_top_avg_treat_tpm2),res_data$gene)]
+AvH_top_avg_treat_tpm2$pos<-pos_res_data$annotation[match(rownames(AvH_top_avg_treat_tpm2),pos_res_data$gene)]
+AvH<-rbind(AvH_bkgr_avg_treat_tpm2,AvH_top_avg_treat_tpm2)
+AvH<-AvH[which(!is.na(AvH$avh) & !is.na(AvH$pos)),]
+AvH$pos<-gsub("Ovary 2","Ovary 1",AvH$pos)
+AvH$pos<-gsub("Ovary 1","Ovary",AvH$pos)
+AvH<-AvH[which(AvH$pos!="Other"),]
+AvH_plot_deseq2_pos_Maccli<-ggplot()+
+  geom_point(data=AvH,
+             aes(x=A,y=H,colour=paste(avh,pos,sep="-")),size=0.5)+
+  geom_abline(slope = 1,intercept = 0,colour="black",linewidth=0.5,linetype="dashed")+
+  scale_x_continuous(limits = c(-3,20),
+                     breaks=breaks,
+                     labels=labels)+
+  scale_y_continuous(limits = c(-3,20),
+                     breaks=breaks,
+                     labels=labels,expand = c(0,0))+
+  scale_colour_manual(values=c("#999999","#999999","#999999","#999999",
+                                        "red","orange","green","blue",
+                                        "red","orange","green","blue"),guide="none")+
+  xlab(expression(atop("Adults",
+                       log[2] ("normalised counts" + 0.1))))+
+  ylab(expression(atop("Hatchlings",
+                       log[2] ("normalised counts" + 0.1))))+
+  ggtitle(expression(paste(italic(M.)," ",italic(cliftonense))))+
+  my.theme+theme(panel.grid.major = element_blank(),
+                 axis.text = element_text(size=20),
+                 axis.title = element_text(size=20),
+                 panel.background = element_rect(fill=NA,colour="black"))+
+  facet_wrap(pos~.)
+AvH_plot_deseq2_pos_Maccli
+```
+
+M. hystrix
+```{r}
+res_data<-read.table(here::here("rdata/AvH_contrasts","Machtx_AvH.tab"),
+                      header=TRUE,sep="\t")
+pos_res_data<-read.table(here::here("rdata/positional_rnaseq","Machtx_all_DESeq2Results_reduced.tab"),
+                      header=TRUE,sep="\t")
+
+all_quant<-read.table(here::here("rdata/AvH_contrasts","/Machtx_all_quant.tab"),
+                      header=TRUE,sep="\t")
+
+normalised_counts<-read.table(here::here("rdata/AvH_contrasts",
+                                         "/Machtx_deseq2_normalised_counts.tab"),
+                              header=TRUE,sep="\t")
+normalised_counts_m<-melt(normalised_counts,
+                          measure.vars = c("A_1","A_2","A_3","H_1","H_2","H_3"),id.vars = c("gene"))
+colnames(normalised_counts_m)<-c("gene","sample","norm_cnt")
+normalised_counts_m<-cbind(normalised_counts_m,do.call(rbind,strsplit(as.character(normalised_counts_m$sample),"_")))
+colnames(normalised_counts_m)<-c("Name","sample","norm_cnt","treat","rep")
+head(normalised_counts_m)
+
+consistentA_machtx_OGs<-as.character(orthotab$og[
+  which(apply(orthotab[,c(8,9,10)],MARGIN = 1,function(x){all(x == "UpinA")}))])
+consistentA_machtx_genes<-as.character(orthotab$machtx_genes[
+  which(orthotab$og %in% consistentA_machtx_OGs)])
+
+consistentH_machtx_OGs<-as.character(orthotab$og[
+  which(apply(orthotab[,c(8,9,10)],MARGIN = 1,function(x){all(x == "UpinH")}))])
+consistentH_machtx_genes<-as.character(orthotab$machtx_genes[
+  which(orthotab$og %in% consistentH_machtx_OGs)])
+
+#Collect the names of the genes that had an adjusted p-value < 0.05.
+top_genes<-res_data[which(res_data$padj<0.05),]
+row.names(top_genes)<-top_genes$gene
+AvH_top_all_quant<-normalised_counts_m[which(as.character(normalised_counts_m$Name) %in% top_genes$gene),]
+AvH_top_all_quant$Name<-factor(AvH_top_all_quant$Name)
+AvH_top_all_quant$treat<-factor(AvH_top_all_quant$treat)
+top1<-row.names(top_genes)[c(1)]
+AvH_top_all_quant[which(AvH_top_all_quant$Name %in% top1),]
+```
+
+Now collect the data for all the "background" genes 
+(i.e. all genes that were not detected as differentially expressed), we will plot these separately below.
+```{r}
+AvH_bkgr_all_quant<-normalised_counts_m[which(!(as.character(normalised_counts_m$Name) %in% top_genes$gene)),]
+AvH_bkgr_all_quant$Name<-factor(AvH_bkgr_all_quant$Name)
+AvH_bkgr_all_quant$treat<-factor(AvH_bkgr_all_quant$treat)
+```
+
+Log2() transform all TPM values (add a fudge factor to deal with TPM = 0)
+```{r}
+AvH_top_all_quant$norm_cnt2<-log2(AvH_top_all_quant$norm_cnt+0.1)
+AvH_bkgr_all_quant$norm_cnt2<-log2(AvH_bkgr_all_quant$norm_cnt+0.1)
+```
+
+Summarise to mean log2(TPM+0.1) for each treatment (octets and pairs)
+```{r}
+AvH_top_avg_treat_tpm2<-tapply(AvH_top_all_quant$norm_cnt,
+                                 INDEX=list(AvH_top_all_quant$Name,AvH_top_all_quant$treat),mean,na.rm=TRUE)
+AvH_top_avg_treat_tpm2<-as.data.frame(AvH_top_avg_treat_tpm2)
+AvH_top_avg_treat_tpm2$p<-top_genes$padj[match(top_genes$gene,rownames(AvH_top_avg_treat_tpm2))]
+AvH_top_avg_treat_tpm2$A<-log(AvH_top_avg_treat_tpm2$A+0.1)
+AvH_top_avg_treat_tpm2$H<-log(AvH_top_avg_treat_tpm2$H+0.1)
+
+AvH_bkgr_avg_treat_tpm2<-tapply(AvH_bkgr_all_quant$norm_cnt,
+                                  INDEX=list(AvH_bkgr_all_quant$Name,AvH_bkgr_all_quant$treat),mean,na.rm=TRUE)
+AvH_bkgr_avg_treat_tpm2<-as.data.frame(AvH_bkgr_avg_treat_tpm2)
+AvH_bkgr_avg_treat_tpm2$A<-log(AvH_bkgr_avg_treat_tpm2$A+0.1)
+AvH_bkgr_avg_treat_tpm2$H<-log(AvH_bkgr_avg_treat_tpm2$H+0.1)
+```
+
+Plot the data: TPM H vs TPM A
+```{r}
+breaks<-seq(-20,20,2.5)
+labels<-as.character(breaks)
+labels[seq(2,length(labels),2)]<-""
+AvH_plot_deseq2_Machtx<-ggplot()+
+  geom_point(data=AvH_bkgr_avg_treat_tpm2,aes(x=A,y=H),size=0.1,colour="grey70")+
+  geom_point(data=AvH_top_avg_treat_tpm2[
+    which(row.names(AvH_top_avg_treat_tpm2) %in% res_data$gene[which(res_data$expr=="UpinA")]),],
+             aes(x=A,y=H),colour="red",size=0.5)+
+  geom_point(data=AvH_top_avg_treat_tpm2[
+    which(row.names(AvH_top_avg_treat_tpm2) %in% res_data$gene[which(res_data$expr=="UpinH")]),],
+             aes(x=A,y=H),colour="blue",size=0.5)+
+  geom_abline(slope = 1,intercept = 0,colour="black",linewidth=0.5,linetype="dashed")+
+  scale_x_continuous(limits = c(-3,20),
+                     breaks=breaks,
+                     labels=labels)+
+  scale_y_continuous(limits = c(-3,20),
+                     breaks=breaks,
+                     labels=labels,expand = c(0,0))+
+  xlab(expression(atop("Adults",
+                       log[2] ("normalised counts" + 0.1))))+
+  ylab(expression(atop("Hatchlings",
+                       log[2] ("normalised counts" + 0.1))))+
+  ggtitle(expression(paste(italic(M.)," ",italic(hystrix))))+
+  my.theme+theme(panel.grid.major = element_blank(),
+                 axis.text = element_text(size=20),
+                 axis.title = element_text(size=20),
+                 legend.text = element_text(size=20),
+                 legend.title = element_text(size=20),
+                 legend.key.size = unit(2,"cm"),
+                 panel.background = element_rect(fill=NA,colour="black"))
+AvH_plot_deseq2_Machtx
+
+AvH_bkgr_avg_treat_tpm2$avh<-res_data$expr[match(rownames(AvH_bkgr_avg_treat_tpm2),res_data$gene)]
+AvH_bkgr_avg_treat_tpm2$pos<-pos_res_data$annotation[match(rownames(AvH_bkgr_avg_treat_tpm2),pos_res_data$gene)]
+AvH_bkgr_avg_treat_tpm2$p<-1
+AvH_top_avg_treat_tpm2$avh<-res_data$expr[match(rownames(AvH_top_avg_treat_tpm2),res_data$gene)]
+AvH_top_avg_treat_tpm2$pos<-pos_res_data$annotation[match(rownames(AvH_top_avg_treat_tpm2),pos_res_data$gene)]
+AvH<-rbind(AvH_bkgr_avg_treat_tpm2,AvH_top_avg_treat_tpm2)
+AvH<-AvH[which(!is.na(AvH$avh) & !is.na(AvH$pos)),]
+AvH$pos<-gsub("Ovary 2","Ovary 1",AvH$pos)
+AvH$pos<-gsub("Ovary 1","Ovary",AvH$pos)
+AvH<-AvH[which(AvH$pos!="Other"),]
+AvH_plot_deseq2_pos_Machtx<-ggplot()+
+  geom_point(data=AvH,
+             aes(x=A,y=H,colour=paste(avh,pos,sep="-")),size=0.5)+
+  geom_abline(slope = 1,intercept = 0,colour="black",linewidth=0.5,linetype="dashed")+
+  scale_x_continuous(limits = c(-3,20),
+                     breaks=breaks,
+                     labels=labels)+
+  scale_y_continuous(limits = c(-3,20),
+                     breaks=breaks,
+                     labels=labels,expand = c(0,0))+
+  scale_colour_manual(values=c("#999999","#999999","#999999","#999999",
+                                        "red","orange","green","blue",
+                                        "red","orange","green","blue"),guide="none")+
+  xlab(expression(atop("Adults",
+                       log[2] ("normalised counts" + 0.1))))+
+  ylab(expression(atop("Hatchlings",
+                       log[2] ("normalised counts" + 0.1))))+
+  ggtitle(expression(paste(italic(M.)," ",italic(hystrix))))+
+  my.theme+theme(panel.grid.major = element_blank(),
+                 axis.text = element_text(size=20),
+                 axis.title = element_text(size=20),
+                 panel.background = element_rect(fill=NA,colour="black"))+
+  facet_wrap(pos~.)
+AvH_plot_deseq2_pos_Machtx
+
+```
+
+
+```{r}
+cowplot::plot_grid(AvH_plot_deseq2_Maccli,AvH_plot_deseq2_Machtx,AvH_plot_deseq2_Maclig,nrow=1,ncol=3)
+cowplot::plot_grid(AvH_plot_deseq2_pos_Maccli,AvH_plot_deseq2_pos_Machtx,AvH_plot_deseq2_pos_Maclig,nrow=1,ncol=3)
+```
+
+
