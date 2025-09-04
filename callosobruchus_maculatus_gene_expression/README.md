@@ -1,6 +1,6 @@
 This repository contains code and scripts for the analysis described in:
 
-Wiberg et al. in prep.
+Wiberg et al. 2025. Mol. Biol. Evol. 42: msaf178.
 
 For full pipeline of bioinformatic analysis steps, see the markdown notebooks.  
 [Analysis pipeline for RNA-seq of adults](./pipeline_adults.md)
