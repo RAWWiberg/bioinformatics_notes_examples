@@ -1,0 +1,3303 @@
+JOB: 27627402
+
+
+The following have been reloaded with a version change:
+  1) python/3.7.2 => python/3.8.7
+
+
+Running fastqc
+Started analysis of CB12-4F_merge_mrna_fwd.fq.gz
+Started analysis of CB12-4F_merge_mrna_rev.fq.gz
+Started analysis of CB12-5M_mrna_fwd.fq.gz
+Started analysis of CB12-5M_mrna_rev.fq.gz
+Started analysis of CB78-3M_merge_mrna_fwd.fq.gz
+Started analysis of CB78-3M_merge_mrna_rev.fq.gz
+Started analysis of CB78-8F_mrna_fwd.fq.gz
+Started analysis of CB78-8F_mrna_rev.fq.gz
+Started analysis of CB910-1M_mrna_fwd.fq.gz
+Started analysis of CB910-1M_mrna_rev.fq.gz
+Started analysis of CB910-2F_mrna_fwd.fq.gz
+Started analysis of CB910-2F_mrna_rev.fq.gz
+Started analysis of FMA22-2M_merge_mrna_fwd.fq.gz
+Started analysis of FMA22-2M_merge_mrna_rev.fq.gz
+Started analysis of FMA22-5F_mrna_fwd.fq.gz
+Started analysis of FMA22-5F_mrna_rev.fq.gz
+Started analysis of FMA55-1F_mrna_fwd.fq.gz
+Started analysis of FMA55-1F_mrna_rev.fq.gz
+Started analysis of FMA55-5M_merge_mrna_fwd.fq.gz
+Started analysis of FMA55-5M_merge_mrna_rev.fq.gz
+Approx 5% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 5% complete for CB12-5M_mrna_rev.fq.gz
+Approx 5% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 5% complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 5% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 5% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 5% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 5% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 5% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Approx 5% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 5% complete for CB910-1M_mrna_fwd.fq.gz
+Approx 5% complete for CB910-1M_mrna_rev.fq.gz
+Approx 5% complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 5% complete for CB910-2F_mrna_rev.fq.gz
+Approx 5% complete for CB78-8F_mrna_fwd.fq.gz
+Approx 5% complete for FMA22-5F_mrna_fwd.fq.gz
+Approx 5% complete for FMA22-5F_mrna_rev.fq.gz
+Approx 5% complete for CB78-8F_mrna_rev.fq.gz
+Approx 10% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 10% complete for CB12-5M_mrna_rev.fq.gz
+Approx 5% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 5% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 10% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 10% complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 10% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 10% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 10% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 10% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 10% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Approx 10% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 15% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 10% complete for CB910-1M_mrna_fwd.fq.gz
+Approx 10% complete for CB910-1M_mrna_rev.fq.gz
+Approx 15% complete for CB12-5M_mrna_rev.fq.gz
+Approx 10% complete for CB910-2F_mrna_rev.fq.gz
+Approx 10% complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 10% complete for CB78-8F_mrna_fwd.fq.gz
+Approx 10% complete for FMA22-5F_mrna_rev.fq.gz
+Approx 10% complete for FMA22-5F_mrna_fwd.fq.gz
+Approx 15% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 15% complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 15% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 15% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 10% complete for CB78-8F_mrna_rev.fq.gz
+Approx 15% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 15% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 20% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 10% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 10% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 20% complete for CB12-5M_mrna_rev.fq.gz
+Approx 15% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 15% complete for CB910-1M_mrna_fwd.fq.gz
+Approx 15% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Approx 15% complete for CB910-1M_mrna_rev.fq.gz
+Approx 15% complete for CB910-2F_mrna_rev.fq.gz
+Approx 20% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 20% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 15% complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 20% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 20% complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 20% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 25% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 15% complete for FMA22-5F_mrna_rev.fq.gz
+Approx 20% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 15% complete for FMA22-5F_mrna_fwd.fq.gz
+Approx 15% complete for CB78-8F_mrna_fwd.fq.gz
+Approx 25% complete for CB12-5M_mrna_rev.fq.gz
+Approx 15% complete for CB78-8F_mrna_rev.fq.gz
+Approx 20% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 15% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 20% complete for CB910-1M_mrna_fwd.fq.gz
+Approx 15% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 20% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Approx 25% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 25% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 20% complete for CB910-2F_mrna_rev.fq.gz
+Approx 30% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 20% complete for CB910-1M_mrna_rev.fq.gz
+Approx 25% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 25% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 25% complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 25% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 30% complete for CB12-5M_mrna_rev.fq.gz
+Approx 20% complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 20% complete for FMA22-5F_mrna_rev.fq.gz
+Approx 20% complete for FMA22-5F_mrna_fwd.fq.gz
+Approx 20% complete for CB78-8F_mrna_fwd.fq.gz
+Approx 35% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 30% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 25% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 30% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 30% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 25% complete for CB910-1M_mrna_fwd.fq.gz
+Approx 30% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 35% complete for CB12-5M_mrna_rev.fq.gz
+Approx 25% complete for CB910-2F_mrna_rev.fq.gz
+Approx 25% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Approx 20% complete for CB78-8F_mrna_rev.fq.gz
+Approx 30% complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 30% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 25% complete for CB910-1M_mrna_rev.fq.gz
+Approx 20% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 20% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 25% complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 40% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 35% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 35% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 25% complete for FMA22-5F_mrna_rev.fq.gz
+Approx 35% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 25% complete for FMA22-5F_mrna_fwd.fq.gz
+Approx 40% complete for CB12-5M_mrna_rev.fq.gz
+Approx 30% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 35% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 35% complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 30% complete for CB910-2F_mrna_rev.fq.gz
+Approx 30% complete for CB910-1M_mrna_fwd.fq.gz
+Approx 35% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 25% complete for CB78-8F_mrna_fwd.fq.gz
+Approx 30% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Approx 45% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 30% complete for CB910-1M_mrna_rev.fq.gz
+Approx 25% complete for CB78-8F_mrna_rev.fq.gz
+Approx 40% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 25% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 30% complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 40% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 45% complete for CB12-5M_mrna_rev.fq.gz
+Approx 25% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 40% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 40% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 35% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 40% complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 40% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 30% complete for FMA22-5F_mrna_rev.fq.gz
+Approx 50% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 30% complete for FMA22-5F_mrna_fwd.fq.gz
+Approx 35% complete for CB910-2F_mrna_rev.fq.gz
+Approx 35% complete for CB910-1M_mrna_fwd.fq.gz
+Approx 45% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 35% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Approx 50% complete for CB12-5M_mrna_rev.fq.gz
+Approx 45% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 35% complete for CB910-1M_mrna_rev.fq.gz
+Approx 30% complete for CB78-8F_mrna_fwd.fq.gz
+Approx 45% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 35% complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 45% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 55% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 30% complete for CB78-8F_mrna_rev.fq.gz
+Approx 45% complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 45% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 40% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 30% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 30% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 40% complete for CB910-2F_mrna_rev.fq.gz
+Approx 55% complete for CB12-5M_mrna_rev.fq.gz
+Approx 50% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 35% complete for FMA22-5F_mrna_rev.fq.gz
+Approx 35% complete for FMA22-5F_mrna_fwd.fq.gz
+Approx 50% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 40% complete for CB910-1M_mrna_fwd.fq.gz
+Approx 50% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 60% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 40% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Approx 50% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 40% complete for CB910-1M_mrna_rev.fq.gz
+Approx 50% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 40% complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 35% complete for CB78-8F_mrna_fwd.fq.gz
+Approx 50% complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 45% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 60% complete for CB12-5M_mrna_rev.fq.gz
+Approx 55% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 55% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 45% complete for CB910-2F_mrna_rev.fq.gz
+Approx 35% complete for CB78-8F_mrna_rev.fq.gz
+Approx 65% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 35% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 35% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 55% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 45% complete for CB910-1M_mrna_fwd.fq.gz
+Approx 55% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 40% complete for FMA22-5F_mrna_rev.fq.gz
+Approx 40% complete for FMA22-5F_mrna_fwd.fq.gz
+Approx 45% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Approx 55% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 45% complete for CB910-1M_mrna_rev.fq.gz
+Approx 65% complete for CB12-5M_mrna_rev.fq.gz
+Approx 55% complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 60% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 70% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 60% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 45% complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 50% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 40% complete for CB78-8F_mrna_fwd.fq.gz
+Approx 60% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 50% complete for CB910-2F_mrna_rev.fq.gz
+Approx 60% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 50% complete for CB910-1M_mrna_fwd.fq.gz
+Approx 40% complete for CB78-8F_mrna_rev.fq.gz
+Approx 40% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 70% complete for CB12-5M_mrna_rev.fq.gz
+Approx 60% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 40% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 75% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 45% complete for FMA22-5F_mrna_rev.fq.gz
+Approx 60% complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 45% complete for FMA22-5F_mrna_fwd.fq.gz
+Approx 65% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 65% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 50% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Approx 50% complete for CB910-1M_mrna_rev.fq.gz
+Approx 55% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 65% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 50% complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 55% complete for CB910-2F_mrna_rev.fq.gz
+Approx 65% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 75% complete for CB12-5M_mrna_rev.fq.gz
+Approx 80% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 65% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 45% complete for CB78-8F_mrna_fwd.fq.gz
+Approx 70% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 55% complete for CB910-1M_mrna_fwd.fq.gz
+Approx 70% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 65% complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 45% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 45% complete for CB78-8F_mrna_rev.fq.gz
+Approx 45% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 55% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Approx 50% complete for FMA22-5F_mrna_rev.fq.gz
+Approx 70% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 50% complete for FMA22-5F_mrna_fwd.fq.gz
+Approx 55% complete for CB910-1M_mrna_rev.fq.gz
+Approx 60% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 80% complete for CB12-5M_mrna_rev.fq.gz
+Approx 85% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 70% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 55% complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 60% complete for CB910-2F_mrna_rev.fq.gz
+Approx 70% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 75% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 75% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 70% complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 60% complete for CB910-1M_mrna_fwd.fq.gz
+Approx 75% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 50% complete for CB78-8F_mrna_fwd.fq.gz
+Approx 90% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 85% complete for CB12-5M_mrna_rev.fq.gz
+Approx 65% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 60% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Approx 60% complete for CB910-1M_mrna_rev.fq.gz
+Approx 55% complete for FMA22-5F_mrna_rev.fq.gz
+Approx 75% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 50% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 55% complete for FMA22-5F_mrna_fwd.fq.gz
+Approx 80% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 50% complete for CB78-8F_mrna_rev.fq.gz
+Approx 50% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 75% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 80% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 65% complete for CB910-2F_mrna_rev.fq.gz
+Approx 60% complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 75% complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 95% complete for CB12-5M_mrna_fwd.fq.gz
+Approx 80% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 90% complete for CB12-5M_mrna_rev.fq.gz
+Approx 65% complete for CB910-1M_mrna_fwd.fq.gz
+Approx 70% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 85% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 80% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 55% complete for CB78-8F_mrna_fwd.fq.gz
+Approx 65% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Approx 80% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 85% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 65% complete for CB910-1M_mrna_rev.fq.gz
+Approx 60% complete for FMA22-5F_mrna_rev.fq.gz
+Analysis complete for CB12-5M_mrna_fwd.fq.gz
+Approx 55% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 85% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 95% complete for CB12-5M_mrna_rev.fq.gz
+Approx 70% complete for CB910-2F_mrna_rev.fq.gz
+Approx 55% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 60% complete for FMA22-5F_mrna_fwd.fq.gz
+Approx 80% complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 65% complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 55% complete for CB78-8F_mrna_rev.fq.gz
+Started analysis of FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 70% complete for CB910-1M_mrna_fwd.fq.gz
+Approx 90% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 75% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 85% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 90% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 85% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 70% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Analysis complete for CB12-5M_mrna_rev.fq.gz
+Approx 90% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 65% complete for FMA22-5F_mrna_rev.fq.gz
+Approx 70% complete for CB910-1M_mrna_rev.fq.gz
+Approx 60% complete for CB78-8F_mrna_fwd.fq.gz
+Started analysis of FMA88-5M_merge_mrna_rev.fq.gz
+Approx 85% complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 95% complete for FMA55-1F_mrna_rev.fq.gz
+Approx 75% complete for CB910-2F_mrna_rev.fq.gz
+Approx 5% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 60% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 60% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 75% complete for CB910-1M_mrna_fwd.fq.gz
+Approx 90% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 95% complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 65% complete for FMA22-5F_mrna_fwd.fq.gz
+Approx 70% complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 80% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 90% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 60% complete for CB78-8F_mrna_rev.fq.gz
+Approx 95% complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 75% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Analysis complete for FMA55-1F_mrna_rev.fq.gz
+Approx 70% complete for FMA22-5F_mrna_rev.fq.gz
+Approx 90% complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 10% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 5% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Approx 75% complete for CB910-1M_mrna_rev.fq.gz
+Approx 65% complete for CB78-8F_mrna_fwd.fq.gz
+Analysis complete for FMA55-1F_mrna_fwd.fq.gz
+Approx 95% complete for FMA22-2M_merge_mrna_rev.fq.gz
+Started analysis of FMA88-6F_mrna_fwd.fq.gz
+Approx 80% complete for CB910-2F_mrna_rev.fq.gz
+Approx 80% complete for CB910-1M_mrna_fwd.fq.gz
+Approx 85% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 65% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 95% complete for CB12-4F_merge_mrna_fwd.fq.gz
+Started analysis of FMA88-6F_mrna_rev.fq.gz
+Analysis complete for FMA22-2M_merge_mrna_fwd.fq.gz
+Approx 65% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 75% complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 70% complete for FMA22-5F_mrna_fwd.fq.gz
+Approx 80% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Approx 95% complete for CB12-4F_merge_mrna_rev.fq.gz
+Started analysis of FMB22-2M_merge_mrna_fwd.fq.gz
+Approx 15% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 65% complete for CB78-8F_mrna_rev.fq.gz
+Analysis complete for FMA22-2M_merge_mrna_rev.fq.gz
+Approx 10% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Approx 75% complete for FMA22-5F_mrna_rev.fq.gz
+Approx 80% complete for CB910-1M_mrna_rev.fq.gz
+Approx 85% complete for CB910-2F_mrna_rev.fq.gz
+Approx 5% complete for FMA88-6F_mrna_fwd.fq.gz
+Analysis complete for CB12-4F_merge_mrna_fwd.fq.gz
+Approx 90% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 70% complete for CB78-8F_mrna_fwd.fq.gz
+Approx 85% complete for CB910-1M_mrna_fwd.fq.gz
+Started analysis of FMB22-2M_merge_mrna_rev.fq.gz
+Started analysis of FMB22-5F_mrna_fwd.fq.gz
+Approx 5% complete for FMA88-6F_mrna_rev.fq.gz
+Approx 80% complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 70% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Analysis complete for CB12-4F_merge_mrna_rev.fq.gz
+Approx 70% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 75% complete for FMA22-5F_mrna_fwd.fq.gz
+Approx 20% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 85% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Approx 5% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Started analysis of FMB22-5F_mrna_rev.fq.gz
+Approx 15% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Approx 85% complete for CB910-1M_mrna_rev.fq.gz
+Approx 80% complete for FMA22-5F_mrna_rev.fq.gz
+Approx 90% complete for CB910-2F_mrna_rev.fq.gz
+Approx 70% complete for CB78-8F_mrna_rev.fq.gz
+Approx 95% complete for CB910-2F_mrna_fwd.fq.gz
+Approx 10% complete for FMA88-6F_mrna_fwd.fq.gz
+Approx 90% complete for CB910-1M_mrna_fwd.fq.gz
+Approx 5% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Approx 75% complete for CB78-8F_mrna_fwd.fq.gz
+Approx 10% complete for FMA88-6F_mrna_rev.fq.gz
+Approx 25% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 85% complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 5% complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 80% complete for FMA22-5F_mrna_fwd.fq.gz
+Approx 20% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Approx 90% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Approx 75% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 75% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 10% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Approx 95% complete for CB910-2F_mrna_rev.fq.gz
+Analysis complete for CB910-2F_mrna_fwd.fq.gz
+Approx 90% complete for CB910-1M_mrna_rev.fq.gz
+Approx 85% complete for FMA22-5F_mrna_rev.fq.gz
+Approx 95% complete for CB910-1M_mrna_fwd.fq.gz
+Approx 5% complete for FMB22-5F_mrna_rev.fq.gz
+Approx 15% complete for FMA88-6F_mrna_fwd.fq.gz
+Started analysis of FMB66-2M_merge_mrna_fwd.fq.gz
+Approx 75% complete for CB78-8F_mrna_rev.fq.gz
+Approx 30% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 10% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Approx 15% complete for FMA88-6F_mrna_rev.fq.gz
+Approx 80% complete for CB78-8F_mrna_fwd.fq.gz
+Approx 90% complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 25% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Approx 95% complete for CB78-3M_merge_mrna_fwd.fq.gz
+Approx 85% complete for FMA22-5F_mrna_fwd.fq.gz
+Analysis complete for CB910-2F_mrna_rev.fq.gz
+Approx 10% complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 80% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 80% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 15% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Approx 95% complete for CB910-1M_mrna_rev.fq.gz
+Analysis complete for CB910-1M_mrna_fwd.fq.gz
+Started analysis of FMB66-2M_merge_mrna_rev.fq.gz
+Approx 90% complete for FMA22-5F_mrna_rev.fq.gz
+Approx 35% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 20% complete for FMA88-6F_mrna_fwd.fq.gz
+Started analysis of FMB66-8F_mrna_fwd.fq.gz
+Approx 5% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Approx 10% complete for FMB22-5F_mrna_rev.fq.gz
+Approx 30% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Approx 15% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Approx 80% complete for CB78-8F_mrna_rev.fq.gz
+Approx 20% complete for FMA88-6F_mrna_rev.fq.gz
+Approx 95% complete for CB78-3M_merge_mrna_rev.fq.gz
+Analysis complete for CB78-3M_merge_mrna_fwd.fq.gz
+Approx 85% complete for CB78-8F_mrna_fwd.fq.gz
+Approx 90% complete for FMA22-5F_mrna_fwd.fq.gz
+Analysis complete for CB910-1M_mrna_rev.fq.gz
+Approx 20% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Started analysis of FMB66-8F_mrna_rev.fq.gz
+Approx 40% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 15% complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 85% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 85% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 95% complete for FMA22-5F_mrna_rev.fq.gz
+Approx 5% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Started analysis of FMB88-1M_mrna_fwd.fq.gz
+Approx 25% complete for FMA88-6F_mrna_fwd.fq.gz
+Approx 35% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Approx 5% complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 10% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Approx 20% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Analysis complete for CB78-3M_merge_mrna_rev.fq.gz
+Approx 15% complete for FMB22-5F_mrna_rev.fq.gz
+Approx 25% complete for FMA88-6F_mrna_rev.fq.gz
+Approx 85% complete for CB78-8F_mrna_rev.fq.gz
+Approx 95% complete for FMA22-5F_mrna_fwd.fq.gz
+Approx 45% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Started analysis of FMB88-1M_mrna_rev.fq.gz
+Approx 90% complete for CB78-8F_mrna_fwd.fq.gz
+Approx 25% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Approx 5% complete for FMB66-8F_mrna_rev.fq.gz
+Approx 5% complete for FMB88-1M_mrna_fwd.fq.gz
+Approx 40% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Approx 10% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Analysis complete for FMA22-5F_mrna_rev.fq.gz
+Approx 90% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 20% complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 30% complete for FMA88-6F_mrna_fwd.fq.gz
+Approx 90% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 10% complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 15% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Started analysis of FMB88-2F_mrna_fwd.fq.gz
+Approx 25% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Approx 50% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 30% complete for FMA88-6F_mrna_rev.fq.gz
+Analysis complete for FMA22-5F_mrna_fwd.fq.gz
+Approx 20% complete for FMB22-5F_mrna_rev.fq.gz
+Approx 90% complete for CB78-8F_mrna_rev.fq.gz
+Approx 5% complete for FMB88-1M_mrna_rev.fq.gz
+Approx 95% complete for CB78-8F_mrna_fwd.fq.gz
+Approx 45% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Started analysis of FMB88-2F_mrna_rev.fq.gz
+Approx 30% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Approx 15% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Approx 10% complete for FMB88-1M_mrna_fwd.fq.gz
+Approx 10% complete for FMB66-8F_mrna_rev.fq.gz
+Approx 35% complete for FMA88-6F_mrna_fwd.fq.gz
+Approx 15% complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 20% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Approx 55% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 95% complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 25% complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 95% complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 35% complete for FMA88-6F_mrna_rev.fq.gz
+Approx 30% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Approx 50% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Approx 10% complete for FMB88-1M_mrna_rev.fq.gz
+Approx 95% complete for CB78-8F_mrna_rev.fq.gz
+Approx 25% complete for FMB22-5F_mrna_rev.fq.gz
+Approx 5% complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 20% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Approx 35% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Analysis complete for CB78-8F_mrna_fwd.fq.gz
+Approx 60% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 15% complete for FMB88-1M_mrna_fwd.fq.gz
+Approx 20% complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 15% complete for FMB66-8F_mrna_rev.fq.gz
+Approx 25% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Approx 40% complete for FMA88-6F_mrna_fwd.fq.gz
+Started analysis of L1A56-1M_mrna_fwd.fq.gz
+Analysis complete for FMA55-5M_merge_mrna_fwd.fq.gz
+Approx 30% complete for FMB22-5F_mrna_fwd.fq.gz
+Analysis complete for FMA55-5M_merge_mrna_rev.fq.gz
+Approx 40% complete for FMA88-6F_mrna_rev.fq.gz
+Approx 35% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Approx 5% complete for FMB88-2F_mrna_rev.fq.gz
+Approx 55% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Started analysis of L1A56-1M_mrna_rev.fq.gz
+Started analysis of L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 15% complete for FMB88-1M_mrna_rev.fq.gz
+Approx 65% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 25% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Analysis complete for CB78-8F_mrna_rev.fq.gz
+Approx 40% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Approx 20% complete for FMB88-1M_mrna_fwd.fq.gz
+Approx 25% complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 30% complete for FMB22-5F_mrna_rev.fq.gz
+Approx 30% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Approx 45% complete for FMA88-6F_mrna_fwd.fq.gz
+Approx 20% complete for FMB66-8F_mrna_rev.fq.gz
+Started analysis of L1A56-4F_merge_mrna_rev.fq.gz
+Approx 60% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Approx 5% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 45% complete for FMA88-6F_mrna_rev.fq.gz
+Approx 40% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Approx 35% complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 10% complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 70% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 20% complete for FMB88-1M_mrna_rev.fq.gz
+Approx 5% complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 30% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Approx 5% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 35% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Approx 30% complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 45% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Approx 25% complete for FMB88-1M_mrna_fwd.fq.gz
+Approx 50% complete for FMA88-6F_mrna_fwd.fq.gz
+Approx 10% complete for FMB88-2F_mrna_rev.fq.gz
+Approx 10% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 25% complete for FMB66-8F_mrna_rev.fq.gz
+Approx 65% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Approx 5% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 35% complete for FMB22-5F_mrna_rev.fq.gz
+Approx 50% complete for FMA88-6F_mrna_rev.fq.gz
+Approx 75% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 45% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Approx 25% complete for FMB88-1M_mrna_rev.fq.gz
+Approx 40% complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 10% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 15% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 40% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Approx 35% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Approx 35% complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 70% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Approx 30% complete for FMB88-1M_mrna_fwd.fq.gz
+Approx 50% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Approx 55% complete for FMA88-6F_mrna_fwd.fq.gz
+Approx 15% complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 30% complete for FMB66-8F_mrna_rev.fq.gz
+Approx 80% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 55% complete for FMA88-6F_mrna_rev.fq.gz
+Approx 10% complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 15% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 40% complete for FMB22-5F_mrna_rev.fq.gz
+Approx 50% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Approx 30% complete for FMB88-1M_mrna_rev.fq.gz
+Approx 20% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 15% complete for FMB88-2F_mrna_rev.fq.gz
+Approx 75% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Approx 45% complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 10% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 45% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Approx 40% complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 40% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Approx 35% complete for FMB88-1M_mrna_fwd.fq.gz
+Approx 85% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 55% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Approx 60% complete for FMA88-6F_mrna_fwd.fq.gz
+Approx 20% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 35% complete for FMB66-8F_mrna_rev.fq.gz
+Approx 60% complete for FMA88-6F_mrna_rev.fq.gz
+Approx 25% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 55% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Approx 35% complete for FMB88-1M_mrna_rev.fq.gz
+Approx 80% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Approx 45% complete for FMB22-5F_mrna_rev.fq.gz
+Approx 20% complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 50% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Approx 90% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 45% complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 25% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 45% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Approx 15% complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 40% complete for FMB88-1M_mrna_fwd.fq.gz
+Approx 60% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Approx 50% complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 65% complete for FMA88-6F_mrna_fwd.fq.gz
+Approx 30% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 20% complete for FMB88-2F_mrna_rev.fq.gz
+Approx 65% complete for FMA88-6F_mrna_rev.fq.gz
+Approx 40% complete for FMB66-8F_mrna_rev.fq.gz
+Approx 15% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 85% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Approx 40% complete for FMB88-1M_mrna_rev.fq.gz
+Approx 60% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Approx 30% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 95% complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 35% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 55% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Approx 50% complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 50% complete for FMB22-5F_mrna_rev.fq.gz
+Approx 50% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Approx 70% complete for FMA88-6F_mrna_fwd.fq.gz
+Approx 45% complete for FMB88-1M_mrna_fwd.fq.gz
+Approx 65% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Approx 55% complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 70% complete for FMA88-6F_mrna_rev.fq.gz
+Approx 90% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Approx 25% complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 45% complete for FMB66-8F_mrna_rev.fq.gz
+Approx 35% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 40% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 45% complete for FMB88-1M_mrna_rev.fq.gz
+Approx 65% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Analysis complete for FMA88-5M_merge_mrna_fwd.fq.gz
+Approx 20% complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 60% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Started analysis of L1A78-6M_mrna_fwd.fq.gz
+Approx 55% complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 25% complete for FMB88-2F_mrna_rev.fq.gz
+Approx 55% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Approx 75% complete for FMA88-6F_mrna_fwd.fq.gz
+Approx 55% complete for FMB22-5F_mrna_rev.fq.gz
+Approx 50% complete for FMB88-1M_mrna_fwd.fq.gz
+Approx 20% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 95% complete for FMA88-5M_merge_mrna_rev.fq.gz
+Approx 70% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Approx 40% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 45% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 75% complete for FMA88-6F_mrna_rev.fq.gz
+Approx 60% complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 50% complete for FMB66-8F_mrna_rev.fq.gz
+Approx 50% complete for FMB88-1M_mrna_rev.fq.gz
+Approx 70% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Approx 65% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Approx 60% complete for FMB66-8F_mrna_fwd.fq.gz
+Analysis complete for FMA88-5M_merge_mrna_rev.fq.gz
+Approx 60% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Approx 30% complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 45% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 80% complete for FMA88-6F_mrna_fwd.fq.gz
+Approx 50% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 55% complete for FMB88-1M_mrna_fwd.fq.gz
+Approx 5% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 75% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Started analysis of L1A78-6M_mrna_rev.fq.gz
+Approx 60% complete for FMB22-5F_mrna_rev.fq.gz
+Approx 25% complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 80% complete for FMA88-6F_mrna_rev.fq.gz
+Approx 55% complete for FMB66-8F_mrna_rev.fq.gz
+Approx 55% complete for FMB88-1M_mrna_rev.fq.gz
+Approx 65% complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 30% complete for FMB88-2F_mrna_rev.fq.gz
+Approx 75% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Approx 25% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 50% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 55% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 70% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Approx 65% complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 65% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Approx 85% complete for FMA88-6F_mrna_fwd.fq.gz
+Approx 60% complete for FMB88-1M_mrna_fwd.fq.gz
+Approx 80% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Approx 85% complete for FMA88-6F_mrna_rev.fq.gz
+Approx 10% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 65% complete for FMB22-5F_mrna_rev.fq.gz
+Approx 60% complete for FMB88-1M_mrna_rev.fq.gz
+Approx 55% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 5% complete for L1A78-6M_mrna_rev.fq.gz
+Approx 60% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 60% complete for FMB66-8F_mrna_rev.fq.gz
+Approx 35% complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 80% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Approx 70% complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 75% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Approx 70% complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 30% complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 70% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Approx 90% complete for FMA88-6F_mrna_fwd.fq.gz
+Approx 65% complete for FMB88-1M_mrna_fwd.fq.gz
+Approx 60% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 65% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 35% complete for FMB88-2F_mrna_rev.fq.gz
+Approx 30% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 90% complete for FMA88-6F_mrna_rev.fq.gz
+Approx 85% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Approx 65% complete for FMB88-1M_mrna_rev.fq.gz
+Approx 65% complete for FMB66-8F_mrna_rev.fq.gz
+Approx 70% complete for FMB22-5F_mrna_rev.fq.gz
+Approx 15% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 85% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Approx 10% complete for L1A78-6M_mrna_rev.fq.gz
+Approx 80% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Approx 75% complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 75% complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 75% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Approx 65% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 70% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 95% complete for FMA88-6F_mrna_fwd.fq.gz
+Approx 70% complete for FMB88-1M_mrna_fwd.fq.gz
+Approx 95% complete for FMA88-6F_mrna_rev.fq.gz
+Approx 40% complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 90% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Approx 70% complete for FMB88-1M_mrna_rev.fq.gz
+Approx 70% complete for FMB66-8F_mrna_rev.fq.gz
+Approx 35% complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 70% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 75% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 90% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Approx 75% complete for FMB22-5F_mrna_rev.fq.gz
+Approx 85% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Approx 80% complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 40% complete for FMB88-2F_mrna_rev.fq.gz
+Approx 35% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 20% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 80% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Analysis complete for FMA88-6F_mrna_fwd.fq.gz
+Approx 15% complete for L1A78-6M_mrna_rev.fq.gz
+Approx 80% complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 75% complete for FMB88-1M_mrna_fwd.fq.gz
+Started analysis of L1A78-8F_mrna_fwd.fq.gz
+Approx 75% complete for FMB88-1M_mrna_rev.fq.gz
+Analysis complete for FMA88-6F_mrna_rev.fq.gz
+Approx 75% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 80% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 95% complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Approx 75% complete for FMB66-8F_mrna_rev.fq.gz
+Started analysis of L1A78-8F_mrna_rev.fq.gz
+Approx 95% complete for FMB22-2M_merge_mrna_rev.fq.gz
+Approx 90% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Approx 85% complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 80% complete for FMB22-5F_mrna_rev.fq.gz
+Approx 85% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Approx 45% complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 80% complete for FMB88-1M_mrna_fwd.fq.gz
+Approx 80% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 85% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 40% complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 25% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 20% complete for L1A78-6M_mrna_rev.fq.gz
+Approx 85% complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 80% complete for FMB88-1M_mrna_rev.fq.gz
+Approx 5% complete for L1A78-8F_mrna_fwd.fq.gz
+Analysis complete for FMB22-2M_merge_mrna_fwd.fq.gz
+Approx 45% complete for FMB88-2F_mrna_rev.fq.gz
+Approx 80% complete for FMB66-8F_mrna_rev.fq.gz
+Approx 40% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 95% complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Started analysis of L1A910-3F_mrna_fwd.fq.gz
+Analysis complete for FMB22-2M_merge_mrna_rev.fq.gz
+Approx 5% complete for L1A78-8F_mrna_rev.fq.gz
+Approx 90% complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 85% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 90% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 90% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Approx 85% complete for FMB88-1M_mrna_fwd.fq.gz
+Approx 85% complete for FMB22-5F_mrna_rev.fq.gz
+Started analysis of L1A910-3F_mrna_rev.fq.gz
+Approx 85% complete for FMB88-1M_mrna_rev.fq.gz
+Approx 90% complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 30% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 10% complete for L1A78-8F_mrna_fwd.fq.gz
+Approx 85% complete for FMB66-8F_mrna_rev.fq.gz
+Approx 25% complete for L1A78-6M_mrna_rev.fq.gz
+Approx 90% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 50% complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 95% complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Analysis complete for FMB66-2M_merge_mrna_fwd.fq.gz
+Approx 45% complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 95% complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 5% complete for L1A910-3F_mrna_fwd.fq.gz
+Started analysis of L1A910-6M_mrna_fwd.fq.gz
+Approx 95% complete for FMB66-2M_merge_mrna_rev.fq.gz
+Approx 10% complete for L1A78-8F_mrna_rev.fq.gz
+Approx 90% complete for FMB88-1M_mrna_fwd.fq.gz
+Approx 50% complete for FMB88-2F_mrna_rev.fq.gz
+Approx 5% complete for L1A910-3F_mrna_rev.fq.gz
+Approx 45% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 90% complete for FMB22-5F_mrna_rev.fq.gz
+Approx 90% complete for FMB88-1M_mrna_rev.fq.gz
+Approx 95% complete for L1A56-4F_merge_mrna_rev.fq.gz
+Analysis complete for L1A56-4F_merge_mrna_fwd.fq.gz
+Approx 90% complete for FMB66-8F_mrna_rev.fq.gz
+Approx 95% complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 15% complete for L1A78-8F_mrna_fwd.fq.gz
+Started analysis of L1A910-6M_mrna_rev.fq.gz
+Approx 35% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 30% complete for L1A78-6M_mrna_rev.fq.gz
+Analysis complete for FMB66-8F_mrna_fwd.fq.gz
+Approx 5% complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 10% complete for L1A910-3F_mrna_fwd.fq.gz
+Analysis complete for FMB66-2M_merge_mrna_rev.fq.gz
+Analysis complete for L1A56-4F_merge_mrna_rev.fq.gz
+Approx 95% complete for FMB88-1M_mrna_fwd.fq.gz
+Started analysis of L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 15% complete for L1A78-8F_mrna_rev.fq.gz
+Approx 10% complete for L1A910-3F_mrna_rev.fq.gz
+Started analysis of L1B12-1M_merge_mrna_rev.fq.gz
+Approx 55% complete for FMB88-2F_mrna_fwd.fq.gz
+Started analysis of L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 95% complete for FMB88-1M_mrna_rev.fq.gz
+Approx 95% complete for FMB66-8F_mrna_rev.fq.gz
+Approx 50% complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 95% complete for FMB22-5F_mrna_rev.fq.gz
+Approx 5% complete for L1A910-6M_mrna_rev.fq.gz
+Approx 55% complete for FMB88-2F_mrna_rev.fq.gz
+Analysis complete for FMB22-5F_mrna_fwd.fq.gz
+Approx 20% complete for L1A78-8F_mrna_fwd.fq.gz
+Approx 50% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 10% complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 5% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 40% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 5% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Started analysis of L1B12-3F_merge_mrna_rev.fq.gz
+Approx 15% complete for L1A910-3F_mrna_fwd.fq.gz
+Approx 35% complete for L1A78-6M_mrna_rev.fq.gz
+Approx 5% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Analysis complete for FMB88-1M_mrna_fwd.fq.gz
+Approx 15% complete for L1A910-3F_mrna_rev.fq.gz
+Analysis complete for FMB88-1M_mrna_rev.fq.gz
+Started analysis of L1B67-3F_mrna_fwd.fq.gz
+Approx 20% complete for L1A78-8F_mrna_rev.fq.gz
+Analysis complete for FMB66-8F_mrna_rev.fq.gz
+Started analysis of L1B67-3F_mrna_rev.fq.gz
+Approx 10% complete for L1A910-6M_mrna_rev.fq.gz
+Analysis complete for FMB22-5F_mrna_rev.fq.gz
+Approx 10% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Started analysis of L1B67-6M_mrna_fwd.fq.gz
+Approx 10% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Approx 15% complete for L1A910-6M_mrna_fwd.fq.gz
+Started analysis of L1B67-6M_mrna_rev.fq.gz
+Approx 60% complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 10% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 5% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Approx 25% complete for L1A78-8F_mrna_fwd.fq.gz
+Approx 55% complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 20% complete for L1A910-3F_mrna_fwd.fq.gz
+Approx 5% complete for L1B67-3F_mrna_fwd.fq.gz
+Approx 20% complete for L1A910-3F_mrna_rev.fq.gz
+Approx 45% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 60% complete for FMB88-2F_mrna_rev.fq.gz
+Approx 40% complete for L1A78-6M_mrna_rev.fq.gz
+Approx 5% complete for L1B67-3F_mrna_rev.fq.gz
+Approx 55% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 15% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 15% complete for L1A910-6M_mrna_rev.fq.gz
+Approx 25% complete for L1A78-8F_mrna_rev.fq.gz
+Approx 15% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Approx 15% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 20% complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 10% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Approx 10% complete for L1B67-3F_mrna_fwd.fq.gz
+Approx 5% complete for L1B67-6M_mrna_fwd.fq.gz
+Approx 5% complete for L1B67-6M_mrna_rev.fq.gz
+Approx 30% complete for L1A78-8F_mrna_fwd.fq.gz
+Approx 25% complete for L1A910-3F_mrna_fwd.fq.gz
+Approx 10% complete for L1B67-3F_mrna_rev.fq.gz
+Approx 20% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 25% complete for L1A910-3F_mrna_rev.fq.gz
+Approx 20% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Approx 20% complete for L1A910-6M_mrna_rev.fq.gz
+Approx 65% complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 50% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 20% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 45% complete for L1A78-6M_mrna_rev.fq.gz
+Approx 15% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Approx 60% complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 25% complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 15% complete for L1B67-3F_mrna_fwd.fq.gz
+Approx 30% complete for L1A78-8F_mrna_rev.fq.gz
+Approx 65% complete for FMB88-2F_mrna_rev.fq.gz
+Approx 15% complete for L1B67-3F_mrna_rev.fq.gz
+Approx 25% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 60% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 25% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Approx 30% complete for L1A910-3F_mrna_fwd.fq.gz
+Approx 10% complete for L1B67-6M_mrna_fwd.fq.gz
+Approx 25% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 35% complete for L1A78-8F_mrna_fwd.fq.gz
+Approx 10% complete for L1B67-6M_mrna_rev.fq.gz
+Approx 30% complete for L1A910-3F_mrna_rev.fq.gz
+Approx 25% complete for L1A910-6M_mrna_rev.fq.gz
+Approx 20% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Approx 20% complete for L1B67-3F_mrna_fwd.fq.gz
+Approx 30% complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 30% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 55% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 20% complete for L1B67-3F_mrna_rev.fq.gz
+Approx 50% complete for L1A78-6M_mrna_rev.fq.gz
+Approx 35% complete for L1A78-8F_mrna_rev.fq.gz
+Approx 30% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Approx 70% complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 30% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 65% complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 35% complete for L1A910-3F_mrna_fwd.fq.gz
+Approx 25% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Approx 25% complete for L1B67-3F_mrna_fwd.fq.gz
+Approx 30% complete for L1A910-6M_mrna_rev.fq.gz
+Approx 35% complete for L1A910-3F_mrna_rev.fq.gz
+Approx 35% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 70% complete for FMB88-2F_mrna_rev.fq.gz
+Approx 40% complete for L1A78-8F_mrna_fwd.fq.gz
+Approx 15% complete for L1B67-6M_mrna_fwd.fq.gz
+Approx 15% complete for L1B67-6M_mrna_rev.fq.gz
+Approx 25% complete for L1B67-3F_mrna_rev.fq.gz
+Approx 35% complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 65% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 35% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Approx 35% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 60% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 30% complete for L1B67-3F_mrna_fwd.fq.gz
+Approx 30% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Approx 55% complete for L1A78-6M_mrna_rev.fq.gz
+Approx 40% complete for L1A78-8F_mrna_rev.fq.gz
+Approx 40% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 35% complete for L1A910-6M_mrna_rev.fq.gz
+Approx 40% complete for L1A910-3F_mrna_fwd.fq.gz
+Approx 30% complete for L1B67-3F_mrna_rev.fq.gz
+Approx 40% complete for L1A910-3F_mrna_rev.fq.gz
+Approx 40% complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 40% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Approx 45% complete for L1A78-8F_mrna_fwd.fq.gz
+Approx 75% complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 20% complete for L1B67-6M_mrna_fwd.fq.gz
+Approx 70% complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 40% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 20% complete for L1B67-6M_mrna_rev.fq.gz
+Approx 35% complete for L1B67-3F_mrna_fwd.fq.gz
+Approx 35% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Approx 45% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 75% complete for FMB88-2F_mrna_rev.fq.gz
+Approx 35% complete for L1B67-3F_mrna_rev.fq.gz
+Approx 70% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 65% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 40% complete for L1A910-6M_mrna_rev.fq.gz
+Approx 45% complete for L1A910-3F_mrna_fwd.fq.gz
+Approx 45% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Approx 45% complete for L1A78-8F_mrna_rev.fq.gz
+Approx 45% complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 60% complete for L1A78-6M_mrna_rev.fq.gz
+Approx 45% complete for L1A910-3F_mrna_rev.fq.gz
+Approx 45% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 40% complete for L1B67-3F_mrna_fwd.fq.gz
+Approx 40% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Approx 50% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 50% complete for L1A78-8F_mrna_fwd.fq.gz
+Approx 25% complete for L1B67-6M_mrna_fwd.fq.gz
+Approx 40% complete for L1B67-3F_mrna_rev.fq.gz
+Approx 25% complete for L1B67-6M_mrna_rev.fq.gz
+Approx 50% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Approx 80% complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 45% complete for L1A910-6M_mrna_rev.fq.gz
+Approx 50% complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 75% complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 70% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 50% complete for L1A910-3F_mrna_fwd.fq.gz
+Approx 50% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 45% complete for L1B67-3F_mrna_fwd.fq.gz
+Approx 55% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 45% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Approx 50% complete for L1A78-8F_mrna_rev.fq.gz
+Approx 50% complete for L1A910-3F_mrna_rev.fq.gz
+Approx 65% complete for L1A78-6M_mrna_rev.fq.gz
+Approx 75% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 80% complete for FMB88-2F_mrna_rev.fq.gz
+Approx 45% complete for L1B67-3F_mrna_rev.fq.gz
+Approx 55% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Approx 55% complete for L1A78-8F_mrna_fwd.fq.gz
+Approx 30% complete for L1B67-6M_mrna_fwd.fq.gz
+Approx 50% complete for L1A910-6M_mrna_rev.fq.gz
+Approx 50% complete for L1B67-3F_mrna_fwd.fq.gz
+Approx 55% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 55% complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 30% complete for L1B67-6M_mrna_rev.fq.gz
+Approx 60% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 50% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Approx 55% complete for L1A910-3F_mrna_fwd.fq.gz
+Approx 50% complete for L1B67-3F_mrna_rev.fq.gz
+Approx 55% complete for L1A910-3F_mrna_rev.fq.gz
+Approx 55% complete for L1A78-8F_mrna_rev.fq.gz
+Approx 75% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 60% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Approx 85% complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 55% complete for L1B67-3F_mrna_fwd.fq.gz
+Approx 80% complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 70% complete for L1A78-6M_mrna_rev.fq.gz
+Approx 60% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 65% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 55% complete for L1A910-6M_mrna_rev.fq.gz
+Approx 55% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Approx 60% complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 60% complete for L1A78-8F_mrna_fwd.fq.gz
+Approx 80% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 35% complete for L1B67-6M_mrna_fwd.fq.gz
+Approx 55% complete for L1B67-3F_mrna_rev.fq.gz
+Approx 85% complete for FMB88-2F_mrna_rev.fq.gz
+Approx 65% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Approx 35% complete for L1B67-6M_mrna_rev.fq.gz
+Approx 60% complete for L1A910-3F_mrna_fwd.fq.gz
+Approx 60% complete for L1A910-3F_mrna_rev.fq.gz
+Approx 60% complete for L1B67-3F_mrna_fwd.fq.gz
+Approx 60% complete for L1A78-8F_mrna_rev.fq.gz
+Approx 80% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 70% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 60% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Approx 65% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 60% complete for L1A910-6M_mrna_rev.fq.gz
+Approx 65% complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 60% complete for L1B67-3F_mrna_rev.fq.gz
+Approx 70% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Approx 75% complete for L1A78-6M_mrna_rev.fq.gz
+Approx 65% complete for L1A78-8F_mrna_fwd.fq.gz
+Approx 90% complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 65% complete for L1B67-3F_mrna_fwd.fq.gz
+Approx 65% complete for L1A910-3F_mrna_fwd.fq.gz
+Approx 40% complete for L1B67-6M_mrna_fwd.fq.gz
+Approx 85% complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 65% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Approx 75% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 65% complete for L1A910-3F_mrna_rev.fq.gz
+Approx 70% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 40% complete for L1B67-6M_mrna_rev.fq.gz
+Approx 85% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 65% complete for L1A78-8F_mrna_rev.fq.gz
+Approx 65% complete for L1B67-3F_mrna_rev.fq.gz
+Approx 75% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Approx 70% complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 65% complete for L1A910-6M_mrna_rev.fq.gz
+Approx 90% complete for FMB88-2F_mrna_rev.fq.gz
+Approx 85% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 70% complete for L1B67-3F_mrna_fwd.fq.gz
+Approx 70% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Approx 80% complete for L1A78-6M_mrna_rev.fq.gz
+Approx 80% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 70% complete for L1A78-8F_mrna_fwd.fq.gz
+Approx 70% complete for L1A910-3F_mrna_fwd.fq.gz
+Approx 70% complete for L1B67-3F_mrna_rev.fq.gz
+Approx 75% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 70% complete for L1A910-3F_mrna_rev.fq.gz
+Approx 80% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Approx 45% complete for L1B67-6M_mrna_fwd.fq.gz
+Approx 75% complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 70% complete for L1A910-6M_mrna_rev.fq.gz
+Approx 45% complete for L1B67-6M_mrna_rev.fq.gz
+Approx 70% complete for L1A78-8F_mrna_rev.fq.gz
+Approx 75% complete for L1B67-3F_mrna_fwd.fq.gz
+Approx 95% complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 90% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 75% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Approx 90% complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 85% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 90% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 75% complete for L1B67-3F_mrna_rev.fq.gz
+Approx 80% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 85% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Approx 85% complete for L1A78-6M_mrna_rev.fq.gz
+Approx 95% complete for FMB88-2F_mrna_rev.fq.gz
+Approx 75% complete for L1A910-3F_mrna_fwd.fq.gz
+Approx 75% complete for L1A910-3F_mrna_rev.fq.gz
+Approx 80% complete for L1B67-3F_mrna_fwd.fq.gz
+Approx 80% complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 75% complete for L1A910-6M_mrna_rev.fq.gz
+Approx 75% complete for L1A78-8F_mrna_fwd.fq.gz
+Approx 50% complete for L1B67-6M_mrna_fwd.fq.gz
+Approx 80% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Approx 75% complete for L1A78-8F_mrna_rev.fq.gz
+Approx 90% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 80% complete for L1B67-3F_mrna_rev.fq.gz
+Approx 50% complete for L1B67-6M_mrna_rev.fq.gz
+Approx 95% complete for L1A78-6M_mrna_fwd.fq.gz
+Approx 90% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Approx 85% complete for L1B67-3F_mrna_fwd.fq.gz
+Approx 85% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 85% complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 80% complete for L1A910-6M_mrna_rev.fq.gz
+Approx 80% complete for L1A910-3F_mrna_rev.fq.gz
+Approx 85% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Analysis complete for FMB88-2F_mrna_fwd.fq.gz
+Approx 80% complete for L1A910-3F_mrna_fwd.fq.gz
+Approx 95% complete for L1A56-1M_mrna_rev.fq.gz
+Approx 90% complete for L1A78-6M_mrna_rev.fq.gz
+Approx 95% complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 85% complete for L1B67-3F_mrna_rev.fq.gz
+Approx 95% complete for L1A56-1M_mrna_fwd.fq.gz
+Started analysis of L1B810-1F_mrna_fwd.fq.gz
+Approx 55% complete for L1B67-6M_mrna_fwd.fq.gz
+Approx 95% complete for L1B12-1M_merge_mrna_rev.fq.gz
+Approx 80% complete for L1A78-8F_mrna_fwd.fq.gz
+Approx 80% complete for L1A78-8F_mrna_rev.fq.gz
+Approx 90% complete for L1B67-3F_mrna_fwd.fq.gz
+Approx 90% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 55% complete for L1B67-6M_mrna_rev.fq.gz
+Analysis complete for FMB88-2F_mrna_rev.fq.gz
+Approx 90% complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 85% complete for L1A910-6M_mrna_rev.fq.gz
+Approx 90% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Analysis complete for L1A78-6M_mrna_fwd.fq.gz
+Analysis complete for L1B12-1M_merge_mrna_fwd.fq.gz
+Approx 90% complete for L1B67-3F_mrna_rev.fq.gz
+Started analysis of L1B810-1F_mrna_rev.fq.gz
+Approx 85% complete for L1A910-3F_mrna_rev.fq.gz
+Analysis complete for L1B12-1M_merge_mrna_rev.fq.gz
+Started analysis of L1B810-2M_mrna_fwd.fq.gz
+Approx 85% complete for L1A910-3F_mrna_fwd.fq.gz
+Started analysis of L1B810-2M_mrna_rev.fq.gz
+Approx 5% complete for L1B810-1F_mrna_fwd.fq.gz
+Approx 95% complete for L1B67-3F_mrna_fwd.fq.gz
+Started analysis of L2A12-4F_mrna_fwd.fq.gz
+Approx 95% complete for L1A78-6M_mrna_rev.fq.gz
+Approx 95% complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 60% complete for L1B67-6M_mrna_fwd.fq.gz
+Approx 85% complete for L1A78-8F_mrna_rev.fq.gz
+Approx 95% complete for L1B12-3F_merge_mrna_rev.fq.gz
+Analysis complete for L1A56-1M_mrna_rev.fq.gz
+Approx 95% complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 95% complete for L1B67-3F_mrna_rev.fq.gz
+Approx 85% complete for L1A78-8F_mrna_fwd.fq.gz
+Approx 90% complete for L1A910-6M_mrna_rev.fq.gz
+Approx 60% complete for L1B67-6M_mrna_rev.fq.gz
+Analysis complete for L1A56-1M_mrna_fwd.fq.gz
+Approx 5% complete for L1B810-1F_mrna_rev.fq.gz
+Started analysis of L2A12-4F_mrna_rev.fq.gz
+Approx 90% complete for L1A910-3F_mrna_rev.fq.gz
+Approx 10% complete for L1B810-1F_mrna_fwd.fq.gz
+Analysis complete for L1B67-3F_mrna_fwd.fq.gz
+Started analysis of L2A12-8M_mrna_fwd.fq.gz
+Analysis complete for L1B12-3F_merge_mrna_fwd.fq.gz
+Approx 5% complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 90% complete for L1A910-3F_mrna_fwd.fq.gz
+Started analysis of L2A12-8M_mrna_rev.fq.gz
+Analysis complete for L1B12-3F_merge_mrna_rev.fq.gz
+Started analysis of L2A34-1F_mrna_fwd.fq.gz
+Analysis complete for L1B67-3F_mrna_rev.fq.gz
+Analysis complete for L1A910-6M_mrna_fwd.fq.gz
+Approx 95% complete for L1A910-6M_mrna_rev.fq.gz
+Analysis complete for L1A78-6M_mrna_rev.fq.gz
+Started analysis of L2A34-1F_mrna_rev.fq.gz
+Started analysis of L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 5% complete for L1B810-2M_mrna_fwd.fq.gz
+Approx 90% complete for L1A78-8F_mrna_rev.fq.gz
+Approx 5% complete for L1B810-2M_mrna_rev.fq.gz
+Approx 65% complete for L1B67-6M_mrna_fwd.fq.gz
+Started analysis of L2A34-5M_merge_mrna_rev.fq.gz
+Approx 10% complete for L1B810-1F_mrna_rev.fq.gz
+Approx 5% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 90% complete for L1A78-8F_mrna_fwd.fq.gz
+Approx 15% complete for L1B810-1F_mrna_fwd.fq.gz
+Started analysis of L2A56-1F_mrna_fwd.fq.gz
+Approx 65% complete for L1B67-6M_mrna_rev.fq.gz
+Approx 10% complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 95% complete for L1A910-3F_mrna_rev.fq.gz
+Approx 95% complete for L1A910-3F_mrna_fwd.fq.gz
+Analysis complete for L1A910-6M_mrna_rev.fq.gz
+Approx 5% complete for L2A12-8M_mrna_fwd.fq.gz
+Approx 5% complete for L2A34-1F_mrna_fwd.fq.gz
+Approx 5% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 10% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 5% complete for L2A12-8M_mrna_rev.fq.gz
+Started analysis of L2A56-1F_mrna_rev.fq.gz
+Approx 20% complete for L1B810-1F_mrna_fwd.fq.gz
+Approx 15% complete for L1B810-1F_mrna_rev.fq.gz
+Approx 5% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 5% complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 5% complete for L2A34-1F_mrna_rev.fq.gz
+Approx 95% complete for L1A78-8F_mrna_rev.fq.gz
+Approx 15% complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 95% complete for L1A78-8F_mrna_fwd.fq.gz
+Approx 70% complete for L1B67-6M_mrna_fwd.fq.gz
+Analysis complete for L1A910-3F_mrna_rev.fq.gz
+Approx 70% complete for L1B67-6M_mrna_rev.fq.gz
+Approx 10% complete for L1B810-2M_mrna_rev.fq.gz
+Approx 10% complete for L1B810-2M_mrna_fwd.fq.gz
+Analysis complete for L1A910-3F_mrna_fwd.fq.gz
+Started analysis of L2A56-8M_mrna_fwd.fq.gz
+Approx 10% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 15% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 25% complete for L1B810-1F_mrna_fwd.fq.gz
+Approx 5% complete for L2A56-1F_mrna_rev.fq.gz
+Approx 10% complete for L2A34-1F_mrna_fwd.fq.gz
+Started analysis of L2A56-8M_mrna_rev.fq.gz
+Approx 20% complete for L1B810-1F_mrna_rev.fq.gz
+Approx 10% complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 20% complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 10% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 10% complete for L2A12-8M_mrna_fwd.fq.gz
+Analysis complete for L1A78-8F_mrna_rev.fq.gz
+Approx 10% complete for L2A12-8M_mrna_rev.fq.gz
+Approx 10% complete for L2A34-1F_mrna_rev.fq.gz
+Analysis complete for L1A78-8F_mrna_fwd.fq.gz
+Approx 75% complete for L1B67-6M_mrna_fwd.fq.gz
+Started analysis of L2B109-5M_mrna_fwd.fq.gz
+Started analysis of L2B109-5M_mrna_rev.fq.gz
+Approx 75% complete for L1B67-6M_mrna_rev.fq.gz
+Approx 15% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 5% complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 20% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 10% complete for L2A56-1F_mrna_rev.fq.gz
+Approx 30% complete for L1B810-1F_mrna_fwd.fq.gz
+Approx 15% complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 25% complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 25% complete for L1B810-1F_mrna_rev.fq.gz
+Approx 5% complete for L2A56-8M_mrna_rev.fq.gz
+Approx 15% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 15% complete for L2A34-1F_mrna_fwd.fq.gz
+Approx 15% complete for L1B810-2M_mrna_rev.fq.gz
+Approx 15% complete for L1B810-2M_mrna_fwd.fq.gz
+Approx 5% complete for L2B109-5M_mrna_fwd.fq.gz
+Approx 5% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 15% complete for L2A34-1F_mrna_rev.fq.gz
+Approx 15% complete for L2A12-8M_mrna_fwd.fq.gz
+Approx 25% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 15% complete for L2A56-1F_mrna_rev.fq.gz
+Approx 35% complete for L1B810-1F_mrna_fwd.fq.gz
+Approx 20% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 15% complete for L2A12-8M_mrna_rev.fq.gz
+Approx 80% complete for L1B67-6M_mrna_fwd.fq.gz
+Approx 20% complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 30% complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 10% complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 30% complete for L1B810-1F_mrna_rev.fq.gz
+Approx 20% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 80% complete for L1B67-6M_mrna_rev.fq.gz
+Approx 10% complete for L2A56-8M_mrna_rev.fq.gz
+Approx 10% complete for L2B109-5M_mrna_fwd.fq.gz
+Approx 20% complete for L2A34-1F_mrna_fwd.fq.gz
+Approx 10% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 30% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 20% complete for L2A56-1F_mrna_rev.fq.gz
+Approx 25% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 25% complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 40% complete for L1B810-1F_mrna_fwd.fq.gz
+Approx 35% complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 20% complete for L2A34-1F_mrna_rev.fq.gz
+Approx 20% complete for L1B810-2M_mrna_fwd.fq.gz
+Approx 20% complete for L1B810-2M_mrna_rev.fq.gz
+Approx 35% complete for L1B810-1F_mrna_rev.fq.gz
+Approx 15% complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 15% complete for L2B109-5M_mrna_fwd.fq.gz
+Approx 25% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 20% complete for L2A12-8M_mrna_fwd.fq.gz
+Approx 85% complete for L1B67-6M_mrna_fwd.fq.gz
+Approx 15% complete for L2A56-8M_mrna_rev.fq.gz
+Approx 15% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 20% complete for L2A12-8M_mrna_rev.fq.gz
+Approx 85% complete for L1B67-6M_mrna_rev.fq.gz
+Approx 25% complete for L2A34-1F_mrna_fwd.fq.gz
+Approx 35% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 25% complete for L2A56-1F_mrna_rev.fq.gz
+Approx 30% complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 40% complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 30% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 45% complete for L1B810-1F_mrna_fwd.fq.gz
+Approx 20% complete for L2B109-5M_mrna_fwd.fq.gz
+Approx 40% complete for L1B810-1F_mrna_rev.fq.gz
+Approx 20% complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 20% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 30% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 25% complete for L2A34-1F_mrna_rev.fq.gz
+Approx 20% complete for L2A56-8M_mrna_rev.fq.gz
+Approx 40% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 90% complete for L1B67-6M_mrna_fwd.fq.gz
+Approx 30% complete for L2A56-1F_mrna_rev.fq.gz
+Approx 35% complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 25% complete for L2A12-8M_mrna_fwd.fq.gz
+Approx 45% complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 25% complete for L2A12-8M_mrna_rev.fq.gz
+Approx 25% complete for L1B810-2M_mrna_fwd.fq.gz
+Approx 25% complete for L1B810-2M_mrna_rev.fq.gz
+Approx 35% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 50% complete for L1B810-1F_mrna_fwd.fq.gz
+Approx 25% complete for L2B109-5M_mrna_fwd.fq.gz
+Approx 30% complete for L2A34-1F_mrna_fwd.fq.gz
+Approx 90% complete for L1B67-6M_mrna_rev.fq.gz
+Approx 25% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 45% complete for L1B810-1F_mrna_rev.fq.gz
+Approx 25% complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 35% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 25% complete for L2A56-8M_mrna_rev.fq.gz
+Approx 30% complete for L2A34-1F_mrna_rev.fq.gz
+Approx 35% complete for L2A56-1F_mrna_rev.fq.gz
+Approx 45% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 40% complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 50% complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 30% complete for L2B109-5M_mrna_fwd.fq.gz
+Approx 55% complete for L1B810-1F_mrna_fwd.fq.gz
+Approx 40% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 30% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 95% complete for L1B67-6M_mrna_fwd.fq.gz
+Approx 50% complete for L1B810-1F_mrna_rev.fq.gz
+Approx 35% complete for L2A34-1F_mrna_fwd.fq.gz
+Approx 30% complete for L2A12-8M_mrna_fwd.fq.gz
+Approx 95% complete for L1B67-6M_mrna_rev.fq.gz
+Approx 30% complete for L2A12-8M_mrna_rev.fq.gz
+Approx 40% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 30% complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 40% complete for L2A56-1F_mrna_rev.fq.gz
+Approx 35% complete for L2B109-5M_mrna_fwd.fq.gz
+Approx 50% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 45% complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 30% complete for L1B810-2M_mrna_rev.fq.gz
+Approx 30% complete for L1B810-2M_mrna_fwd.fq.gz
+Approx 55% complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 30% complete for L2A56-8M_mrna_rev.fq.gz
+Approx 35% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 45% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 60% complete for L1B810-1F_mrna_fwd.fq.gz
+Approx 35% complete for L2A34-1F_mrna_rev.fq.gz
+Approx 55% complete for L1B810-1F_mrna_rev.fq.gz
+Approx 40% complete for L2B109-5M_mrna_fwd.fq.gz
+Approx 45% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Analysis complete for L1B67-6M_mrna_fwd.fq.gz
+Approx 40% complete for L2A34-1F_mrna_fwd.fq.gz
+Approx 55% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 45% complete for L2A56-1F_mrna_rev.fq.gz
+Approx 35% complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 50% complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 40% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 60% complete for L2A12-4F_mrna_fwd.fq.gz
+Analysis complete for L1B67-6M_mrna_rev.fq.gz
+Started analysis of L2B109-6F_mrna_fwd.fq.gz
+Approx 35% complete for L2A12-8M_mrna_fwd.fq.gz
+Approx 35% complete for L2A56-8M_mrna_rev.fq.gz
+Approx 50% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 65% complete for L1B810-1F_mrna_fwd.fq.gz
+Approx 35% complete for L2A12-8M_mrna_rev.fq.gz
+Started analysis of L2B109-6F_mrna_rev.fq.gz
+Approx 60% complete for L1B810-1F_mrna_rev.fq.gz
+Approx 45% complete for L2B109-5M_mrna_fwd.fq.gz
+Approx 40% complete for L2A34-1F_mrna_rev.fq.gz
+Approx 35% complete for L1B810-2M_mrna_fwd.fq.gz
+Approx 35% complete for L1B810-2M_mrna_rev.fq.gz
+Approx 65% complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 50% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 45% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 50% complete for L2A56-1F_mrna_rev.fq.gz
+Approx 60% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 55% complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 40% complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 45% complete for L2A34-1F_mrna_fwd.fq.gz
+Approx 70% complete for L1B810-1F_mrna_fwd.fq.gz
+Approx 55% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 50% complete for L2B109-5M_mrna_fwd.fq.gz
+Approx 40% complete for L2A56-8M_mrna_rev.fq.gz
+Approx 65% complete for L1B810-1F_mrna_rev.fq.gz
+Approx 50% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 70% complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 40% complete for L2A12-8M_mrna_fwd.fq.gz
+Approx 55% complete for L2A56-1F_mrna_rev.fq.gz
+Approx 60% complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 40% complete for L2A12-8M_mrna_rev.fq.gz
+Approx 55% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 65% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 45% complete for L2A34-1F_mrna_rev.fq.gz
+Approx 5% complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 75% complete for L1B810-1F_mrna_fwd.fq.gz
+Approx 45% complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 55% complete for L2B109-5M_mrna_fwd.fq.gz
+Approx 60% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 5% complete for L2B109-6F_mrna_rev.fq.gz
+Approx 50% complete for L2A34-1F_mrna_fwd.fq.gz
+Approx 40% complete for L1B810-2M_mrna_fwd.fq.gz
+Approx 55% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 45% complete for L2A56-8M_mrna_rev.fq.gz
+Approx 70% complete for L1B810-1F_mrna_rev.fq.gz
+Approx 40% complete for L1B810-2M_mrna_rev.fq.gz
+Approx 75% complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 60% complete for L2A56-1F_mrna_rev.fq.gz
+Approx 65% complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 70% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 60% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 60% complete for L2B109-5M_mrna_fwd.fq.gz
+Approx 80% complete for L1B810-1F_mrna_fwd.fq.gz
+Approx 45% complete for L2A12-8M_mrna_fwd.fq.gz
+Approx 50% complete for L2A34-1F_mrna_rev.fq.gz
+Approx 60% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 50% complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 65% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 45% complete for L2A12-8M_mrna_rev.fq.gz
+Approx 75% complete for L1B810-1F_mrna_rev.fq.gz
+Approx 80% complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 65% complete for L2A56-1F_mrna_rev.fq.gz
+Approx 50% complete for L2A56-8M_mrna_rev.fq.gz
+Approx 70% complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 55% complete for L2A34-1F_mrna_fwd.fq.gz
+Approx 75% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 65% complete for L2B109-5M_mrna_fwd.fq.gz
+Approx 10% complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 65% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 85% complete for L1B810-1F_mrna_fwd.fq.gz
+Approx 65% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 45% complete for L1B810-2M_mrna_fwd.fq.gz
+Approx 10% complete for L2B109-6F_mrna_rev.fq.gz
+Approx 70% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 45% complete for L1B810-2M_mrna_rev.fq.gz
+Approx 55% complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 80% complete for L1B810-1F_mrna_rev.fq.gz
+Approx 70% complete for L2B109-5M_mrna_fwd.fq.gz
+Approx 70% complete for L2A56-1F_mrna_rev.fq.gz
+Approx 85% complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 55% complete for L2A34-1F_mrna_rev.fq.gz
+Approx 80% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 75% complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 50% complete for L2A12-8M_mrna_fwd.fq.gz
+Approx 55% complete for L2A56-8M_mrna_rev.fq.gz
+Approx 70% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 50% complete for L2A12-8M_mrna_rev.fq.gz
+Approx 70% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 60% complete for L2A34-1F_mrna_fwd.fq.gz
+Approx 90% complete for L1B810-1F_mrna_fwd.fq.gz
+Approx 75% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 75% complete for L2B109-5M_mrna_fwd.fq.gz
+Approx 85% complete for L1B810-1F_mrna_rev.fq.gz
+Approx 60% complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 90% complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 75% complete for L2A56-1F_mrna_rev.fq.gz
+Approx 85% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 15% complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 80% complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 75% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 60% complete for L2A34-1F_mrna_rev.fq.gz
+Approx 75% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 60% complete for L2A56-8M_mrna_rev.fq.gz
+Approx 50% complete for L1B810-2M_mrna_fwd.fq.gz
+Approx 15% complete for L2B109-6F_mrna_rev.fq.gz
+Approx 95% complete for L1B810-1F_mrna_fwd.fq.gz
+Approx 50% complete for L1B810-2M_mrna_rev.fq.gz
+Approx 80% complete for L2B109-5M_mrna_fwd.fq.gz
+Approx 55% complete for L2A12-8M_mrna_fwd.fq.gz
+Approx 65% complete for L2A34-1F_mrna_fwd.fq.gz
+Approx 80% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 55% complete for L2A12-8M_mrna_rev.fq.gz
+Approx 90% complete for L1B810-1F_mrna_rev.fq.gz
+Approx 95% complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 80% complete for L2A56-1F_mrna_rev.fq.gz
+Approx 90% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 85% complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 80% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 65% complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 80% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 85% complete for L2B109-5M_mrna_fwd.fq.gz
+Approx 65% complete for L2A56-8M_mrna_rev.fq.gz
+Analysis complete for L1B810-1F_mrna_fwd.fq.gz
+Approx 65% complete for L2A34-1F_mrna_rev.fq.gz
+Approx 85% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 20% complete for L2B109-6F_mrna_fwd.fq.gz
+Analysis complete for L2A12-4F_mrna_fwd.fq.gz
+Approx 95% complete for L1B810-1F_mrna_rev.fq.gz
+Approx 85% complete for L2A56-1F_mrna_rev.fq.gz
+Approx 85% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 95% complete for L2A12-4F_mrna_rev.fq.gz
+Approx 70% complete for L2A34-1F_mrna_fwd.fq.gz
+Approx 90% complete for L2A56-1F_mrna_fwd.fq.gz
+Started analysis of L2B12-2M_mrna_fwd.fq.gz
+Approx 60% complete for L2A12-8M_mrna_fwd.fq.gz
+Approx 55% complete for L1B810-2M_mrna_fwd.fq.gz
+Approx 70% complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 90% complete for L2B109-5M_mrna_fwd.fq.gz
+Started analysis of L2B12-2M_mrna_rev.fq.gz
+Approx 55% complete for L1B810-2M_mrna_rev.fq.gz
+Approx 60% complete for L2A12-8M_mrna_rev.fq.gz
+Approx 20% complete for L2B109-6F_mrna_rev.fq.gz
+Approx 85% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 70% complete for L2A56-8M_mrna_rev.fq.gz
+Approx 90% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 90% complete for L2A56-1F_mrna_rev.fq.gz
+Analysis complete for L1B810-1F_mrna_rev.fq.gz
+Approx 90% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Analysis complete for L2A12-4F_mrna_rev.fq.gz
+Approx 95% complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 70% complete for L2A34-1F_mrna_rev.fq.gz
+Approx 95% complete for L2B109-5M_mrna_fwd.fq.gz
+Started analysis of L2B12-4F_mrna_fwd.fq.gz
+Started analysis of L2B12-4F_mrna_rev.fq.gz
+Approx 75% complete for L2A34-1F_mrna_fwd.fq.gz
+Approx 65% complete for L2A12-8M_mrna_fwd.fq.gz
+Approx 75% complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 90% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 95% complete for L2B109-5M_mrna_rev.fq.gz
+Approx 5% complete for L2B12-2M_mrna_fwd.fq.gz
+Approx 25% complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 95% complete for L2A56-1F_mrna_rev.fq.gz
+Approx 75% complete for L2A56-8M_mrna_rev.fq.gz
+Analysis complete for L2B109-5M_mrna_fwd.fq.gz
+Approx 65% complete for L2A12-8M_mrna_rev.fq.gz
+Approx 60% complete for L1B810-2M_mrna_fwd.fq.gz
+Approx 95% complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Analysis complete for L2A56-1F_mrna_fwd.fq.gz
+Approx 5% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 60% complete for L1B810-2M_mrna_rev.fq.gz
+Started analysis of L2B34-4M_merge_mrna_fwd.fq.gz
+Approx 25% complete for L2B109-6F_mrna_rev.fq.gz
+Analysis complete for L2B109-5M_mrna_rev.fq.gz
+Approx 75% complete for L2A34-1F_mrna_rev.fq.gz
+Started analysis of L2B34-4M_merge_mrna_rev.fq.gz
+Approx 95% complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 5% complete for L2B12-4F_mrna_fwd.fq.gz
+Started analysis of L2B34-5F_mrna_fwd.fq.gz
+Approx 80% complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 5% complete for L2B12-4F_mrna_rev.fq.gz
+Approx 80% complete for L2A34-1F_mrna_fwd.fq.gz
+Analysis complete for L2A56-1F_mrna_rev.fq.gz
+Approx 70% complete for L2A12-8M_mrna_fwd.fq.gz
+Analysis complete for L2A34-5M_merge_mrna_fwd.fq.gz
+Approx 80% complete for L2A56-8M_mrna_rev.fq.gz
+Approx 5% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Started analysis of L2B34-5F_mrna_rev.fq.gz
+Approx 10% complete for L2B12-2M_mrna_fwd.fq.gz
+Started analysis of L3A23-5M_merge_mrna_fwd.fq.gz
+Approx 70% complete for L2A12-8M_mrna_rev.fq.gz
+Approx 30% complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 5% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 5% complete for L2B34-5F_mrna_fwd.fq.gz
+Analysis complete for L2A34-5M_merge_mrna_rev.fq.gz
+Approx 80% complete for L2A34-1F_mrna_rev.fq.gz
+Approx 65% complete for L1B810-2M_mrna_fwd.fq.gz
+Approx 10% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 10% complete for L2B12-4F_mrna_fwd.fq.gz
+Approx 85% complete for L2A56-8M_mrna_fwd.fq.gz
+Started analysis of L3A23-5M_merge_mrna_rev.fq.gz
+Approx 10% complete for L2B12-4F_mrna_rev.fq.gz
+Approx 65% complete for L1B810-2M_mrna_rev.fq.gz
+Approx 85% complete for L2A34-1F_mrna_fwd.fq.gz
+Approx 5% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 10% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Approx 30% complete for L2B109-6F_mrna_rev.fq.gz
+Approx 85% complete for L2A56-8M_mrna_rev.fq.gz
+Approx 10% complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 10% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 5% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Approx 75% complete for L2A12-8M_mrna_fwd.fq.gz
+Approx 10% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 75% complete for L2A12-8M_mrna_rev.fq.gz
+Approx 15% complete for L2B12-2M_mrna_fwd.fq.gz
+Approx 5% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Approx 90% complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 15% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Approx 85% complete for L2A34-1F_mrna_rev.fq.gz
+Approx 15% complete for L2B12-4F_mrna_fwd.fq.gz
+Approx 15% complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 15% complete for L2B12-4F_mrna_rev.fq.gz
+Approx 35% complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 15% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 90% complete for L2A34-1F_mrna_fwd.fq.gz
+Approx 90% complete for L2A56-8M_mrna_rev.fq.gz
+Approx 15% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 70% complete for L1B810-2M_mrna_fwd.fq.gz
+Approx 10% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Approx 15% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 70% complete for L1B810-2M_mrna_rev.fq.gz
+Approx 20% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Approx 80% complete for L2A12-8M_mrna_fwd.fq.gz
+Approx 20% complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 10% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Approx 35% complete for L2B109-6F_mrna_rev.fq.gz
+Approx 95% complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 20% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 20% complete for L2B12-4F_mrna_fwd.fq.gz
+Approx 80% complete for L2A12-8M_mrna_rev.fq.gz
+Approx 20% complete for L2B12-4F_mrna_rev.fq.gz
+Approx 90% complete for L2A34-1F_mrna_rev.fq.gz
+Approx 20% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 95% complete for L2A56-8M_mrna_rev.fq.gz
+Approx 15% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Approx 95% complete for L2A34-1F_mrna_fwd.fq.gz
+Approx 20% complete for L2B12-2M_mrna_fwd.fq.gz
+Approx 25% complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 25% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Approx 40% complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 20% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 25% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 15% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Approx 25% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 75% complete for L1B810-2M_mrna_fwd.fq.gz
+Analysis complete for L2A56-8M_mrna_fwd.fq.gz
+Approx 85% complete for L2A12-8M_mrna_fwd.fq.gz
+Approx 25% complete for L2B12-4F_mrna_fwd.fq.gz
+Approx 75% complete for L1B810-2M_mrna_rev.fq.gz
+Approx 25% complete for L2B12-4F_mrna_rev.fq.gz
+Analysis complete for L2A56-8M_mrna_rev.fq.gz
+Approx 30% complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 20% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Started analysis of L3A23-8F_mrna_fwd.fq.gz
+Approx 30% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Approx 95% complete for L2A34-1F_mrna_rev.fq.gz
+Approx 85% complete for L2A12-8M_mrna_rev.fq.gz
+Analysis complete for L2A34-1F_mrna_fwd.fq.gz
+Started analysis of L3A23-8F_mrna_rev.fq.gz
+Approx 40% complete for L2B109-6F_mrna_rev.fq.gz
+Approx 30% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 30% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 20% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Started analysis of L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 25% complete for L2B12-2M_mrna_fwd.fq.gz
+Approx 35% complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 5% complete for L3A23-8F_mrna_fwd.fq.gz
+Approx 35% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Approx 30% complete for L2B12-4F_mrna_fwd.fq.gz
+Approx 25% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Approx 5% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 30% complete for L2B12-4F_mrna_rev.fq.gz
+Approx 25% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 45% complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 35% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 90% complete for L2A12-8M_mrna_fwd.fq.gz
+Approx 35% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 80% complete for L1B810-2M_mrna_fwd.fq.gz
+Analysis complete for L2A34-1F_mrna_rev.fq.gz
+Approx 10% complete for L3A23-8F_mrna_fwd.fq.gz
+Approx 40% complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 5% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 80% complete for L1B810-2M_mrna_rev.fq.gz
+Approx 25% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Approx 90% complete for L2A12-8M_mrna_rev.fq.gz
+Started analysis of L3A56-2F_merge_mrna_rev.fq.gz
+Approx 10% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 40% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Approx 40% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 30% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Approx 45% complete for L2B109-6F_mrna_rev.fq.gz
+Approx 35% complete for L2B12-4F_mrna_fwd.fq.gz
+Approx 40% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 15% complete for L3A23-8F_mrna_fwd.fq.gz
+Approx 30% complete for L2B12-2M_mrna_fwd.fq.gz
+Approx 35% complete for L2B12-4F_mrna_rev.fq.gz
+Approx 45% complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 15% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 10% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 95% complete for L2A12-8M_mrna_fwd.fq.gz
+Approx 30% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Approx 45% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Approx 5% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Approx 30% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 45% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 50% complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 20% complete for L3A23-8F_mrna_fwd.fq.gz
+Approx 35% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Approx 85% complete for L1B810-2M_mrna_fwd.fq.gz
+Approx 45% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 95% complete for L2A12-8M_mrna_rev.fq.gz
+Approx 50% complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 20% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 85% complete for L1B810-2M_mrna_rev.fq.gz
+Approx 40% complete for L2B12-4F_mrna_fwd.fq.gz
+Approx 15% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 40% complete for L2B12-4F_mrna_rev.fq.gz
+Approx 50% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Approx 50% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 25% complete for L3A23-8F_mrna_fwd.fq.gz
+Approx 35% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Approx 10% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Approx 50% complete for L2B109-6F_mrna_rev.fq.gz
+Approx 35% complete for L2B12-2M_mrna_fwd.fq.gz
+Approx 55% complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 50% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 25% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 40% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Analysis complete for L2A12-8M_mrna_fwd.fq.gz
+Approx 30% complete for L3A23-8F_mrna_fwd.fq.gz
+Approx 55% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 35% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 20% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 55% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Started analysis of L3A56-3M_mrna_fwd.fq.gz
+Approx 45% complete for L2B12-4F_mrna_fwd.fq.gz
+Analysis complete for L2A12-8M_mrna_rev.fq.gz
+Approx 55% complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 15% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Approx 45% complete for L2B12-4F_mrna_rev.fq.gz
+Approx 40% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Approx 30% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 60% complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 90% complete for L1B810-2M_mrna_fwd.fq.gz
+Approx 55% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 35% complete for L3A23-8F_mrna_fwd.fq.gz
+Approx 45% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Started analysis of L3A56-3M_mrna_rev.fq.gz
+Approx 90% complete for L1B810-2M_mrna_rev.fq.gz
+Approx 60% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 60% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Approx 25% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 35% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 55% complete for L2B109-6F_mrna_rev.fq.gz
+Approx 20% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Approx 40% complete for L2B12-2M_mrna_fwd.fq.gz
+Approx 65% complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 5% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 60% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 40% complete for L3A23-8F_mrna_fwd.fq.gz
+Approx 45% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Approx 50% complete for L2B12-4F_mrna_fwd.fq.gz
+Approx 50% complete for L2B12-4F_mrna_rev.fq.gz
+Approx 5% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 65% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 50% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Approx 40% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 65% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Approx 40% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 30% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 70% complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 60% complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 45% complete for L3A23-8F_mrna_fwd.fq.gz
+Approx 25% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Approx 95% complete for L1B810-2M_mrna_fwd.fq.gz
+Approx 65% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 10% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 50% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Approx 95% complete for L1B810-2M_mrna_rev.fq.gz
+Approx 70% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 45% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 55% complete for L2B12-4F_mrna_fwd.fq.gz
+Approx 10% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 55% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Approx 70% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Approx 55% complete for L2B12-4F_mrna_rev.fq.gz
+Approx 50% complete for L3A23-8F_mrna_fwd.fq.gz
+Approx 75% complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 45% complete for L2B12-2M_mrna_fwd.fq.gz
+Approx 60% complete for L2B109-6F_mrna_rev.fq.gz
+Approx 35% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 30% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Approx 70% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 75% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 50% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 45% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 15% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 55% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Approx 55% complete for L3A23-8F_mrna_fwd.fq.gz
+Approx 75% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Approx 80% complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 65% complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 60% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Approx 15% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 40% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Analysis complete for L1B810-2M_mrna_fwd.fq.gz
+Approx 60% complete for L2B12-4F_mrna_fwd.fq.gz
+Approx 60% complete for L2B12-4F_mrna_rev.fq.gz
+Approx 75% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 55% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 80% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 35% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Started analysis of L3A78-1M_mrna_fwd.fq.gz
+Analysis complete for L1B810-2M_mrna_rev.fq.gz
+Approx 60% complete for L3A23-8F_mrna_fwd.fq.gz
+Approx 20% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 85% complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 80% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Approx 50% complete for L2B12-2M_mrna_fwd.fq.gz
+Approx 60% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Started analysis of L3A78-1M_mrna_rev.fq.gz
+Approx 65% complete for L2B109-6F_mrna_rev.fq.gz
+Approx 65% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Approx 45% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 60% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 85% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 80% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 20% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 50% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 40% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Approx 65% complete for L3A23-8F_mrna_fwd.fq.gz
+Approx 5% complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 65% complete for L2B12-4F_mrna_fwd.fq.gz
+Approx 65% complete for L2B12-4F_mrna_rev.fq.gz
+Approx 90% complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 85% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Approx 70% complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 5% complete for L3A78-1M_mrna_rev.fq.gz
+Approx 25% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 65% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 65% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Approx 90% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 50% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 70% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Approx 70% complete for L3A23-8F_mrna_fwd.fq.gz
+Approx 85% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 45% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Approx 10% complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 95% complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 25% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 55% complete for L2B12-2M_mrna_fwd.fq.gz
+Approx 70% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 90% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Approx 70% complete for L2B12-4F_mrna_rev.fq.gz
+Approx 70% complete for L2B12-4F_mrna_fwd.fq.gz
+Approx 10% complete for L3A78-1M_mrna_rev.fq.gz
+Approx 95% complete for L2B34-5F_mrna_rev.fq.gz
+Approx 70% complete for L2B109-6F_mrna_rev.fq.gz
+Approx 30% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 70% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Approx 75% complete for L3A23-8F_mrna_fwd.fq.gz
+Approx 55% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 55% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 90% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 75% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Analysis complete for L2B34-5F_mrna_fwd.fq.gz
+Approx 75% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 50% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Approx 15% complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 95% complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Analysis complete for L2B34-5F_mrna_rev.fq.gz
+Started analysis of L3A78-3F_mrna_fwd.fq.gz
+Approx 75% complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 30% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 15% complete for L3A78-1M_mrna_rev.fq.gz
+Approx 80% complete for L3A23-8F_mrna_fwd.fq.gz
+Started analysis of L3A78-3F_mrna_rev.fq.gz
+Approx 75% complete for L2B12-4F_mrna_rev.fq.gz
+Approx 35% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 75% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Approx 75% complete for L2B12-4F_mrna_fwd.fq.gz
+Approx 80% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 95% complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 60% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 60% complete for L2B12-2M_mrna_fwd.fq.gz
+Approx 20% complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 80% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Approx 55% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Approx 85% complete for L3A23-8F_mrna_fwd.fq.gz
+Analysis complete for L2B34-4M_merge_mrna_fwd.fq.gz
+Approx 20% complete for L3A78-1M_mrna_rev.fq.gz
+Approx 60% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 85% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 75% complete for L2B109-6F_mrna_rev.fq.gz
+Approx 35% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 5% complete for L3A78-3F_mrna_fwd.fq.gz
+Started analysis of L3B24-5F_merge_mrna_fwd.fq.gz
+Analysis complete for L2B34-4M_merge_mrna_rev.fq.gz
+Approx 80% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Approx 40% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 65% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 25% complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 80% complete for L2B12-4F_mrna_fwd.fq.gz
+Approx 5% complete for L3A78-3F_mrna_rev.fq.gz
+Approx 80% complete for L2B12-4F_mrna_rev.fq.gz
+Approx 90% complete for L3A23-8F_mrna_fwd.fq.gz
+Approx 60% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Started analysis of L3B24-5F_merge_mrna_rev.fq.gz
+Approx 85% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Approx 80% complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 90% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 25% complete for L3A78-1M_mrna_rev.fq.gz
+Approx 65% complete for L2B12-2M_mrna_fwd.fq.gz
+Approx 10% complete for L3A78-3F_mrna_fwd.fq.gz
+Approx 5% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Approx 40% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 95% complete for L3A23-8F_mrna_fwd.fq.gz
+Approx 70% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 85% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Approx 30% complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 45% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 95% complete for L3A23-8F_mrna_rev.fq.gz
+Approx 65% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Approx 65% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 85% complete for L2B12-4F_mrna_fwd.fq.gz
+Approx 10% complete for L3A78-3F_mrna_rev.fq.gz
+Approx 90% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Approx 85% complete for L2B12-4F_mrna_rev.fq.gz
+Approx 5% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 30% complete for L3A78-1M_mrna_rev.fq.gz
+Approx 80% complete for L2B109-6F_mrna_rev.fq.gz
+Analysis complete for L3A23-8F_mrna_fwd.fq.gz
+Approx 35% complete for L3A78-1M_mrna_fwd.fq.gz
+Analysis complete for L3A23-8F_mrna_rev.fq.gz
+Approx 75% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 10% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Started analysis of L3B24-7M_mrna_fwd.fq.gz
+Approx 90% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Approx 45% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 85% complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 15% complete for L3A78-3F_mrna_fwd.fq.gz
+Approx 50% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 70% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Approx 35% complete for L3A78-1M_mrna_rev.fq.gz
+Approx 70% complete for L2B12-2M_mrna_fwd.fq.gz
+Started analysis of L3B24-7M_mrna_rev.fq.gz
+Approx 95% complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Approx 10% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 90% complete for L2B12-4F_mrna_fwd.fq.gz
+Approx 15% complete for L3A78-3F_mrna_rev.fq.gz
+Approx 90% complete for L2B12-4F_mrna_rev.fq.gz
+Approx 40% complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 5% complete for L3B24-7M_mrna_fwd.fq.gz
+Approx 80% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 70% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 15% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Approx 5% complete for L3B24-7M_mrna_rev.fq.gz
+Approx 95% complete for L3A23-5M_merge_mrna_rev.fq.gz
+Approx 40% complete for L3A78-1M_mrna_rev.fq.gz
+Approx 75% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Approx 50% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 55% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 20% complete for L3A78-3F_mrna_fwd.fq.gz
+Approx 85% complete for L2B109-6F_mrna_rev.fq.gz
+Analysis complete for L3A23-5M_merge_mrna_fwd.fq.gz
+Approx 15% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 10% complete for L3B24-7M_mrna_fwd.fq.gz
+Approx 45% complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 95% complete for L2B12-4F_mrna_fwd.fq.gz
+Approx 20% complete for L3A78-3F_mrna_rev.fq.gz
+Started analysis of L3B78-1F_mrna_fwd.fq.gz
+Approx 85% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 75% complete for L2B12-2M_mrna_fwd.fq.gz
+Approx 95% complete for L2B12-4F_mrna_rev.fq.gz
+Approx 10% complete for L3B24-7M_mrna_rev.fq.gz
+Approx 90% complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 45% complete for L3A78-1M_mrna_rev.fq.gz
+Approx 80% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Approx 20% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Analysis complete for L3A23-5M_merge_mrna_rev.fq.gz
+Approx 55% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 60% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 25% complete for L3A78-3F_mrna_fwd.fq.gz
+Approx 15% complete for L3B24-7M_mrna_fwd.fq.gz
+Started analysis of L3B78-1F_mrna_rev.fq.gz
+Approx 75% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 50% complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 20% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 15% complete for L3B24-7M_mrna_rev.fq.gz
+Approx 90% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 50% complete for L3A78-1M_mrna_rev.fq.gz
+Analysis complete for L2B12-4F_mrna_fwd.fq.gz
+Approx 25% complete for L3A78-3F_mrna_rev.fq.gz
+Approx 85% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Analysis complete for L2B12-4F_mrna_rev.fq.gz
+Approx 25% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Started analysis of L3B78-2M_mrna_fwd.fq.gz
+Approx 90% complete for L2B109-6F_mrna_rev.fq.gz
+Approx 20% complete for L3B24-7M_mrna_fwd.fq.gz
+Approx 5% complete for L3B78-1F_mrna_fwd.fq.gz
+Approx 60% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 65% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 80% complete for L2B12-2M_mrna_fwd.fq.gz
+Started analysis of L3B78-2M_mrna_rev.fq.gz
+Approx 55% complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 20% complete for L3B24-7M_mrna_rev.fq.gz
+Approx 30% complete for L3A78-3F_mrna_fwd.fq.gz
+Approx 55% complete for L3A78-1M_mrna_rev.fq.gz
+Approx 95% complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 95% complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 25% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 90% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Approx 5% complete for L3B78-1F_mrna_rev.fq.gz
+Approx 25% complete for L3B24-7M_mrna_fwd.fq.gz
+Approx 80% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 30% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Approx 30% complete for L3A78-3F_mrna_rev.fq.gz
+Approx 25% complete for L3B24-7M_mrna_rev.fq.gz
+Approx 5% complete for L3B78-2M_mrna_fwd.fq.gz
+Approx 60% complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 70% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 65% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 60% complete for L3A78-1M_mrna_rev.fq.gz
+Approx 5% complete for L3B78-2M_mrna_rev.fq.gz
+Analysis complete for L3A56-2F_merge_mrna_fwd.fq.gz
+Approx 10% complete for L3B78-1F_mrna_fwd.fq.gz
+Approx 35% complete for L3A78-3F_mrna_fwd.fq.gz
+Approx 30% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 30% complete for L3B24-7M_mrna_fwd.fq.gz
+Approx 95% complete for L3A56-2F_merge_mrna_rev.fq.gz
+Approx 85% complete for L2B12-2M_mrna_fwd.fq.gz
+Approx 95% complete for L2B109-6F_mrna_rev.fq.gz
+Started analysis of L3B910-6F_mrna_fwd.fq.gz
+Approx 30% complete for L3B24-7M_mrna_rev.fq.gz
+Approx 35% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Approx 65% complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 35% complete for L3A78-3F_mrna_rev.fq.gz
+Approx 65% complete for L3A78-1M_mrna_rev.fq.gz
+Approx 10% complete for L3B78-1F_mrna_rev.fq.gz
+Approx 75% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 70% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 10% complete for L3B78-2M_mrna_fwd.fq.gz
+Analysis complete for L2B109-6F_mrna_fwd.fq.gz
+Approx 35% complete for L3B24-7M_mrna_fwd.fq.gz
+Approx 10% complete for L3B78-2M_mrna_rev.fq.gz
+Approx 85% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 35% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Analysis complete for L3A56-2F_merge_mrna_rev.fq.gz
+Approx 35% complete for L3B24-7M_mrna_rev.fq.gz
+Approx 40% complete for L3A78-3F_mrna_fwd.fq.gz
+Started analysis of L3B910-6F_mrna_rev.fq.gz
+Approx 40% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Approx 70% complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 15% complete for L3B78-1F_mrna_fwd.fq.gz
+Approx 5% complete for L3B910-6F_mrna_fwd.fq.gz
+Started analysis of L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 70% complete for L3A78-1M_mrna_rev.fq.gz
+Approx 40% complete for L3B24-7M_mrna_fwd.fq.gz
+Approx 90% complete for L2B12-2M_mrna_fwd.fq.gz
+Approx 40% complete for L3A78-3F_mrna_rev.fq.gz
+Approx 80% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 75% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 15% complete for L3B78-2M_mrna_fwd.fq.gz
+Approx 40% complete for L3B24-7M_mrna_rev.fq.gz
+Analysis complete for L2B109-6F_mrna_rev.fq.gz
+Approx 15% complete for L3B78-2M_mrna_rev.fq.gz
+Approx 40% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 15% complete for L3B78-1F_mrna_rev.fq.gz
+Approx 75% complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 5% complete for L3B910-6F_mrna_rev.fq.gz
+Approx 45% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Approx 75% complete for L3A78-1M_mrna_rev.fq.gz
+Approx 45% complete for L3A78-3F_mrna_fwd.fq.gz
+Approx 5% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 45% complete for L3B24-7M_mrna_fwd.fq.gz
+Started analysis of L3B910-7M_merge_mrna_rev.fq.gz
+Approx 10% complete for L3B910-6F_mrna_fwd.fq.gz
+Approx 90% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 45% complete for L3B24-7M_mrna_rev.fq.gz
+Approx 85% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 80% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 45% complete for L3A78-3F_mrna_rev.fq.gz
+Approx 20% complete for L3B78-1F_mrna_fwd.fq.gz
+Approx 20% complete for L3B78-2M_mrna_fwd.fq.gz
+Approx 45% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 80% complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 50% complete for L3B24-7M_mrna_fwd.fq.gz
+Approx 80% complete for L3A78-1M_mrna_rev.fq.gz
+Approx 20% complete for L3B78-2M_mrna_rev.fq.gz
+Approx 10% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 95% complete for L2B12-2M_mrna_fwd.fq.gz
+Approx 5% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Approx 50% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Approx 10% complete for L3B910-6F_mrna_rev.fq.gz
+Approx 50% complete for L3B24-7M_mrna_rev.fq.gz
+Approx 50% complete for L3A78-3F_mrna_fwd.fq.gz
+Approx 20% complete for L3B78-1F_mrna_rev.fq.gz
+Approx 15% complete for L3B910-6F_mrna_fwd.fq.gz
+Approx 90% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 85% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 55% complete for L3B24-7M_mrna_fwd.fq.gz
+Approx 50% complete for L3A78-3F_mrna_rev.fq.gz
+Approx 85% complete for L3A78-1M_mrna_rev.fq.gz
+Approx 85% complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 25% complete for L3B78-2M_mrna_fwd.fq.gz
+Approx 15% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 95% complete for L2B12-2M_mrna_rev.fq.gz
+Approx 50% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 55% complete for L3B24-7M_mrna_rev.fq.gz
+Approx 10% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Approx 25% complete for L3B78-1F_mrna_fwd.fq.gz
+Approx 55% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Approx 25% complete for L3B78-2M_mrna_rev.fq.gz
+Approx 15% complete for L3B910-6F_mrna_rev.fq.gz
+Approx 55% complete for L3A78-3F_mrna_fwd.fq.gz
+Approx 60% complete for L3B24-7M_mrna_fwd.fq.gz
+Approx 20% complete for L3B910-6F_mrna_fwd.fq.gz
+Analysis complete for L2B12-2M_mrna_fwd.fq.gz
+Approx 90% complete for L3A78-1M_mrna_rev.fq.gz
+Approx 90% complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 95% complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 60% complete for L3B24-7M_mrna_rev.fq.gz
+Approx 90% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 20% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 25% complete for L3B78-1F_mrna_rev.fq.gz
+Approx 55% complete for L3A78-3F_mrna_rev.fq.gz
+Approx 15% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Started analysis of MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 30% complete for L3B78-2M_mrna_fwd.fq.gz
+Approx 55% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 60% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Approx 65% complete for L3B24-7M_mrna_fwd.fq.gz
+Approx 30% complete for L3B78-2M_mrna_rev.fq.gz
+Approx 20% complete for L3B910-6F_mrna_rev.fq.gz
+Approx 65% complete for L3B24-7M_mrna_rev.fq.gz
+Approx 95% complete for L3A78-1M_mrna_rev.fq.gz
+Analysis complete for L2B12-2M_mrna_rev.fq.gz
+Approx 30% complete for L3B78-1F_mrna_fwd.fq.gz
+Approx 95% complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 60% complete for L3A78-3F_mrna_fwd.fq.gz
+Approx 25% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 25% complete for L3B910-6F_mrna_fwd.fq.gz
+Approx 20% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Analysis complete for L3A56-3M_mrna_fwd.fq.gz
+Approx 95% complete for L3A56-3M_mrna_rev.fq.gz
+Approx 5% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Started analysis of MFA22-1M_merge_mrna_rev.fq.gz
+Approx 60% complete for L3A78-3F_mrna_rev.fq.gz
+Approx 35% complete for L3B78-2M_mrna_fwd.fq.gz
+Approx 60% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 70% complete for L3B24-7M_mrna_fwd.fq.gz
+Started analysis of MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 65% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Approx 70% complete for L3B24-7M_mrna_rev.fq.gz
+Approx 30% complete for L3B78-1F_mrna_rev.fq.gz
+Analysis complete for L3A78-1M_mrna_rev.fq.gz
+Analysis complete for L3A78-1M_mrna_fwd.fq.gz
+Approx 25% complete for L3B910-6F_mrna_rev.fq.gz
+Approx 25% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Approx 30% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 35% complete for L3B78-2M_mrna_rev.fq.gz
+Started analysis of MFA22-3F_merge_mrna_rev.fq.gz
+Approx 65% complete for L3A78-3F_mrna_fwd.fq.gz
+Approx 30% complete for L3B910-6F_mrna_fwd.fq.gz
+Approx 10% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Started analysis of MFA55-1F_mrna_fwd.fq.gz
+Approx 5% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Analysis complete for L3A56-3M_mrna_rev.fq.gz
+Approx 75% complete for L3B24-7M_mrna_fwd.fq.gz
+Approx 35% complete for L3B78-1F_mrna_fwd.fq.gz
+Approx 75% complete for L3B24-7M_mrna_rev.fq.gz
+Approx 65% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 65% complete for L3A78-3F_mrna_rev.fq.gz
+Approx 70% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Approx 40% complete for L3B78-2M_mrna_fwd.fq.gz
+Started analysis of MFA55-1F_mrna_rev.fq.gz
+Approx 35% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 30% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Approx 5% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 30% complete for L3B910-6F_mrna_rev.fq.gz
+Approx 80% complete for L3B24-7M_mrna_fwd.fq.gz
+Approx 15% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 35% complete for L3B78-1F_mrna_rev.fq.gz
+Approx 10% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 80% complete for L3B24-7M_mrna_rev.fq.gz
+Approx 40% complete for L3B78-2M_mrna_rev.fq.gz
+Approx 70% complete for L3A78-3F_mrna_fwd.fq.gz
+Approx 35% complete for L3B910-6F_mrna_fwd.fq.gz
+Approx 75% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Approx 5% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 70% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 5% complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 40% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 35% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Approx 45% complete for L3B78-2M_mrna_fwd.fq.gz
+Approx 70% complete for L3A78-3F_mrna_rev.fq.gz
+Approx 40% complete for L3B78-1F_mrna_fwd.fq.gz
+Approx 85% complete for L3B24-7M_mrna_fwd.fq.gz
+Approx 85% complete for L3B24-7M_mrna_rev.fq.gz
+Approx 20% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 5% complete for MFA55-1F_mrna_rev.fq.gz
+Approx 15% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 35% complete for L3B910-6F_mrna_rev.fq.gz
+Approx 10% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 40% complete for L3B910-6F_mrna_fwd.fq.gz
+Approx 45% complete for L3B78-2M_mrna_rev.fq.gz
+Approx 75% complete for L3A78-3F_mrna_fwd.fq.gz
+Approx 80% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Approx 45% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 40% complete for L3B78-1F_mrna_rev.fq.gz
+Approx 40% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Approx 75% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 90% complete for L3B24-7M_mrna_fwd.fq.gz
+Approx 90% complete for L3B24-7M_mrna_rev.fq.gz
+Approx 50% complete for L3B78-2M_mrna_fwd.fq.gz
+Approx 25% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 75% complete for L3A78-3F_mrna_rev.fq.gz
+Approx 10% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 20% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 10% complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 45% complete for L3B78-1F_mrna_fwd.fq.gz
+Approx 40% complete for L3B910-6F_mrna_rev.fq.gz
+Approx 10% complete for MFA55-1F_mrna_rev.fq.gz
+Approx 95% complete for L3B24-7M_mrna_fwd.fq.gz
+Approx 50% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 15% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 45% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Approx 95% complete for L3B24-7M_mrna_rev.fq.gz
+Approx 85% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Approx 45% complete for L3B910-6F_mrna_fwd.fq.gz
+Approx 50% complete for L3B78-2M_mrna_rev.fq.gz
+Approx 80% complete for L3A78-3F_mrna_fwd.fq.gz
+Approx 80% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 30% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 25% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 55% complete for L3B78-2M_mrna_fwd.fq.gz
+Approx 45% complete for L3B78-1F_mrna_rev.fq.gz
+Approx 80% complete for L3A78-3F_mrna_rev.fq.gz
+Analysis complete for L3B24-7M_mrna_fwd.fq.gz
+Approx 15% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 55% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Analysis complete for L3B24-7M_mrna_rev.fq.gz
+Approx 15% complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 50% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Approx 45% complete for L3B910-6F_mrna_rev.fq.gz
+Started analysis of MFA55-3M_mrna_fwd.fq.gz
+Approx 90% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Started analysis of MFA55-3M_mrna_rev.fq.gz
+Approx 50% complete for L3B910-6F_mrna_fwd.fq.gz
+Approx 20% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 50% complete for L3B78-1F_mrna_fwd.fq.gz
+Approx 85% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 15% complete for MFA55-1F_mrna_rev.fq.gz
+Approx 85% complete for L3A78-3F_mrna_fwd.fq.gz
+Approx 55% complete for L3B78-2M_mrna_rev.fq.gz
+Approx 35% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 30% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 60% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 60% complete for L3B78-2M_mrna_fwd.fq.gz
+Approx 55% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Approx 85% complete for L3A78-3F_mrna_rev.fq.gz
+Approx 50% complete for L3B910-6F_mrna_rev.fq.gz
+Approx 50% complete for L3B78-1F_mrna_rev.fq.gz
+Approx 20% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 95% complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Approx 40% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 20% complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 90% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 35% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 55% complete for L3B910-6F_mrna_fwd.fq.gz
+Approx 90% complete for L3A78-3F_mrna_fwd.fq.gz
+Approx 60% complete for L3B78-2M_mrna_rev.fq.gz
+Approx 25% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 65% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 60% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Approx 20% complete for MFA55-1F_mrna_rev.fq.gz
+Approx 55% complete for L3B78-1F_mrna_fwd.fq.gz
+Approx 65% complete for L3B78-2M_mrna_fwd.fq.gz
+Approx 90% complete for L3A78-3F_mrna_rev.fq.gz
+Approx 55% complete for L3B910-6F_mrna_rev.fq.gz
+Approx 5% complete for MFA55-3M_mrna_fwd.fq.gz
+Approx 45% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 5% complete for MFA55-3M_mrna_rev.fq.gz
+Analysis complete for L3B24-5F_merge_mrna_fwd.fq.gz
+Approx 40% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 25% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 95% complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 70% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 60% complete for L3B910-6F_mrna_fwd.fq.gz
+Approx 55% complete for L3B78-1F_mrna_rev.fq.gz
+Approx 65% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Started analysis of MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 95% complete for L3A78-3F_mrna_fwd.fq.gz
+Approx 25% complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 65% complete for L3B78-2M_mrna_rev.fq.gz
+Approx 30% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 25% complete for MFA55-1F_mrna_rev.fq.gz
+Approx 70% complete for L3B78-2M_mrna_fwd.fq.gz
+Approx 50% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 45% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 95% complete for L3A78-3F_mrna_rev.fq.gz
+Approx 60% complete for L3B910-6F_mrna_rev.fq.gz
+Approx 60% complete for L3B78-1F_mrna_fwd.fq.gz
+Approx 75% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 70% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Analysis complete for L3B24-5F_merge_mrna_rev.fq.gz
+Approx 65% complete for L3B910-6F_mrna_fwd.fq.gz
+Approx 5% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 30% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Analysis complete for L3A78-3F_mrna_fwd.fq.gz
+Started analysis of MFA88-4M_merge_mrna_rev.fq.gz
+Approx 70% complete for L3B78-2M_mrna_rev.fq.gz
+Approx 60% complete for L3B78-1F_mrna_rev.fq.gz
+Approx 30% complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 50% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 55% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 10% complete for MFA55-3M_mrna_fwd.fq.gz
+Approx 35% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 10% complete for MFA55-3M_mrna_rev.fq.gz
+Started analysis of MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 80% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 65% complete for L3B910-6F_mrna_rev.fq.gz
+Approx 75% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Approx 75% complete for L3B78-2M_mrna_fwd.fq.gz
+Analysis complete for L3A78-3F_mrna_rev.fq.gz
+Approx 30% complete for MFA55-1F_mrna_rev.fq.gz
+Approx 10% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 65% complete for L3B78-1F_mrna_fwd.fq.gz
+Approx 70% complete for L3B910-6F_mrna_fwd.fq.gz
+Started analysis of MFA88-8F_merge_mrna_rev.fq.gz
+Approx 5% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Approx 55% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 35% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 60% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 75% complete for L3B78-2M_mrna_rev.fq.gz
+Approx 85% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 80% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Approx 70% complete for L3B910-6F_mrna_rev.fq.gz
+Approx 35% complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 65% complete for L3B78-1F_mrna_rev.fq.gz
+Approx 40% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 80% complete for L3B78-2M_mrna_fwd.fq.gz
+Approx 15% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 5% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 75% complete for L3B910-6F_mrna_fwd.fq.gz
+Approx 10% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Approx 60% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 35% complete for MFA55-1F_mrna_rev.fq.gz
+Approx 65% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 90% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 5% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Approx 70% complete for L3B78-1F_mrna_fwd.fq.gz
+Approx 15% complete for MFA55-3M_mrna_rev.fq.gz
+Approx 85% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Approx 15% complete for MFA55-3M_mrna_fwd.fq.gz
+Approx 80% complete for L3B78-2M_mrna_rev.fq.gz
+Approx 40% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 20% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 75% complete for L3B910-6F_mrna_rev.fq.gz
+Approx 85% complete for L3B78-2M_mrna_fwd.fq.gz
+Approx 65% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 45% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 15% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Approx 10% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 80% complete for L3B910-6F_mrna_fwd.fq.gz
+Approx 40% complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 70% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 70% complete for L3B78-1F_mrna_rev.fq.gz
+Approx 95% complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 90% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Approx 40% complete for MFA55-1F_mrna_rev.fq.gz
+Approx 10% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Approx 25% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 85% complete for L3B78-2M_mrna_rev.fq.gz
+Approx 75% complete for L3B78-1F_mrna_fwd.fq.gz
+Approx 45% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 70% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 80% complete for L3B910-6F_mrna_rev.fq.gz
+Approx 20% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Analysis complete for L3B910-7M_merge_mrna_fwd.fq.gz
+Approx 75% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 90% complete for L3B78-2M_mrna_fwd.fq.gz
+Approx 95% complete for L3B910-7M_merge_mrna_rev.fq.gz
+Approx 85% complete for L3B910-6F_mrna_fwd.fq.gz
+Approx 20% complete for MFA55-3M_mrna_rev.fq.gz
+Approx 50% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Started analysis of MFB22-7F_mrna_fwd.fq.gz
+Approx 15% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 20% complete for MFA55-3M_mrna_fwd.fq.gz
+Approx 45% complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 30% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 75% complete for L3B78-1F_mrna_rev.fq.gz
+Approx 75% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 15% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Approx 90% complete for L3B78-2M_mrna_rev.fq.gz
+Approx 45% complete for MFA55-1F_mrna_rev.fq.gz
+Approx 25% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Approx 80% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 85% complete for L3B910-6F_mrna_rev.fq.gz
+Analysis complete for L3B910-7M_merge_mrna_rev.fq.gz
+Approx 50% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 80% complete for L3B78-1F_mrna_fwd.fq.gz
+Approx 95% complete for L3B78-2M_mrna_fwd.fq.gz
+Approx 90% complete for L3B910-6F_mrna_fwd.fq.gz
+Started analysis of MFB22-7F_mrna_rev.fq.gz
+Approx 5% complete for MFB22-7F_mrna_fwd.fq.gz
+Approx 35% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 20% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 55% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 80% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 50% complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 85% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 80% complete for L3B78-1F_mrna_rev.fq.gz
+Approx 30% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Approx 20% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Approx 95% complete for L3B78-2M_mrna_rev.fq.gz
+Approx 90% complete for L3B910-6F_mrna_rev.fq.gz
+Approx 25% complete for MFA55-3M_mrna_rev.fq.gz
+Approx 95% complete for L3B910-6F_mrna_fwd.fq.gz
+Approx 50% complete for MFA55-1F_mrna_rev.fq.gz
+Approx 25% complete for MFA55-3M_mrna_fwd.fq.gz
+Analysis complete for L3B78-2M_mrna_fwd.fq.gz
+Approx 40% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 10% complete for MFB22-7F_mrna_fwd.fq.gz
+Approx 85% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 5% complete for MFB22-7F_mrna_rev.fq.gz
+Approx 55% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 85% complete for L3B78-1F_mrna_fwd.fq.gz
+Started analysis of MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 25% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 90% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 35% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Approx 60% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Analysis complete for L3B78-2M_mrna_rev.fq.gz
+Approx 25% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Approx 55% complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 95% complete for L3B910-6F_mrna_rev.fq.gz
+Approx 85% complete for L3B78-1F_mrna_rev.fq.gz
+Approx 45% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 90% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 15% complete for MFB22-7F_mrna_fwd.fq.gz
+Approx 10% complete for MFB22-7F_mrna_rev.fq.gz
+Analysis complete for L3B910-6F_mrna_fwd.fq.gz
+Started analysis of MFB22-8M_merge_mrna_rev.fq.gz
+Started analysis of MFB66-3M_mrna_fwd.fq.gz
+Approx 60% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 55% complete for MFA55-1F_mrna_rev.fq.gz
+Approx 5% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 95% complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 40% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Approx 30% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 90% complete for L3B78-1F_mrna_fwd.fq.gz
+Approx 30% complete for MFA55-3M_mrna_rev.fq.gz
+Approx 65% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 50% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Analysis complete for L3B910-6F_mrna_rev.fq.gz
+Approx 95% complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 30% complete for MFA55-3M_mrna_fwd.fq.gz
+Approx 20% complete for MFB22-7F_mrna_fwd.fq.gz
+Approx 30% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Approx 15% complete for MFB22-7F_mrna_rev.fq.gz
+Approx 60% complete for MFA55-1F_mrna_fwd.fq.gz
+Started analysis of MFB66-3M_mrna_rev.fq.gz
+Approx 5% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 45% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Analysis complete for MFA22-1M_merge_mrna_fwd.fq.gz
+Approx 90% complete for L3B78-1F_mrna_rev.fq.gz
+Approx 10% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Started analysis of MFB66-5F_mrna_fwd.fq.gz
+Approx 65% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 5% complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 60% complete for MFA55-1F_mrna_rev.fq.gz
+Analysis complete for MFA22-1M_merge_mrna_rev.fq.gz
+Approx 55% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 35% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 25% complete for MFB22-7F_mrna_fwd.fq.gz
+Approx 95% complete for L3B78-1F_mrna_fwd.fq.gz
+Started analysis of MFB66-5F_mrna_rev.fq.gz
+Approx 70% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 50% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Approx 20% complete for MFB22-7F_mrna_rev.fq.gz
+Approx 10% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 35% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Approx 5% complete for MFB66-3M_mrna_rev.fq.gz
+Approx 65% complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 15% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 5% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 95% complete for L3B78-1F_mrna_rev.fq.gz
+Approx 60% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 35% complete for MFA55-3M_mrna_rev.fq.gz
+Approx 35% complete for MFA55-3M_mrna_fwd.fq.gz
+Approx 70% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 30% complete for MFB22-7F_mrna_fwd.fq.gz
+Approx 10% complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 55% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Approx 40% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 65% complete for MFA55-1F_mrna_rev.fq.gz
+Approx 25% complete for MFB22-7F_mrna_rev.fq.gz
+Approx 15% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 5% complete for MFB66-5F_mrna_rev.fq.gz
+Approx 75% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 40% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Analysis complete for L3B78-1F_mrna_fwd.fq.gz
+Approx 20% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 65% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Started analysis of MFB88-2F_mrna_fwd.fq.gz
+Approx 10% complete for MFB66-3M_mrna_rev.fq.gz
+Approx 10% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 70% complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 60% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Approx 35% complete for MFB22-7F_mrna_fwd.fq.gz
+Analysis complete for L3B78-1F_mrna_rev.fq.gz
+Approx 75% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 30% complete for MFB22-7F_mrna_rev.fq.gz
+Approx 15% complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 20% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 45% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 10% complete for MFB66-5F_mrna_rev.fq.gz
+Started analysis of MFB88-2F_mrna_rev.fq.gz
+Approx 70% complete for MFA55-1F_mrna_rev.fq.gz
+Approx 70% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 40% complete for MFA55-3M_mrna_rev.fq.gz
+Approx 45% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Approx 80% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 25% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 65% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Approx 40% complete for MFA55-3M_mrna_fwd.fq.gz
+Approx 15% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 15% complete for MFB66-3M_mrna_rev.fq.gz
+Approx 40% complete for MFB22-7F_mrna_fwd.fq.gz
+Approx 75% complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 35% complete for MFB22-7F_mrna_rev.fq.gz
+Approx 25% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 5% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 15% complete for MFB66-5F_mrna_rev.fq.gz
+Approx 75% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 80% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 50% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 20% complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 70% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Approx 50% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Approx 30% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 75% complete for MFA55-1F_mrna_rev.fq.gz
+Approx 85% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 45% complete for MFB22-7F_mrna_fwd.fq.gz
+Approx 20% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 5% complete for MFB88-2F_mrna_rev.fq.gz
+Approx 20% complete for MFB66-3M_mrna_rev.fq.gz
+Approx 40% complete for MFB22-7F_mrna_rev.fq.gz
+Approx 80% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 30% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 45% complete for MFA55-3M_mrna_rev.fq.gz
+Approx 20% complete for MFB66-5F_mrna_rev.fq.gz
+Approx 80% complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 75% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Approx 55% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 85% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 45% complete for MFA55-3M_mrna_fwd.fq.gz
+Approx 25% complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 35% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 55% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Approx 50% complete for MFB22-7F_mrna_fwd.fq.gz
+Approx 10% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 90% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 25% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 80% complete for MFA55-1F_mrna_rev.fq.gz
+Approx 85% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 45% complete for MFB22-7F_mrna_rev.fq.gz
+Approx 35% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 80% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Approx 25% complete for MFB66-3M_mrna_rev.fq.gz
+Approx 25% complete for MFB66-5F_mrna_rev.fq.gz
+Approx 60% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 10% complete for MFB88-2F_mrna_rev.fq.gz
+Approx 85% complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 40% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 55% complete for MFB22-7F_mrna_fwd.fq.gz
+Approx 90% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 60% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Approx 30% complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 90% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 30% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 95% complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 50% complete for MFA55-3M_mrna_rev.fq.gz
+Approx 50% complete for MFB22-7F_mrna_rev.fq.gz
+Approx 40% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 85% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Approx 15% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 50% complete for MFA55-3M_mrna_fwd.fq.gz
+Approx 85% complete for MFA55-1F_mrna_rev.fq.gz
+Approx 30% complete for MFB66-5F_mrna_rev.fq.gz
+Approx 30% complete for MFB66-3M_mrna_rev.fq.gz
+Approx 60% complete for MFB22-7F_mrna_fwd.fq.gz
+Approx 45% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 65% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 95% complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 90% complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 65% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Approx 95% complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 90% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Approx 35% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 55% complete for MFB22-7F_mrna_rev.fq.gz
+Approx 35% complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 45% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 15% complete for MFB88-2F_mrna_rev.fq.gz
+Analysis complete for MFA22-3F_merge_mrna_fwd.fq.gz
+Approx 35% complete for MFB66-5F_mrna_rev.fq.gz
+Approx 90% complete for MFA55-1F_mrna_rev.fq.gz
+Approx 65% complete for MFB22-7F_mrna_fwd.fq.gz
+Started analysis of MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 50% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 35% complete for MFB66-3M_mrna_rev.fq.gz
+Analysis complete for MFA88-4M_merge_mrna_fwd.fq.gz
+Approx 20% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 70% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 55% complete for MFA55-3M_mrna_rev.fq.gz
+Approx 95% complete for MFA88-4M_merge_mrna_rev.fq.gz
+Started analysis of MFB88-3M_merge_mrna_rev.fq.gz
+Approx 70% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Approx 60% complete for MFB22-7F_mrna_rev.fq.gz
+Approx 50% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 40% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 55% complete for MFA55-3M_mrna_fwd.fq.gz
+Analysis complete for MFA22-3F_merge_mrna_rev.fq.gz
+Approx 95% complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 40% complete for MFB66-3M_mrna_fwd.fq.gz
+Started analysis of SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 70% complete for MFB22-7F_mrna_fwd.fq.gz
+Approx 40% complete for MFB66-5F_mrna_rev.fq.gz
+Approx 55% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 20% complete for MFB88-2F_mrna_rev.fq.gz
+Analysis complete for MFA88-4M_merge_mrna_rev.fq.gz
+Approx 95% complete for MFA55-1F_mrna_rev.fq.gz
+Approx 75% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 40% complete for MFB66-3M_mrna_rev.fq.gz
+Approx 5% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 65% complete for MFB22-7F_mrna_rev.fq.gz
+Approx 75% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Approx 55% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Started analysis of SAA23-5F_merge_mrna_rev.fq.gz
+Approx 45% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 5% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 25% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 5% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Approx 75% complete for MFB22-7F_mrna_fwd.fq.gz
+Analysis complete for MFA55-1F_mrna_fwd.fq.gz
+Approx 45% complete for MFB66-5F_mrna_rev.fq.gz
+Approx 45% complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 60% complete for MFA55-3M_mrna_rev.fq.gz
+Approx 60% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Started analysis of SAA23-8M_mrna_fwd.fq.gz
+Approx 5% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Approx 70% complete for MFB22-7F_mrna_rev.fq.gz
+Approx 60% complete for MFA55-3M_mrna_fwd.fq.gz
+Approx 10% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 60% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 80% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Approx 80% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Analysis complete for MFA55-1F_mrna_rev.fq.gz
+Approx 50% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 45% complete for MFB66-3M_mrna_rev.fq.gz
+Approx 10% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 25% complete for MFB88-2F_mrna_rev.fq.gz
+Approx 80% complete for MFB22-7F_mrna_fwd.fq.gz
+Started analysis of SAA23-8M_mrna_rev.fq.gz
+Approx 10% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Approx 10% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Approx 15% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 65% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 50% complete for MFB66-5F_mrna_rev.fq.gz
+Approx 30% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 5% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 75% complete for MFB22-7F_mrna_rev.fq.gz
+Approx 50% complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 65% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 85% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Approx 55% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 85% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 15% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Approx 85% complete for MFB22-7F_mrna_fwd.fq.gz
+Approx 20% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 65% complete for MFA55-3M_mrna_rev.fq.gz
+Approx 50% complete for MFB66-3M_mrna_rev.fq.gz
+Approx 5% complete for SAA23-8M_mrna_rev.fq.gz
+Approx 15% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 65% complete for MFA55-3M_mrna_fwd.fq.gz
+Approx 70% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 55% complete for MFB66-5F_mrna_rev.fq.gz
+Approx 15% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Approx 80% complete for MFB22-7F_mrna_rev.fq.gz
+Approx 10% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 30% complete for MFB88-2F_mrna_rev.fq.gz
+Approx 20% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Approx 25% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 70% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 55% complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 90% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Approx 60% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 90% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 90% complete for MFB22-7F_mrna_fwd.fq.gz
+Approx 35% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 10% complete for SAA23-8M_mrna_rev.fq.gz
+Approx 55% complete for MFB66-3M_mrna_rev.fq.gz
+Approx 25% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Approx 75% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 85% complete for MFB22-7F_mrna_rev.fq.gz
+Approx 60% complete for MFB66-5F_mrna_rev.fq.gz
+Approx 30% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 20% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 15% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 20% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Approx 75% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 70% complete for MFA55-3M_mrna_rev.fq.gz
+Approx 95% complete for MFB22-7F_mrna_fwd.fq.gz
+Approx 65% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 95% complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 95% complete for MFA88-8F_merge_mrna_rev.fq.gz
+Approx 60% complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 30% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Approx 35% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 35% complete for MFB88-2F_mrna_rev.fq.gz
+Approx 70% complete for MFA55-3M_mrna_fwd.fq.gz
+Approx 90% complete for MFB22-7F_mrna_rev.fq.gz
+Approx 15% complete for SAA23-8M_mrna_rev.fq.gz
+Approx 80% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 65% complete for MFB66-5F_mrna_rev.fq.gz
+Approx 40% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 60% complete for MFB66-3M_mrna_rev.fq.gz
+Approx 20% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 25% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 40% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 80% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 35% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Analysis complete for MFB22-7F_mrna_fwd.fq.gz
+Approx 70% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 25% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Analysis complete for MFA88-8F_merge_mrna_rev.fq.gz
+Started analysis of SAA45-3M_mrna_fwd.fq.gz
+Analysis complete for MFA88-8F_merge_mrna_fwd.fq.gz
+Approx 65% complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 95% complete for MFB22-7F_mrna_rev.fq.gz
+Started analysis of SAA45-3M_mrna_rev.fq.gz
+Approx 85% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 20% complete for SAA23-8M_mrna_rev.fq.gz
+Started analysis of SAA45-6F_mrna_fwd.fq.gz
+Approx 40% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Approx 45% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 70% complete for MFB66-5F_mrna_rev.fq.gz
+Approx 25% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 75% complete for MFA55-3M_mrna_rev.fq.gz
+Approx 40% complete for MFB88-2F_mrna_rev.fq.gz
+Approx 65% complete for MFB66-3M_mrna_rev.fq.gz
+Approx 85% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 75% complete for MFA55-3M_mrna_fwd.fq.gz
+Approx 75% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 30% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 45% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 5% complete for SAA45-3M_mrna_fwd.fq.gz
+Approx 45% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Approx 50% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 30% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Analysis complete for MFB22-7F_mrna_rev.fq.gz
+Approx 5% complete for SAA45-3M_mrna_rev.fq.gz
+Approx 90% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 70% complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 25% complete for SAA23-8M_mrna_rev.fq.gz
+Approx 75% complete for MFB66-5F_mrna_rev.fq.gz
+Started analysis of SAA45-6F_mrna_rev.fq.gz
+Approx 30% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 5% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 90% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 50% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Approx 55% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 70% complete for MFB66-3M_mrna_rev.fq.gz
+Approx 10% complete for SAA45-3M_mrna_fwd.fq.gz
+Approx 80% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 35% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 45% complete for MFB88-2F_mrna_rev.fq.gz
+Approx 80% complete for MFA55-3M_mrna_rev.fq.gz
+Approx 10% complete for SAA45-3M_mrna_rev.fq.gz
+Approx 95% complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 35% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Approx 80% complete for MFB66-5F_mrna_rev.fq.gz
+Approx 55% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Approx 60% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 30% complete for SAA23-8M_mrna_rev.fq.gz
+Approx 50% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 35% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 80% complete for MFA55-3M_mrna_fwd.fq.gz
+Approx 75% complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 95% complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 5% complete for SAA45-6F_mrna_rev.fq.gz
+Approx 15% complete for SAA45-3M_mrna_fwd.fq.gz
+Approx 10% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 85% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 75% complete for MFB66-3M_mrna_rev.fq.gz
+Approx 65% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 60% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Approx 15% complete for SAA45-3M_mrna_rev.fq.gz
+Analysis complete for MFB22-8M_merge_mrna_fwd.fq.gz
+Approx 40% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 85% complete for MFB66-5F_mrna_rev.fq.gz
+Approx 40% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 35% complete for SAA23-8M_mrna_rev.fq.gz
+Approx 40% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Started analysis of SAA68-5F_mrna_fwd.fq.gz
+Analysis complete for MFB22-8M_merge_mrna_rev.fq.gz
+Approx 50% complete for MFB88-2F_mrna_rev.fq.gz
+Approx 80% complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 70% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 65% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Approx 20% complete for SAA45-3M_mrna_fwd.fq.gz
+Started analysis of SAA68-5F_mrna_rev.fq.gz
+Approx 90% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 85% complete for MFA55-3M_mrna_rev.fq.gz
+Approx 55% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 10% complete for SAA45-6F_mrna_rev.fq.gz
+Approx 80% complete for MFB66-3M_mrna_rev.fq.gz
+Approx 85% complete for MFA55-3M_mrna_fwd.fq.gz
+Approx 15% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 20% complete for SAA45-3M_mrna_rev.fq.gz
+Approx 5% complete for SAA68-5F_mrna_fwd.fq.gz
+Approx 90% complete for MFB66-5F_mrna_rev.fq.gz
+Approx 75% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 70% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Approx 40% complete for SAA23-8M_mrna_rev.fq.gz
+Approx 45% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 45% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 45% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Approx 5% complete for SAA68-5F_mrna_rev.fq.gz
+Approx 25% complete for SAA45-3M_mrna_fwd.fq.gz
+Approx 85% complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 95% complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 75% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Approx 80% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 55% complete for MFB88-2F_mrna_rev.fq.gz
+Approx 10% complete for SAA68-5F_mrna_fwd.fq.gz
+Approx 25% complete for SAA45-3M_mrna_rev.fq.gz
+Approx 85% complete for MFB66-3M_mrna_rev.fq.gz
+Approx 15% complete for SAA45-6F_mrna_rev.fq.gz
+Approx 95% complete for MFB66-5F_mrna_rev.fq.gz
+Approx 60% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 50% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 20% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 45% complete for SAA23-8M_mrna_rev.fq.gz
+Approx 10% complete for SAA68-5F_mrna_rev.fq.gz
+Approx 90% complete for MFA55-3M_mrna_rev.fq.gz
+Approx 30% complete for SAA45-3M_mrna_fwd.fq.gz
+Approx 50% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 80% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Approx 85% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 50% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Approx 90% complete for MFA55-3M_mrna_fwd.fq.gz
+Analysis complete for MFB66-5F_mrna_fwd.fq.gz
+Approx 90% complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 15% complete for SAA68-5F_mrna_fwd.fq.gz
+Started analysis of SAA68-8M_mrna_fwd.fq.gz
+Approx 30% complete for SAA45-3M_mrna_rev.fq.gz
+Approx 15% complete for SAA68-5F_mrna_rev.fq.gz
+Analysis complete for MFB66-5F_mrna_rev.fq.gz
+Approx 90% complete for MFB66-3M_mrna_rev.fq.gz
+Approx 55% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 85% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Approx 50% complete for SAA23-8M_mrna_rev.fq.gz
+Approx 90% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 60% complete for MFB88-2F_mrna_rev.fq.gz
+Started analysis of SAA68-8M_mrna_rev.fq.gz
+Approx 20% complete for SAA45-6F_mrna_rev.fq.gz
+Approx 35% complete for SAA45-3M_mrna_fwd.fq.gz
+Approx 25% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 55% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 20% complete for SAA68-5F_mrna_fwd.fq.gz
+Approx 65% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 55% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Approx 20% complete for SAA68-5F_mrna_rev.fq.gz
+Approx 95% complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 90% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Approx 95% complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 5% complete for SAA68-8M_mrna_fwd.fq.gz
+Approx 35% complete for SAA45-3M_mrna_rev.fq.gz
+Approx 95% complete for MFA55-3M_mrna_rev.fq.gz
+Approx 60% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 55% complete for SAA23-8M_mrna_rev.fq.gz
+Approx 95% complete for MFB66-3M_mrna_rev.fq.gz
+Approx 5% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 95% complete for MFA55-3M_mrna_fwd.fq.gz
+Approx 40% complete for SAA45-3M_mrna_fwd.fq.gz
+Approx 25% complete for SAA68-5F_mrna_fwd.fq.gz
+Approx 95% complete for SAA23-5F_merge_mrna_rev.fq.gz
+Analysis complete for SAA23-5F_merge_mrna_fwd.fq.gz
+Approx 25% complete for SAA45-6F_mrna_rev.fq.gz
+Approx 25% complete for SAA68-5F_mrna_rev.fq.gz
+Approx 30% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 65% complete for MFB88-2F_mrna_rev.fq.gz
+Approx 60% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 10% complete for SAA68-8M_mrna_fwd.fq.gz
+Started analysis of SAB34-4F_mrna_fwd.fq.gz
+Approx 60% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Analysis complete for MFB66-3M_mrna_fwd.fq.gz
+Approx 40% complete for SAA45-3M_mrna_rev.fq.gz
+Approx 70% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 65% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 30% complete for SAA68-5F_mrna_fwd.fq.gz
+Started analysis of SAB34-4F_mrna_rev.fq.gz
+Analysis complete for SAA23-5F_merge_mrna_rev.fq.gz
+Approx 10% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 60% complete for SAA23-8M_mrna_rev.fq.gz
+Approx 45% complete for SAA45-3M_mrna_fwd.fq.gz
+Analysis complete for MFB66-3M_mrna_rev.fq.gz
+Approx 30% complete for SAA68-5F_mrna_rev.fq.gz
+Started analysis of SAB34-5M_merge_mrna_fwd.fq.gz
+Started analysis of SAB34-5M_merge_mrna_rev.fq.gz
+Approx 100% complete for MFA55-3M_mrna_rev.fq.gz
+Analysis complete for MFA55-3M_mrna_rev.fq.gz
+Approx 35% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 15% complete for SAA68-8M_mrna_fwd.fq.gz
+Approx 5% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 65% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 30% complete for SAA45-6F_mrna_rev.fq.gz
+Approx 45% complete for SAA45-3M_mrna_rev.fq.gz
+Approx 100% complete for MFA55-3M_mrna_fwd.fq.gz
+Analysis complete for MFA55-3M_mrna_fwd.fq.gz
+Approx 35% complete for SAA68-5F_mrna_fwd.fq.gz
+Started analysis of SAB57-1F_mrna_fwd.fq.gz
+Approx 65% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Approx 70% complete for MFB88-2F_mrna_rev.fq.gz
+Approx 70% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 35% complete for SAA68-5F_mrna_rev.fq.gz
+Approx 15% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 50% complete for SAA45-3M_mrna_fwd.fq.gz
+Approx 5% complete for SAB34-4F_mrna_rev.fq.gz
+Started analysis of SAB57-1F_mrna_rev.fq.gz
+Approx 65% complete for SAA23-8M_mrna_rev.fq.gz
+Approx 75% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 5% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Approx 5% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 10% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 20% complete for SAA68-8M_mrna_fwd.fq.gz
+Approx 40% complete for SAA68-5F_mrna_fwd.fq.gz
+Approx 50% complete for SAA45-3M_mrna_rev.fq.gz
+Approx 70% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 40% complete for SAA68-5F_mrna_rev.fq.gz
+Approx 40% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 35% complete for SAA45-6F_mrna_rev.fq.gz
+Approx 55% complete for SAA45-3M_mrna_fwd.fq.gz
+Approx 20% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 10% complete for SAB34-4F_mrna_rev.fq.gz
+Approx 75% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 70% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Approx 70% complete for SAA23-8M_mrna_rev.fq.gz
+Approx 75% complete for MFB88-2F_mrna_rev.fq.gz
+Approx 5% complete for SAB57-1F_mrna_fwd.fq.gz
+Approx 10% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Approx 10% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 45% complete for SAA68-5F_mrna_fwd.fq.gz
+Approx 15% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 25% complete for SAA68-8M_mrna_fwd.fq.gz
+Approx 5% complete for SAB57-1F_mrna_rev.fq.gz
+Approx 45% complete for SAA68-5F_mrna_rev.fq.gz
+Approx 55% complete for SAA45-3M_mrna_rev.fq.gz
+Approx 80% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 60% complete for SAA45-3M_mrna_fwd.fq.gz
+Approx 25% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 15% complete for SAB34-4F_mrna_rev.fq.gz
+Approx 75% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 80% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 75% complete for SAA23-8M_mrna_rev.fq.gz
+Approx 45% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 75% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Approx 50% complete for SAA68-5F_mrna_fwd.fq.gz
+Approx 40% complete for SAA45-6F_mrna_rev.fq.gz
+Approx 15% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Approx 30% complete for SAA68-8M_mrna_fwd.fq.gz
+Approx 50% complete for SAA68-5F_mrna_rev.fq.gz
+Approx 20% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 15% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 80% complete for MFB88-2F_mrna_rev.fq.gz
+Approx 60% complete for SAA45-3M_mrna_rev.fq.gz
+Approx 10% complete for SAB57-1F_mrna_fwd.fq.gz
+Approx 65% complete for SAA45-3M_mrna_fwd.fq.gz
+Approx 30% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 20% complete for SAB34-4F_mrna_rev.fq.gz
+Approx 55% complete for SAA68-5F_mrna_fwd.fq.gz
+Approx 10% complete for SAB57-1F_mrna_rev.fq.gz
+Approx 85% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 80% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 80% complete for SAA23-8M_mrna_rev.fq.gz
+Approx 55% complete for SAA68-5F_mrna_rev.fq.gz
+Approx 85% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 20% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Approx 35% complete for SAA68-8M_mrna_fwd.fq.gz
+Approx 80% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Approx 25% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 50% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 20% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 45% complete for SAA45-6F_mrna_rev.fq.gz
+Approx 65% complete for SAA45-3M_mrna_rev.fq.gz
+Approx 60% complete for SAA68-5F_mrna_fwd.fq.gz
+Approx 70% complete for SAA45-3M_mrna_fwd.fq.gz
+Approx 35% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 25% complete for SAB34-4F_mrna_rev.fq.gz
+Approx 60% complete for SAA68-5F_mrna_rev.fq.gz
+Approx 90% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 85% complete for MFB88-2F_mrna_rev.fq.gz
+Approx 85% complete for SAA23-8M_mrna_rev.fq.gz
+Approx 85% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 30% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 25% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Approx 15% complete for SAB57-1F_mrna_fwd.fq.gz
+Approx 40% complete for SAA68-8M_mrna_fwd.fq.gz
+Approx 25% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 85% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Approx 15% complete for SAB57-1F_mrna_rev.fq.gz
+Approx 65% complete for SAA68-5F_mrna_fwd.fq.gz
+Approx 55% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 70% complete for SAA45-3M_mrna_rev.fq.gz
+Approx 90% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 65% complete for SAA68-5F_mrna_rev.fq.gz
+Approx 75% complete for SAA45-3M_mrna_fwd.fq.gz
+Approx 50% complete for SAA45-6F_mrna_rev.fq.gz
+Approx 40% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 30% complete for SAB34-4F_mrna_rev.fq.gz
+Approx 95% complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 35% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 90% complete for SAA23-8M_mrna_rev.fq.gz
+Approx 45% complete for SAA68-8M_mrna_fwd.fq.gz
+Approx 30% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Approx 90% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 70% complete for SAA68-5F_mrna_fwd.fq.gz
+Approx 30% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 70% complete for SAA68-5F_mrna_rev.fq.gz
+Approx 90% complete for MFB88-2F_mrna_rev.fq.gz
+Approx 90% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Approx 75% complete for SAA45-3M_mrna_rev.fq.gz
+Approx 20% complete for SAB57-1F_mrna_fwd.fq.gz
+Approx 80% complete for SAA45-3M_mrna_fwd.fq.gz
+Approx 45% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 60% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 35% complete for SAB34-4F_mrna_rev.fq.gz
+Approx 55% complete for SAA45-6F_mrna_rev.fq.gz
+Approx 20% complete for SAB57-1F_mrna_rev.fq.gz
+Analysis complete for SAA23-8M_mrna_fwd.fq.gz
+Approx 40% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 95% complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 50% complete for SAA68-8M_mrna_fwd.fq.gz
+Approx 75% complete for SAA68-5F_mrna_fwd.fq.gz
+Approx 95% complete for SAA23-8M_mrna_rev.fq.gz
+Approx 35% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Approx 75% complete for SAA68-5F_mrna_rev.fq.gz
+Started analysis of SAB57-2M_merge_mrna_fwd.fq.gz
+Approx 35% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 95% complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 80% complete for SAA45-3M_mrna_rev.fq.gz
+Approx 85% complete for SAA45-3M_mrna_fwd.fq.gz
+Approx 50% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 95% complete for MFB88-3M_merge_mrna_rev.fq.gz
+Approx 40% complete for SAB34-4F_mrna_rev.fq.gz
+Approx 95% complete for MFB88-2F_mrna_rev.fq.gz
+Approx 80% complete for SAA68-5F_mrna_fwd.fq.gz
+Approx 45% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 65% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 80% complete for SAA68-5F_mrna_rev.fq.gz
+Approx 55% complete for SAA68-8M_mrna_fwd.fq.gz
+Approx 25% complete for SAB57-1F_mrna_fwd.fq.gz
+Approx 40% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Analysis complete for SAA23-8M_mrna_rev.fq.gz
+Approx 60% complete for SAA45-6F_mrna_rev.fq.gz
+Approx 5% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Approx 40% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Started analysis of SAB57-2M_merge_mrna_rev.fq.gz
+Analysis complete for MFB88-2F_mrna_fwd.fq.gz
+Approx 25% complete for SAB57-1F_mrna_rev.fq.gz
+Approx 85% complete for SAA45-3M_mrna_rev.fq.gz
+Approx 90% complete for SAA45-3M_mrna_fwd.fq.gz
+Analysis complete for MFB88-3M_merge_mrna_fwd.fq.gz
+Approx 55% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 45% complete for SAB34-4F_mrna_rev.fq.gz
+Approx 85% complete for SAA68-5F_mrna_fwd.fq.gz
+Started analysis of SAB98-2M_mrna_fwd.fq.gz
+Approx 85% complete for SAA68-5F_mrna_rev.fq.gz
+Started analysis of SAB98-2M_mrna_rev.fq.gz
+Analysis complete for MFB88-3M_merge_mrna_rev.fq.gz
+Approx 50% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 60% complete for SAA68-8M_mrna_fwd.fq.gz
+Started analysis of SAB98-3F_mrna_fwd.fq.gz
+Approx 70% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 45% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Approx 10% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Analysis complete for MFB88-2F_mrna_rev.fq.gz
+Approx 65% complete for SAA45-6F_mrna_rev.fq.gz
+Approx 45% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 90% complete for SAA45-3M_mrna_rev.fq.gz
+Approx 5% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Approx 95% complete for SAA45-3M_mrna_fwd.fq.gz
+Approx 90% complete for SAA68-5F_mrna_fwd.fq.gz
+Approx 30% complete for SAB57-1F_mrna_fwd.fq.gz
+Started analysis of SAB98-3F_mrna_rev.fq.gz
+Approx 60% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 90% complete for SAA68-5F_mrna_rev.fq.gz
+Approx 50% complete for SAB34-4F_mrna_rev.fq.gz
+Approx 5% complete for SAB98-2M_mrna_fwd.fq.gz
+Approx 5% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 55% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 30% complete for SAB57-1F_mrna_rev.fq.gz
+Approx 65% complete for SAA68-8M_mrna_fwd.fq.gz
+Approx 50% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Approx 15% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Approx 95% complete for SAA68-5F_mrna_fwd.fq.gz
+Approx 5% complete for SAB98-3F_mrna_fwd.fq.gz
+Approx 75% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 95% complete for SAA45-3M_mrna_rev.fq.gz
+Approx 50% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 95% complete for SAA68-5F_mrna_rev.fq.gz
+Analysis complete for SAA45-3M_mrna_fwd.fq.gz
+Approx 10% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Approx 65% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 55% complete for SAB34-4F_mrna_rev.fq.gz
+Approx 10% complete for SAB98-2M_mrna_fwd.fq.gz
+Approx 70% complete for SAA45-6F_mrna_rev.fq.gz
+Approx 10% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 5% complete for SAB98-3F_mrna_rev.fq.gz
+Approx 60% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 70% complete for SAA68-8M_mrna_fwd.fq.gz
+Approx 35% complete for SAB57-1F_mrna_fwd.fq.gz
+Analysis complete for SAA68-5F_mrna_fwd.fq.gz
+Approx 55% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Analysis complete for SAA68-5F_mrna_rev.fq.gz
+Approx 20% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Analysis complete for SAA45-3M_mrna_rev.fq.gz
+Approx 55% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 15% complete for SAB98-2M_mrna_fwd.fq.gz
+Approx 35% complete for SAB57-1F_mrna_rev.fq.gz
+Approx 10% complete for SAB98-3F_mrna_fwd.fq.gz
+Approx 70% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 60% complete for SAB34-4F_mrna_rev.fq.gz
+Approx 15% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Approx 80% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 65% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 15% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 10% complete for SAB98-3F_mrna_rev.fq.gz
+Approx 75% complete for SAA45-6F_mrna_rev.fq.gz
+Approx 75% complete for SAA68-8M_mrna_fwd.fq.gz
+Approx 60% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Approx 20% complete for SAB98-2M_mrna_fwd.fq.gz
+Approx 25% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Approx 60% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 20% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 75% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 40% complete for SAB57-1F_mrna_fwd.fq.gz
+Approx 65% complete for SAB34-4F_mrna_rev.fq.gz
+Approx 70% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 15% complete for SAB98-3F_mrna_fwd.fq.gz
+Approx 20% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Approx 85% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 80% complete for SAA68-8M_mrna_fwd.fq.gz
+Approx 40% complete for SAB57-1F_mrna_rev.fq.gz
+Approx 15% complete for SAB98-3F_mrna_rev.fq.gz
+Approx 80% complete for SAA45-6F_mrna_rev.fq.gz
+Approx 65% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Approx 25% complete for SAB98-2M_mrna_fwd.fq.gz
+Approx 25% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 30% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Approx 65% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 80% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 70% complete for SAB34-4F_mrna_rev.fq.gz
+Approx 75% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 25% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Approx 20% complete for SAB98-3F_mrna_fwd.fq.gz
+Approx 45% complete for SAB57-1F_mrna_fwd.fq.gz
+Approx 85% complete for SAA68-8M_mrna_fwd.fq.gz
+Approx 30% complete for SAB98-2M_mrna_fwd.fq.gz
+Approx 90% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 20% complete for SAB98-3F_mrna_rev.fq.gz
+Approx 30% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 70% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Approx 80% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 85% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 85% complete for SAA45-6F_mrna_rev.fq.gz
+Approx 70% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 75% complete for SAB34-4F_mrna_rev.fq.gz
+Approx 35% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Approx 45% complete for SAB57-1F_mrna_rev.fq.gz
+Approx 30% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Approx 35% complete for SAB98-2M_mrna_fwd.fq.gz
+Approx 25% complete for SAB98-3F_mrna_fwd.fq.gz
+Approx 90% complete for SAA68-8M_mrna_fwd.fq.gz
+Approx 35% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 75% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Approx 85% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 25% complete for SAB98-3F_mrna_rev.fq.gz
+Approx 90% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 95% complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 75% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 80% complete for SAB34-4F_mrna_rev.fq.gz
+Approx 50% complete for SAB57-1F_mrna_fwd.fq.gz
+Approx 40% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Approx 90% complete for SAA45-6F_mrna_rev.fq.gz
+Approx 40% complete for SAB98-2M_mrna_fwd.fq.gz
+Approx 95% complete for SAA68-8M_mrna_fwd.fq.gz
+Approx 35% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Approx 40% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 50% complete for SAB57-1F_mrna_rev.fq.gz
+Approx 30% complete for SAB98-3F_mrna_fwd.fq.gz
+Approx 80% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Approx 90% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 95% complete for SAA68-8M_mrna_rev.fq.gz
+Approx 85% complete for SAB34-4F_mrna_rev.fq.gz
+Approx 80% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 30% complete for SAB98-3F_mrna_rev.fq.gz
+Approx 45% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Analysis complete for SAA45-6F_mrna_fwd.fq.gz
+Approx 45% complete for SAB98-2M_mrna_fwd.fq.gz
+Approx 45% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 55% complete for SAB57-1F_mrna_fwd.fq.gz
+Approx 95% complete for SAA45-6F_mrna_rev.fq.gz
+Analysis complete for SAA68-8M_mrna_fwd.fq.gz
+Approx 40% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Approx 95% complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 85% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Approx 35% complete for SAB98-3F_mrna_fwd.fq.gz
+Analysis complete for SAA68-8M_mrna_rev.fq.gz
+Approx 90% complete for SAB34-4F_mrna_rev.fq.gz
+Approx 85% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 50% complete for SAB98-2M_mrna_fwd.fq.gz
+Approx 50% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Approx 55% complete for SAB57-1F_mrna_rev.fq.gz
+Approx 35% complete for SAB98-3F_mrna_rev.fq.gz
+Approx 50% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 45% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Analysis complete for SAA45-6F_mrna_rev.fq.gz
+Approx 90% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Analysis complete for SAB34-4F_mrna_fwd.fq.gz
+Approx 95% complete for SAB34-4F_mrna_rev.fq.gz
+Approx 55% complete for SAB98-2M_mrna_fwd.fq.gz
+Approx 60% complete for SAB57-1F_mrna_fwd.fq.gz
+Approx 90% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 40% complete for SAB98-3F_mrna_fwd.fq.gz
+Approx 55% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 55% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Approx 40% complete for SAB98-3F_mrna_rev.fq.gz
+Approx 60% complete for SAB57-1F_mrna_rev.fq.gz
+Approx 50% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Approx 95% complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Approx 95% complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 60% complete for SAB98-2M_mrna_fwd.fq.gz
+Analysis complete for SAB34-4F_mrna_rev.fq.gz
+Approx 60% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 45% complete for SAB98-3F_mrna_fwd.fq.gz
+Approx 60% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Approx 65% complete for SAB57-1F_mrna_fwd.fq.gz
+Approx 45% complete for SAB98-3F_mrna_rev.fq.gz
+Approx 65% complete for SAB98-2M_mrna_fwd.fq.gz
+Analysis complete for SAB34-5M_merge_mrna_fwd.fq.gz
+Analysis complete for SAB34-5M_merge_mrna_rev.fq.gz
+Approx 65% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 55% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Approx 65% complete for SAB57-1F_mrna_rev.fq.gz
+Approx 50% complete for SAB98-3F_mrna_fwd.fq.gz
+Approx 65% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Approx 70% complete for SAB98-2M_mrna_fwd.fq.gz
+Approx 50% complete for SAB98-3F_mrna_rev.fq.gz
+Approx 70% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 60% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Approx 70% complete for SAB57-1F_mrna_fwd.fq.gz
+Approx 75% complete for SAB98-2M_mrna_fwd.fq.gz
+Approx 70% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Approx 55% complete for SAB98-3F_mrna_fwd.fq.gz
+Approx 75% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 70% complete for SAB57-1F_mrna_rev.fq.gz
+Approx 65% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Approx 55% complete for SAB98-3F_mrna_rev.fq.gz
+Approx 80% complete for SAB98-2M_mrna_fwd.fq.gz
+Approx 75% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Approx 60% complete for SAB98-3F_mrna_fwd.fq.gz
+Approx 80% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 75% complete for SAB57-1F_mrna_fwd.fq.gz
+Approx 70% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Approx 60% complete for SAB98-3F_mrna_rev.fq.gz
+Approx 75% complete for SAB57-1F_mrna_rev.fq.gz
+Approx 85% complete for SAB98-2M_mrna_fwd.fq.gz
+Approx 85% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 80% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Approx 65% complete for SAB98-3F_mrna_fwd.fq.gz
+Approx 75% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Approx 65% complete for SAB98-3F_mrna_rev.fq.gz
+Approx 90% complete for SAB98-2M_mrna_fwd.fq.gz
+Approx 80% complete for SAB57-1F_mrna_fwd.fq.gz
+Approx 90% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 85% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Approx 80% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Approx 80% complete for SAB57-1F_mrna_rev.fq.gz
+Approx 70% complete for SAB98-3F_mrna_fwd.fq.gz
+Approx 95% complete for SAB98-2M_mrna_fwd.fq.gz
+Approx 70% complete for SAB98-3F_mrna_rev.fq.gz
+Approx 95% complete for SAB98-2M_mrna_rev.fq.gz
+Approx 90% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Approx 85% complete for SAB57-1F_mrna_fwd.fq.gz
+Approx 85% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Analysis complete for SAB98-2M_mrna_fwd.fq.gz
+Approx 75% complete for SAB98-3F_mrna_fwd.fq.gz
+Analysis complete for SAB98-2M_mrna_rev.fq.gz
+Approx 85% complete for SAB57-1F_mrna_rev.fq.gz
+Approx 75% complete for SAB98-3F_mrna_rev.fq.gz
+Approx 95% complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Approx 90% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Approx 80% complete for SAB98-3F_mrna_fwd.fq.gz
+Approx 90% complete for SAB57-1F_mrna_fwd.fq.gz
+Approx 80% complete for SAB98-3F_mrna_rev.fq.gz
+Analysis complete for SAB57-2M_merge_mrna_fwd.fq.gz
+Approx 90% complete for SAB57-1F_mrna_rev.fq.gz
+Approx 95% complete for SAB57-2M_merge_mrna_rev.fq.gz
+Approx 85% complete for SAB98-3F_mrna_fwd.fq.gz
+Approx 85% complete for SAB98-3F_mrna_rev.fq.gz
+Approx 95% complete for SAB57-1F_mrna_fwd.fq.gz
+Analysis complete for SAB57-2M_merge_mrna_rev.fq.gz
+Approx 90% complete for SAB98-3F_mrna_fwd.fq.gz
+Approx 95% complete for SAB57-1F_mrna_rev.fq.gz
+Approx 90% complete for SAB98-3F_mrna_rev.fq.gz
+Analysis complete for SAB57-1F_mrna_fwd.fq.gz
+Approx 95% complete for SAB98-3F_mrna_fwd.fq.gz
+Approx 95% complete for SAB98-3F_mrna_rev.fq.gz
+Analysis complete for SAB57-1F_mrna_rev.fq.gz
+Analysis complete for SAB98-3F_mrna_fwd.fq.gz
+Analysis complete for SAB98-3F_mrna_rev.fq.gz
+
+  /// MultiQC 🔍 | v1.12
+
+|           multiqc | Search path : /crex/proj/snic2021-6-30/selection_lines_gene_expression/reads/rrna_removed
+|         searching | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 553/553  
+|         sortmerna | Found 162 logs
+|            fastqc | Found 156 reports
+|           multiqc | Compressing plot data
+|           multiqc | Previous MultiQC output found! Adjusting filenames..
+|           multiqc | Use -f or --force to overwrite existing reports instead
+|           multiqc | Report      : multiqc_report_1.html
+|           multiqc | Data        : multiqc_data_1
+|           multiqc | MultiQC complete
+|           multiqc | 8 flat-image plots used in the report due to large sample numbers
+|           multiqc | To force interactive plots, use the '--interactive' flag. 
+See the documentation.
+Done

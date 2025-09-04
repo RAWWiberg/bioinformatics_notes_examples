@@ -1,0 +1,183 @@
+---
+title: "Create read count matrices"
+author: "R. Axel W. Wiberg"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+This notebook reads in individual salmon quant files and creates big matrices of all samples/transcripts
+also includes filtering steps:
+1) Remove transcripts with ccounts of 0 across all samples
+2) Remove transcripts with mean counts < 3 across all samples
+3) Remove transcripts on contigs < 100kb
+
+
+#0. Load libraries and define functions
+```{r}
+library(here)
+library(ggplot2)
+library(plyr)
+library(reshape)
+library(edgeR)
+library(UpSetR)
+source(here::here("rscripts","useful_functions.R"))
+```
+Read in transcript and genome information
+```{r}
+trans_dat<-read.table(here::here("rdata","p1.GS.annotation.v1.transcripts.fa.stats"),
+                      header=TRUE,sep="\t")
+trans_dat$gene<-gsub(".t.*","",trans_dat$sequence_id)
+length_dat<-trans_dat$length[match(row.names(big_all_quant_count),trans_dat$sequence_id)]
+names(length_dat)<-trans_dat$sequence_id[match(row.names(big_all_quant_count),trans_dat$sequence_id)]
+
+trans_coord_dat<-read.table(here::here("rdata","p1.GS.annotation.v1.genes.tab"),
+                      header=FALSE)
+colnames(trans_coord_dat)<-c("chrom","start","end","gene")
+trans_dat<-cbind(trans_dat,trans_coord_dat[match(trans_dat$gene,trans_coord_dat$gene),])
+
+trans_dat[grep("Tor",trans_dat$sequence_id),]
+
+genome_stats<-read.table(here::here("rdata","pt_036_001_hifiasm_20201223.primary.fasta.stats"),
+                         header=TRUE,sep="\t")
+X<-c("utg000057l_1","utg000114l_1","utg000139l_1","utg000191l_1",
+     "utg000326l_1","utg000359l_1","utg000532l_1","utg000602l_1")
+Y<-c("utg000322l_1","utg000312c_1","utg000610l_1","utg001235l_1")
+short<-genome_stats$sequence_id[which(genome_stats$length<100000)]
+
+trans_dat$chr_t<-ifelse(trans_dat$chrom %in% X,"X",
+                        ifelse(trans_dat$chrom %in% Y,"Y",
+                               ifelse(trans_dat$chrom %in% short,"<100kb","A")))
+
+X_transcripts<-trans_dat$sequence_id[which(trans_dat$chrom %in% X)]
+Y_transcripts<-trans_dat$sequence_id[which(trans_dat$chrom %in% Y)]
+```
+
+
+
+# 1. Process data for adults
+Read in the salmon counts
+```{r}
+samples<-scan(here::here("rdata/adults/salmon","samples.txt"),what = "character")
+all_quant_count<-list()
+all_quant_tpm<-list()
+for(sample in samples){
+  quant_dat<-read.table(here::here("rdata/adults/salmon",paste(sample,"_quant.sf",sep="")),header=TRUE)
+  quant_dat<-quant_dat[order(quant_dat$Name),]
+  all_quant_count[[sample]]<-round(quant_dat$NumReads)
+  all_quant_tpm[[sample]]<-round(quant_dat$TPM)
+}
+big_all_quant_count<-do.call(cbind,all_quant_count[names(all_quant_count)])
+big_all_quant_tpm<-do.call(cbind,all_quant_tpm[names(all_quant_tpm)])
+rownames(big_all_quant_count)<-quant_dat$Name
+rownames(big_all_quant_tpm)<-quant_dat$Name
+nrow(big_all_quant_tpm)
+```
+
+Filter out all transcripts on contigs <100kb
+```{r}
+length(trans_dat$sequence_id[which(trans_dat$chr_t=="<100kb")])
+length(trans_dat$sequence_id[which(trans_dat$chr_t=="<100kb")])/length(trans_dat$sequence_id)
+big_all_quant_count<-big_all_quant_count[which(rownames(big_all_quant_count) %in% trans_dat$sequence_id[which(trans_dat$chr_t!="<100kb")]),]
+big_all_quant_tpm<-big_all_quant_tpm[which(rownames(big_all_quant_tpm) %in% trans_dat$sequence_id[which(trans_dat$chr_t!="<100kb")]),]
+```
+
+Basic filtering of the expression data data
+```{r}
+total_n<-nrow(big_all_quant_tpm)
+total_n==nrow(big_all_quant_count)
+total_n
+# Identify rows with counts > 0 in at least 1 sample
+non_zero<-which(apply(big_all_quant_count,MARGIN = 1,function(x){sum(x>0)>=1}))
+# How many transcripts have expression
+nrow(big_all_quant_tpm)
+# How many are non-zero in at least one sample
+length(non_zero)
+length(non_zero)/total_n
+# Subset
+big_all_quant_tpm<-big_all_quant_tpm[which(row.names(big_all_quant_tpm) %in% names(non_zero)),]
+big_all_quant_count<-big_all_quant_count[non_zero,]
+
+# Identify rows with mean counts > x
+x<-3
+x_rows<-which(apply(big_all_quant_count,MARGIN = 1,function(x){mean(x)>3}))
+length(x_rows)
+length(x_rows)/total_n
+total_n-length(x_rows)
+# Subset
+big_all_quant_tpm<-big_all_quant_tpm[which(row.names(big_all_quant_tpm) %in% names(x_rows)),]
+big_all_quant_count<-big_all_quant_count[x_rows,]
+
+nrow(big_all_quant_count)
+nrow(big_all_quant_tpm)
+
+```
+
+Save the count matrices
+```{r}
+write.table(big_all_quant_count,here::here("rdata/adults/salmon","adults_big_all_quant_count.tab"),
+            col.names = TRUE,row.names=TRUE,quote=FALSE,sep="\t")
+write.table(big_all_quant_tpm,here::here("rdata/adults/salmon","adults_big_all_quant_tpm.tab"),
+            col.names = TRUE,row.names=TRUE,quote=FALSE,sep="\t")
+```
+
+
+
+# 2. Process data for larvae
+Read in the salmon counts
+```{r}
+samples<-scan(here::here("rdata/larvae/salmon","samples.txt"),what = "character")
+all_quant_count<-list()
+all_quant_tpm<-list()
+for(sample in samples){
+  quant_dat<-read.table(here::here("rdata/larvae/salmon",paste(sample,"_quant.sf",sep="")),header=TRUE)
+  quant_dat<-quant_dat[order(quant_dat$Name),]
+  all_quant_count[[sample]]<-round(quant_dat$NumReads)
+  all_quant_tpm[[sample]]<-round(quant_dat$TPM)
+}
+big_all_quant_count<-do.call(cbind,all_quant_count[names(all_quant_count)])
+big_all_quant_tpm<-do.call(cbind,all_quant_tpm[names(all_quant_tpm)])
+rownames(big_all_quant_count)<-quant_dat$Name
+rownames(big_all_quant_tpm)<-quant_dat$Name
+nrow(big_all_quant_tpm)
+```
+
+Filter out all transcripts on contigs <100kb
+```{r}
+big_all_quant_count<-big_all_quant_count[which(rownames(big_all_quant_count) %in% trans_dat$sequence_id[which(trans_dat$chr_t!="<100kb")]),]
+big_all_quant_tpm<-big_all_quant_tpm[which(rownames(big_all_quant_tpm) %in% trans_dat$sequence_id[which(trans_dat$chr_t!="<100kb")]),]
+```
+
+Basic filtering of the expression data data
+```{r}
+total_n<-nrow(big_all_quant_tpm)
+total_n==nrow(big_all_quant_count)
+# Identify rows with counts > 0 in at least 1 sample
+non_zero<-which(apply(big_all_quant_count,MARGIN = 1,function(x){sum(x>0)>=1}))
+# How many transcripts have expression
+nrow(big_all_quant_tpm)
+# How many are non-zero in at least one sample
+length(non_zero)
+length(non_zero)/total_n
+names(non_zero)
+# Subset
+big_all_quant_tpm<-big_all_quant_tpm[which(row.names(big_all_quant_tpm) %in% names(non_zero)),]
+big_all_quant_count<-big_all_quant_count[non_zero,]
+nrow(big_all_quant_count)
+
+# Identify rows with mean counts > x
+x<-3
+x_rows<-which(apply(big_all_quant_count,MARGIN = 1,function(x){mean(x)>3}))
+length(x_rows)
+length(x_rows)/total_n
+big_all_quant_tpm<-big_all_quant_tpm[which(row.names(big_all_quant_tpm) %in% names(x_rows)),]
+big_all_quant_count<-big_all_quant_count[x_rows,]
+```
+
+Save the count matrices
+```{r}
+write.table(big_all_quant_count,here::here("rdata/larvae/salmon","larvae_big_all_quant_count.tab"),
+            col.names = TRUE,row.names=TRUE,quote=FALSE,sep="\t")
+write.table(big_all_quant_tpm,here::here("rdata/larvae/salmon","larvae_big_all_quant_tpm.tab"),
+            col.names = TRUE,row.names=TRUE,quote=FALSE,sep="\t")
+```

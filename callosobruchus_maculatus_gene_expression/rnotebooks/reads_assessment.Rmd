@@ -1,0 +1,187 @@
+---
+title: "Reads assessments"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+This notebook details the process of assessing trimming and cleaning steps of reads
+
+#0. Load libraries and define functions
+```{r}
+library(here)
+library(ggplot2)
+```
+
+
+#1. Load the adapter trimmed read stats
+```{r}
+adtr<-read.table(here::here("rdata/larvae/reads","adtr_fastq_stats.tab"),header=TRUE,sep="\t")
+
+# Need to re-organise a bit because some samples were sequenced twice and data merged.
+# Here I remove the non-merged datasets for these samples
+adtr$sample<-gsub("_.*","",adtr$file)
+adtr$file<-gsub("fastq","fq",adtr$file)
+adtr$file<-gsub("R1","fwd",adtr$file)
+adtr$file<-gsub("R2","rev",adtr$file)
+adtr$file<-gsub("_adTr","",adtr$file)
+merged_samples<-adtr$file[grep("_merge_",adtr$file)]
+merged_samples<-gsub("_merge","",merged_samples)
+
+head(adtr)
+```
+
+There should be more reads in the merged file than in the first.
+```{r}
+merged_data<-data.frame("sample"=merged_samples)
+
+merged_data$n_first<-adtr$num_seqs[match(merged_data$sample,adtr$file)]
+merged_data$n_merged<-adtr$num_seqs[match(gsub("_","_merge_",merged_data$sample),adtr$file)]
+
+head(merged_data)
+ggplot()+
+  geom_point(data=merged_data,aes(x=n_first/1000000,n_merged/1000000))+
+  scale_x_continuous("# Reads in first sequencing run",limits=c(30,100))+
+  scale_y_continuous("# Reads after mergin with second sequencing run",limits=c(30,100))+
+  geom_abline(slope=1,intercept=0,linetype="dashed")
+```
+
+
+#2. Load the rrna_removed read stats
+```{r}
+rrna_removed<-read.table(here::here("rdata/reads","rrna_removed_fastq_stats_mod.tab"),header = TRUE,sep="\t")
+head(rrna_removed)
+```
+
+#3. Load table of the proportion rrna in each set of reads
+```{r}
+rrna<-read.table(here::here("rdata/reads","rrna_removal_log_30052022.txt"),header=FALSE)
+colnames(rrna)<-c("file","rrna_database","perc")
+rrna$file<-gsub("_rrna","",rrna$file)
+
+head(rrna)
+```
+
+
+#3. Combine
+```{r}
+n_reads<-data.frame("file"=rrna_removed$file)
+nrow(n_reads)
+
+n_reads$rrna_removed_n_reads<-rrna_removed$num_seqs[match(n_reads$file,rrna_removed$file)]
+
+n_reads$file<-gsub("_mrna","",n_reads$file)
+n_reads$adtr_n_reads<-adtr$num_seqs[match(n_reads$file,adtr$file)]
+
+n_reads$sequenced<-ifelse(grepl("merge",n_reads$file),"twice","once")
+n_reads$org_cnt<-n_reads$adtr_n_reads
+n_reads$org_cnt<-adtr$num_seqs[match(gsub("_merge","",n_reads$file), adtr$file)]
+
+n_reads$rrna_perc<-rrna$perc[match(gsub("_fwd.*|_rev.*","",n_reads$file),rrna$file)]
+n_reads$rrna_removed<-(1-(n_reads$rrna_removed_n_reads/n_reads$adtr_n_reads))*100
+head(n_reads)
+
+# Add line and sex information
+# L1 = small males
+# L2 = large females
+# L3 = large males
+# CB = random, control
+# SA = Sexually antagonistic (small sons, large daughters)
+
+#### SL1 x SL2 crosses
+# FM = female SL1 x male SL2 
+# MF = male SL1 x female SL2
+
+head(rrna_removed)
+sample_dat<-do.call(rbind,strsplit(rrna_removed$sample,split = "-"))
+colnames(sample_dat)<-c("sel_line","rep","fam1","fam2","individual","sex")
+n_reads<-cbind(n_reads,sample_dat)
+n_reads$family<-paste(n_reads$fam1,"x",n_reads$fam2,se="")
+summary(n_reads$rrna_perc)
+summary(n_reads$rrna_removed_n_reads)
+head(n_reads)
+```
+
+
+```{r}
+ggplot()+
+  geom_point(data=n_reads,
+             aes(x=adtr_n_reads/1000000,y=rrna_removed_n_reads/1000000,fill=sequenced),shape=21,size=3)+
+  scale_fill_manual("",values=c("grey60","white"))+
+  xlab("# Reads (x 1,000,000) after adapter trimming")+
+  ylab("# Reads (x 1,000,000) after adapter trimming + rrna removal")
+
+ggplot()+
+  geom_histogram(data=n_reads,aes(x=adtr_n_reads/1000000,fill=sequenced),colour="black")+
+  scale_fill_manual("",values=c("grey60","white"))+
+  xlab("# Reads (x 1,000,000)")+
+  ylab("Count")+
+  ggtitle("Adapters trimmed, reads >= 75bp")
+
+ggplot()+
+  geom_histogram(data=n_reads,aes(x=org_cnt/1000000,fill=sequenced),colour="black")+
+  scale_fill_manual("",values=c("grey60","white"))+
+  xlab("# Reads (x 1,000,000)")+
+  ylab("Count")+
+  ggtitle("Adapters trimmed, reads >= 75bp, only first sequencing")
+
+ggplot()+
+  geom_histogram(data=n_reads,aes(x=rrna_perc,fill=sequenced),colour="black")+
+  scale_fill_manual("",values=c("grey60","white"))+
+  xlab("% rRNA mapping")+
+  ylab("Count")
+
+ggplot()+
+  geom_point(data=n_reads,
+             aes(x=rrna_removed,y=rrna_perc,fill=sequenced),shape=21,size=3)+
+  geom_abline(intercept=0,slope=1,linetype="dashed")+
+  scale_fill_manual("",values=c("grey60","white"))+
+  xlab("% reads removed")+
+  ylab("% rRNA mapping")
+
+ggplot()+
+  geom_histogram(data=n_reads,aes(x=rrna_removed_n_reads/1000000,fill=sequenced),colour="black")+
+  scale_fill_manual("",values=c("grey60","white"))+
+  geom_vline(xintercept = 30,linetype="dashed",colour="red",size=2)+
+  scale_x_continuous("# Reads (x 1,000,000)",limits=c(0,60),
+                     breaks=c(5,10,15,20,25,30,35,40,45,50,55,60),
+                     labels=c("","10","","20","","30","","40","","50","","60"))+
+  ylab("Count")+
+  ggtitle("Adapters trimmed, reads >= 75bp, rRNA reads removed")
+
+ggplot()+
+  geom_hline(yintercept = 30,linetype="dashed",colour="red")+
+  geom_point(data=n_reads,aes(x=rrna_perc,y=rrna_removed_n_reads/1000000,fill=sequenced),shape=21,colour="black",size=3)+
+  scale_fill_manual("",values=c("grey60","white"))+
+  xlab("% rRNA mapping")+
+  ylab("# Reads (x 1,000,000)")+
+  ggtitle("Adapters trimmed, reads >= 75bp, rRNA reads removed")
+
+ggplot()+
+  geom_hline(yintercept = 30,linetype="dashed",colour="red")+
+  geom_point(data=n_reads,aes(x=rrna_perc,y=rrna_removed_n_reads/1000000,fill=sex),shape=21,colour="black",size=3)+
+  scale_fill_manual("",values=c("blue","red"))+
+  xlab("% rRNA mapping")+
+  ylab("# Reads (x 1,000,000)")+
+  ggtitle("Adapters trimmed, reads >= 75bp, rRNA reads removed")+
+  facet_grid(sel_line~rep)+
+  theme(strip.text.y = element_text(angle=0))
+
+ggplot()+
+  geom_hline(yintercept = 30,linetype="dashed",colour="red")+
+  geom_point(data=n_reads,aes(x=family,y=rrna_removed_n_reads/1000000,fill=sex),size=3,shape=21,position=position_dodge(0.2))+
+  scale_fill_manual("",values=c("blue","red"))+
+  xlab("")+
+  ylab("# Reads (x 1,000,000)")+
+  ggtitle("Adapters trimmed, reads >= 75bp, rRNA reads removed")+
+  facet_wrap(sel_line~rep,scales = "free_x")+
+  theme(strip.text.y = element_text(angle=0))
+
+m<-lm(rrna_removed_n_reads/1000000~sex*sel_line,data=n_reads)
+anova(m)
+summary(m)
+tapply(n_reads$file,INDEX=list(n_reads$line,n_reads$sex),length)/2
+```
+
+
+

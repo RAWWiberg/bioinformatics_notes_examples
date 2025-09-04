@@ -1,0 +1,1065 @@
+---
+title: "Analysis of sex-bias across selection lines: adults"
+author: "R. Axel W. Wiberg"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+This notebook details the process of running analysis of how sex-bias in expression varies across selection lines
+
+
+#0. Load libraries and define functions
+```{r}
+library(here)
+library(ggplot2)
+library(plyr)
+library(reshape)
+library(edgeR)
+library(UpSetR)
+source(here::here("rscripts","useful_functions.R"))
+```
+
+
+#1. Read in data 
+First read in the salmon read counts
+```{r}
+big_all_quant_count<-read.table(here::here("rdata/adults/salmon","adults_big_all_quant_count.tab"),
+                                header=TRUE,sep="\t")
+big_all_quant_tpm<-read.table(here::here("rdata/adults/salmon","adults_big_all_quant_tpm.tab"),
+                              header=TRUE,sep="\t")
+```
+
+Here I read in the sample and read information
+```{r}
+rrna_removed<-read.table(here::here("rdata/adults/reads","rrna_removed_fastq_stats_mod.tab"),
+                         header = TRUE,sep="\t")
+rrna_removed<-rrna_removed[grep("_fwd",rrna_removed$file),]
+rrna_removed$sample<-gsub("_mrna.*","",rrna_removed$sample)
+
+
+adtr_reads<-read.table(here::here("rdata/adults/reads","adtr_fastq_stats.tab"),header=TRUE,sep="\t")
+adtr_reads<-adtr_reads[grep("_R1",adtr_reads$file),]
+adtr_reads$samp<-gsub("_adTr_.*","",adtr_reads$file)
+
+# Create a data.frame to store information about the RNA-seq samples.
+sample_dat<-do.call(rbind,strsplit(rrna_removed$sample,split = "-"))
+colnames(sample_dat)<-c("sel_line","rep","fam1","fam2","sex")
+sample_dat<-as.data.frame(sample_dat)
+sample_dat$sample<-paste(sample_dat$sel_line,
+                         sample_dat$rep,
+                         sample_dat$fam1,
+                         sample_dat$fam2,
+                         sample_dat$sex,sep="")
+rrna_removed$samp<-sample_dat$sample
+# Collect the number of sequences that remain after rRNA removal.
+sample_dat$num_seqs<-rrna_removed$num_seqs[match(sample_dat$sample,rrna_removed$samp)]
+
+# Collect the number of sequences that were originally in the sample after adapter trimming.
+sample_dat$raw_num_seqs<-adtr_reads$num_seqs[match(sample_dat$sample,adtr_reads$samp)]
+
+# The line is the combination of selection treatment and replicate
+sample_dat$line<-paste(sample_dat$sel_line,"_",sample_dat$rep,sep="")
+```
+
+Here I read in the the salmon mapping rates
+```{r}
+map_rates<-read.table(here::here("rdata/adults/salmon","salmon_mapping_rates.txt"),header=FALSE)
+colnames(map_rates)<-c("sample","map_perc")
+
+# Add mapping rates to the sample information
+sample_dat$map_rates<-map_rates$map_perc[match(sample_dat$samp,map_rates$sample)]
+```
+
+Here I read in some data about the selection lines
+```{r}
+line_dat<-read.table(here::here("rdata","lines.csv"),header=TRUE,sep=",")
+line_dat$line<-paste(line_dat$sel_line,"_",line_dat$rep,sep="")
+line_dat_summary<-ddply(line_dat,c("sel_line"),summarise,
+                "sd"=mean(SD),
+                "m_wt"=mean(m_body_wt),
+                "f_wt"=mean(f_body_wt))
+line_dat_summary[order(line_dat_summary$sd),]
+line_dat_summary[order(line_dat_summary$m_wt),]
+line_dat_summary[order(line_dat_summary$f_wt),]
+# Add sexual dimorphism data to the sample data
+sample_dat$sd<-line_dat$SD[match(sample_dat$line,line_dat$line)]
+# Add a cross information variable
+sample_dat$cross<-paste(sample_dat$fam1,"x",sample_dat$fam2,sep="")
+
+```
+
+Subset the sample data to just those samples from the selection lines.
+```{r}
+sample_dat<-sample_dat[grep("FM|MF",sample_dat$sel_line,invert=TRUE),]
+```
+
+
+Here I produce a dataset of column names to allow DE analysis.
+```{r}
+coldata<-sample_dat[,c("sel_line","rep","sex","cross")]
+row.names(coldata)<-sample_dat$sample
+coldata$line<-paste(coldata$sel_line,"_",coldata$rep,sep="")
+coldata$group<-paste(coldata$sel_line,"_",coldata$sex,sep="")
+coldata$batch<-paste(coldata$sel_line,"_",coldata$rep,sep="")
+coldata$batch2<-as.numeric(as.factor(coldata$batch))
+coldata$sd<-line_dat$SD[match(coldata$line,line_dat$line)]
+```
+
+
+Next I read in the transcript and genome information.
+```{r}
+# Here I read in some basic statistics about the transcripts
+trans_dat<-read.table(here::here("rdata","p1.GS.annotation.v1.transcripts.fa.stats"),
+                      header=TRUE,sep="\t")
+trans_dat$gene<-gsub(".t.*","",trans_dat$sequence_id)
+
+# Obtain the transcript lengths for each transcript
+length_dat<-trans_dat$length[match(row.names(big_all_quant_count),trans_dat$sequence_id)]
+names(length_dat)<-trans_dat$sequence_id[match(row.names(big_all_quant_count),trans_dat$sequence_id)]
+
+# Read in the coordinate data for all genes.
+trans_coord_dat<-read.table(here::here("rdata","p1.GS.annotation.v1.genes.tab"),
+                      header=FALSE)
+colnames(trans_coord_dat)<-c("chrom","start","end","gene")
+# Now I combine the coordinates and transcript statistics
+trans_dat<-cbind(trans_dat,trans_coord_dat[match(trans_dat$gene,trans_coord_dat$gene),])
+
+# Here I read in the summary statistics for each contig/scaffold of the genome assembly
+genome_stats<-read.table(here::here("rdata","pt_036_001_hifiasm_20201223.primary.fasta.stats"),
+                         header=TRUE,sep="\t")
+# Define the X and Y contigs
+# See the paper: Kauffman et al. 2023. Mol. Biol. Evol. 40: msad167.
+
+X<-c("utg000057l_1","utg000114l_1","utg000139l_1","utg000191l_1",
+     "utg000326l_1","utg000359l_1","utg000532l_1","utg000602l_1")
+Y<-c("utg000322l_1","utg000312c_1","utg000610l_1","utg001235l_1")
+
+# Define the "short" contigs (i.e. any contig <100kb)
+# See the paper: Kauffman et al. 2023. Mol. Biol. Evol. 40: msad167.
+short<-genome_stats$sequence_id[which(genome_stats$length<100000)]
+
+# Here I label transcripts according to to which type of chromosome they are on.
+trans_dat$chr_t<-ifelse(trans_dat$chrom %in% X,"X",
+                        ifelse(trans_dat$chrom %in% Y,"Y",
+                               ifelse(trans_dat$chrom %in% short,"<100kb","A")))
+
+# Get lists of transcripts from X and Y contigs
+X_transcripts<-trans_dat$sequence_id[which(trans_dat$chrom %in% X)]
+Y_transcripts<-trans_dat$sequence_id[which(trans_dat$chrom %in% Y)]
+```
+
+# 2. Analyses
+First subset the data.
+Remove transcripts on the Y chromosome, as well as transcripts on short contigs (<100kb).
+```{r}
+trans_dat<-trans_dat[which(!(trans_dat$chr_t%in%c("Y","<100kb"))),]
+big_all_quant_count<-big_all_quant_count[which(row.names(big_all_quant_count) %in% trans_dat$sequence_id),]
+big_all_quant_tpm<-big_all_quant_tpm[which(row.names(big_all_quant_tpm) %in% trans_dat$sequence_id),]
+head(big_all_quant_tpm)
+ncol(big_all_quant_tpm)
+nrow(big_all_quant_tpm)
+```
+
+## 2.1 Run a PCA using the TPM data
+Full PCA of all expression data
+```{r}
+# For PCA need to also get rid of transcripts variance of 0 across all samples,
+# can happen even if there is some counts...
+non_zero_var_tpm<-which(apply(big_all_quant_tpm, MARGIN = 1,function(x){var(x)>0}))
+length(non_zero_var_tpm)
+nrow(big_all_quant_tpm)-length(non_zero_var_tpm)
+
+big_all_quant_tpm_filtvar<-big_all_quant_tpm[
+  which(row.names(big_all_quant_tpm) %in% names(non_zero_var_tpm)),]
+
+pca<-prcomp(t(big_all_quant_tpm_filtvar),center = TRUE,scale. = TRUE)
+pca.summary<-summary(pca)
+
+scores<-as.data.frame(pca$x)
+scores<-cbind(scores,sample_dat[match(row.names(scores),sample_dat$sample),])
+scores$n_reads<-sample_dat$num_seqs[match(row.names(scores),sample_dat$samp)]/1000000
+scores$map_rates<-sample_dat$map_rates[match(row.names(scores),sample_dat$sample)]
+scores$line_rep<-paste(scores$sel_line,"_",scores$rep,sep="")
+scores$SD<-line_dat$SD[match(scores$line_rep,line_dat$line_rep)]
+# Plot full PCA first 2 PCs, colour points by sex
+
+# Colour palette from Philipp
+#'navajowhite', ‘navajowhite4’		C
+#'plum1', ‘plum4’ 		        		SA
+#'steelblue1', 'steelblue4’, 	  	SL1
+#'sienna1', ‘sienna4’			        SL3
+#'olivedrab1', ‘olivedrab4’ 			SL2
+
+#Its always rep A, rep B.
+pc1_perc_expl<-round(pca.summary$importance["Proportion of Variance","PC1"]*100,2)
+pc2_perc_expl<-round(pca.summary$importance["Proportion of Variance","PC2"]*100,2)
+ggplot()+
+  geom_point(data=scores,aes(x=PC1,y=PC2,shape=sex,colour=sex),size=4)+
+  scale_colour_manual("Sex",values=c("black","grey70"),labels=c("Females","Males"))+
+  scale_shape_discrete("Sex",labels=c("Females","Males"))+
+  xlab(paste("PC1 (",pc1_perc_expl,"%)",sep=""))+
+  ylab(paste("PC2 (",pc2_perc_expl,"%)",sep=""))+
+  theme(text=element_text(size=16))
+
+ggplot()+
+  geom_point(data=scores,aes(x=PC1,y=PC2,shape=sex,colour=paste(sel_line,"_",rep,sep="")),size=4)+
+  scale_colour_manual("Selection line",
+                        values=c("navajowhite4",
+                                 "steelblue1", "steelblue4",
+                                 "olivedrab1", "olivedrab4",
+                                 "sienna1", "sienna4",
+                                 "plum1", "plum4"))+
+  scale_shape_discrete("Sex",labels=c("Females","Males"))+
+  xlab(paste("PC1 (",pc1_perc_expl,"%)",sep=""))+
+  ylab(paste("PC2 (",pc2_perc_expl,"%)",sep=""))+
+  theme(text=element_text(size=16))
+```
+
+
+
+## 2.2. Do DE analysis for sex within each selection line
+This will identify sex-biased (SB) genes within each selection line.
+1. Which line has most SB genes?
+2. Does the number of SB genes very by sexual dimorphism?
+3. Are the SB genes the same across lines?
+```{r}
+head(big_all_quant_count)
+nrow(big_all_quant_count)
+
+sb_dat<-data.frame("sel_line"=rep(unique(sample_dat$sel_line),each=8),
+                   "rep"=rep(unique(sample_dat$rep),20))
+sb_dat$line<-paste(sb_dat$sel_line,"_",sb_dat$rep,sep="")
+sb_dat$chr_t<-rep(c("<100kb","A","X","Y"),each=2)
+sb_dat$sd<-line_dat$SD[match(sb_dat$line,line_dat$line)]
+sb_dat$n<-vector(length=nrow(sb_dat))
+sb_dat$n_mb<-vector(length=nrow(sb_dat))
+sb_dat$n_fb<-vector(length=nrow(sb_dat))
+sb_dat$n_mb2fc<-vector(length=nrow(sb_dat))
+sb_dat$n_fb2fc<-vector(length=nrow(sb_dat))
+
+sb_genes<-list()
+all_sig_res<-data.frame()
+sl<-"L1"
+r<-"A"
+for(sl in unique(sample_dat$sel_line)){
+  col_data<-coldata[which(coldata$sel_line==sl),]
+  for(r in unique(col_data$rep)){
+    col_data_r<-col_data[which(col_data$rep==r),]
+    samples_r<-row.names(col_data_r)
+    
+    # Define the model design
+    design<-model.matrix(~sex+cross,data = col_data_r)
+    # sexM term becomes the sex effect
+    
+    # Collect the expression data for the samples
+    y<-DGEList(counts=big_all_quant_count[,samples_r])
+    
+    # Filter the data
+    # This uses default filtering criteria
+    keep<-filterByExpr(y,design = design)
+    y<-y[keep,,keep.lib.sizes=FALSE]
+    
+    # Save the number of genes being tested
+    tested_genes<-rownames(y)
+    N_tested<-tapply(trans_dat$sequence_id[which(trans_dat$sequence_id %in% tested_genes)],
+                  INDEX = list(trans_dat$chr_t[which(trans_dat$sequence_id %in% tested_genes)]),length)
+
+    sb_dat$n[which(sb_dat$sel_line==sl & sb_dat$rep==r)]<-N_tested[match(sb_dat$chr_t[
+      which(sb_dat$sel_line==sl & sb_dat$rep==r)], names(N_tested))]
+    
+    # Recalculate normalisation factors
+    y<-calcNormFactors(y)
+
+    # Estimate dispersions
+    y<-estimateDisp(y,design)
+    
+    # Fit the model and test the sex effect
+    fit <- glmQLFit(y, design)
+    my.contrasts <- makeContrasts(sex=-sexM, levels=design)
+    qlf <- glmQLFTest(fit,contrast = my.contrasts[,'sex'])
+    # Up: If logFC > 0, then F > M
+    # Down: If logFC < 0, then M > F
+    res<-qlf$table
+    res$FDR<-p.adjust(res$PValue,method = "BH")
+    res$transcript<-rownames(res)
+    res$sel_line<-rep(sl,nrow(res))
+    
+    sig_res<-res[which(res$FDR<0.05),]
+
+    # Save the results
+    write.table(res,here::here("rdata/adults",paste(sl,"_",r,"_all_sexbias.tab",sep="")),
+              col.names=TRUE,row.names=FALSE,quote=FALSE,sep="\t")
+    
+    write.table(sig_res,here::here("rdata/adults",paste(sl,"_",r,"_sig_sexbias.tab",sep="")),
+              col.names=TRUE,row.names=FALSE,quote=FALSE,sep="\t")
+  
+    # Save the data
+    # Just by DE
+    #sb_dat[which(sb_dat$sel_line==sl & sb_dat$rep==r),]
+    
+    mb<-rownames(sig_res[which(sig_res$logFC < 0),])
+    N_mbt<-tapply(trans_dat$sequence_id[which(trans_dat$sequence_id %in% mb)],
+                  INDEX = list(trans_dat$chr_t[which(trans_dat$sequence_id %in% mb)]),length)
+    fb<-rownames(sig_res[which(sig_res$logFC > 0),])
+    N_fbt<-tapply(trans_dat$sequence_id[which(trans_dat$sequence_id %in% fb)],
+                  INDEX = list(trans_dat$chr_t[which(trans_dat$sequence_id %in% fb)]),length)  
+    sb_dat$n_mb[which(sb_dat$sel_line==sl & sb_dat$rep==r)]<-N_mbt[match(sb_dat$chr_t[
+      which(sb_dat$sel_line==sl & sb_dat$rep==r)], names(N_mbt))]
+    sb_dat$n_fb[which(sb_dat$sel_line==sl & sb_dat$rep==r)]<-N_fbt[match(sb_dat$chr_t[
+      which(sb_dat$sel_line==sl & sb_dat$rep==r)], names(N_fbt))]
+
+    # Apply log2FC of 2
+    mb<-rownames(sig_res[which(sig_res$logFC < -2),])
+    N_mbt<-tapply(trans_dat$sequence_id[which(trans_dat$sequence_id %in% mb)],
+                  INDEX = list(trans_dat$chr_t[which(trans_dat$sequence_id %in% mb)]),length)
+    fb<-rownames(sig_res[which(sig_res$logFC > 2),])
+    N_fbt<-tapply(trans_dat$sequence_id[which(trans_dat$sequence_id %in% fb)],
+                  INDEX = list(trans_dat$chr_t[which(trans_dat$sequence_id %in% fb)]),length)  
+    sb_dat$n_mb2fc[which(sb_dat$sel_line==sl & sb_dat$rep==r)]<-N_mbt[match(sb_dat$chr_t[
+      which(sb_dat$sel_line==sl & sb_dat$rep==r)], names(N_mbt))]
+    sb_dat$n_fb2fc[which(sb_dat$sel_line==sl & sb_dat$rep==r)]<-N_fbt[match(sb_dat$chr_t[
+      which(sb_dat$sel_line==sl & sb_dat$rep==r)], names(N_fbt))]
+    
+    sb_genes[[paste(sl,"_",r,"_male_biased",sep="")]]<-rownames(sig_res[which(sig_res$logFC<0),])
+    sb_genes[[paste(sl,"_",r,"_female_biased",sep="")]]<-rownames(sig_res[which(sig_res$logFC>0),])
+  }
+}
+# Remove C_A, they were not sequenced
+sb_dat<-sb_dat[which(sb_dat$line!="C_A"),]
+# If any counts are NA, that means they are 0
+sb_dat$n[is.na(sb_dat$n)]<-0
+sb_dat$n_mb[is.na(sb_dat$n_mb)]<-0
+sb_dat$n_fb[is.na(sb_dat$n_fb)]<-0
+sb_dat$n_mb2fc[is.na(sb_dat$n_mb2fc)]<-0
+sb_dat$n_fb2fc[is.na(sb_dat$n_fb2fc)]<-0
+n_t<-tapply(trans_dat$sequence_id,INDEX=list(trans_dat$chr_t),length)
+sb_dat$n_t<-n_t[match(sb_dat$chr_t,names(n_t))]
+
+write.table(sb_dat,here::here("rdata/adults","sb_by_line_rep_summary.tab"),
+            col.names=TRUE,row.names=FALSE,quote=FALSE,sep="\t")
+
+# Save the list of SB genes to a file
+names(sb_genes)
+saveRDS(sb_genes[c("L1_A_male_biased","L1_A_female_biased",
+                   "L3_A_male_biased","L3_A_female_biased",
+                   "SA_A_male_biased","SA_A_female_biased",
+                   "L2_A_male_biased","L2_A_female_biased",
+                   "L1_B_male_biased","L1_B_female_biased",
+                   "L3_B_male_biased","L3_B_female_biased",
+                   "SA_B_male_biased","SA_B_female_biased",
+                   "L2_B_male_biased","L2_B_female_biased",
+                   "C_B_male_biased","C_B_female_biased")],
+        file = here::here("rdata/adults","sb_genes.RData"))
+```
+
+## 2.3 Exploring and further analysis of sex-bias DE results
+### 2.3.1 Load data
+```{r}
+all_sig_res<-data.frame()
+for(sl_r in unique(sample_dat$line)){
+  sig_res<-read.table(here::here("rdata/adults",paste(sl_r,"_sig_sexbias.tab",sep="")),
+            header=TRUE,sep="\t")
+  sig_res$sel_line_rep<-rep(sl_r,nrow(sig_res))
+  all_sig_res<-rbind(all_sig_res,sig_res)
+
+}
+
+sb_genes<-readRDS(file = here::here("rdata/adults","sb_genes.RData"))
+sb_dat<-read.table(here::here("rdata/adults","sb_by_line_rep_summary.tab"),
+                   header=TRUE,sep="\t")
+```
+
+
+### 2.3.2 Test for an association between SSD and the degree of sex-bias (logFC in expression between males and females)
+```{r}
+head(all_sig_res)
+all_sig_res$sd<-line_dat$SD[match(all_sig_res$sel_line_rep,line_dat$line)]
+
+male_biased<-ddply(all_sig_res[which(all_sig_res$logFC<0),],
+                   .variables = c("sel_line_rep"),summarise,
+                   log_fc=median(logFC),
+                   lwr_qrt_rng=quantile(logFC,p=0.25),
+                   upr_qrt_rng=quantile(logFC,p=0.75),
+                   sd_log_fc=sd(logFC))
+male_biased$sd<-line_dat$SD[match(male_biased$sel_line_rep,line_dat$line)]
+
+female_biased<-ddply(all_sig_res[which(all_sig_res$logFC>0),],
+                   .variables = c("sel_line_rep"),summarise,
+                   log_fc=median(logFC),
+                   lwr_qrt_rng=quantile(logFC,p=0.25),
+                   upr_qrt_rng=quantile(logFC,p=0.75),
+                   sd_log_fc=sd(logFC))
+female_biased$sd<-line_dat$SD[match(female_biased$sel_line_rep,line_dat$line)]
+
+mct<-cor.test(male_biased$sd,male_biased$log_fc,method="spearman")
+fct<-cor.test(female_biased$sd,female_biased$log_fc,method="spearman")
+
+# Colour palette from Philipp
+#'navajowhite', ‘navajowhite4’		C
+#'plum1', ‘plum4’ 		        		SA
+#'steelblue1', 'steelblue4’, 	  	SL1
+#'sienna1', ‘sienna4’			        SL3
+#'olivedrab1', ‘olivedrab4’ 			SL2
+
+#values=c("navajowhite4","steelblue1", "steelblue4","olivedrab1", "olivedrab4","sienna1", "sienna4","plum1", "plum4")
+
+#Its always rep A, rep B.
+# Here I use only colours from rep A since I have analysed the replicates together.
+
+head(all_sig_res)
+p<-ggplot()+
+  geom_point(data=all_sig_res,aes(x=sd,y=logFC,colour=sel_line_rep),position=position_jitter(0.01))+
+  
+  scale_colour_manual("Selection line",
+                        values=c("navajowhite4",
+                                 "steelblue1", "steelblue4",
+                                 "olivedrab1", "olivedrab4",
+                                 "sienna1", "sienna4",
+                                 "plum1", "plum4"))+
+                                   
+  xlab("Sexual dimorphism")+
+  ylab("log(fold-change in expression)")+
+  
+  geom_errorbar(data=male_biased,aes(x=sd,ymin=lwr_qrt_rng,ymax=upr_qrt_rng,group=sel_line_rep),
+                position = position_dodge(width = 0.05),width=0,linewidth=1)+
+  geom_point(data=male_biased,aes(x=sd,y=log_fc,fill=sel_line_rep),
+                position = position_dodge(width = 0.05),colour="black",size=3,shape=21)+
+  geom_text(aes(x=-Inf,y=-20,label=paste("rho = ",round(mct$estimate,2),", p = ",round(mct$p.value,2),sep="")),hjust=-0.1,size=6)+
+
+    
+  geom_errorbar(data=female_biased,aes(x=sd,ymin=lwr_qrt_rng,ymax=upr_qrt_rng,group=sel_line_rep),
+                position = position_dodge(width = 0.05),width=0,linewidth=1)+
+  geom_point(data=female_biased,aes(x=sd,y=log_fc,fill=sel_line_rep),
+                position = position_dodge(width = 0.05),colour="black",size=3,shape=24)+
+  geom_text(aes(x=-Inf,y=20,label=paste("rho = ",round(fct$estimate,2),", p = ",round(fct$p.value,2),sep="")),hjust=-0.1,size=6)+
+  scale_fill_manual("Selection line",
+                        values=c("navajowhite4",
+                                 "steelblue1", "steelblue4",
+                                 "olivedrab1", "olivedrab4",
+                                 "sienna1", "sienna4",
+                                 "plum1", "plum4"))+
+  
+  theme(text=element_text(size=24),
+        strip.text.y = element_text(angle=0))
+install.packages("svglite")
+ggsave("figureS3_adults_logFC_sexbias_by_sd.svg",plot = p,units="mm",width = 210, height = 148)
+```
+
+```{r}
+ggplot()+
+
+  xlab("Sexual dimorphism")+
+  ylab("log(fold-change in expression)")+
+  
+  geom_errorbar(data=male_biased,aes(x=sd,ymin=lwr_qrt_rng,ymax=upr_qrt_rng,group=sel_line_rep),
+                position = position_dodge(width = 0.05),width=0,linewidth=1)+
+  geom_point(data=male_biased,aes(x=sd,y=log_fc,fill=sel_line_rep),
+                position = position_dodge(width = 0.05),colour="black",size=3,shape=21)+
+  geom_text(aes(x=-Inf,y=-4,label=paste("rho = ",round(mct$estimate,2),", p = ",round(mct$p.value,2),sep="")),hjust=-0.1,size=6)+
+
+    
+  geom_errorbar(data=female_biased,aes(x=sd,ymin=lwr_qrt_rng,ymax=upr_qrt_rng,group=sel_line_rep),
+                position = position_dodge(width = 0.05),width=0,linewidth=1)+
+  geom_point(data=female_biased,aes(x=sd,y=log_fc,fill=sel_line_rep),
+                position = position_dodge(width = 0.05),colour="black",size=3,shape=24)+
+  geom_text(aes(x=-Inf,y=4,label=paste("rho = ",round(fct$estimate,2),", p = ",round(fct$p.value,2),sep="")),hjust=-0.1,size=6)+
+  scale_fill_manual("Selection line",
+                        values=c("navajowhite4",
+                                 "steelblue1", "steelblue4",
+                                 "olivedrab1", "olivedrab4",
+                                 "sienna1", "sienna4",
+                                 "plum1", "plum4"))+
+  
+  theme(text=element_text(size=24),
+        strip.text.y = element_text(angle=0))
+```
+
+
+### 2.3.3 Test for an association between the number and proportion of sex-biased genes and sexual dimorphism.
+```{r}
+sb_dat<-sb_dat[which(sb_dat$chr_t%in%c("A","X")),]
+tapply(sb_dat$n_mb,INDEX=list(sb_dat$line),sum)
+order(tapply(sb_dat$n_mb,INDEX=list(sb_dat$line),sum))
+tapply(sb_dat$n_fb,INDEX=list(sb_dat$line),sum)
+order(tapply(sb_dat$n_fb,INDEX=list(sb_dat$line),sum))
+
+sb_dat$n_b<-sb_dat$n_mb+sb_dat$n_fb
+tapply(sb_dat$n_b,INDEX=list(sb_dat$line),sum)
+order(tapply(sb_dat$n_b,INDEX=list(sb_dat$line),sum))
+
+ggplot()+
+  geom_text(data=sb_dat,
+             aes(x=sd+0.07,y=(n_mb/n_t)+0.001,
+                 label=paste("n = ",n_mb,sep="")),size=3)+
+  geom_point(data=sb_dat,
+             aes(x=sd,y=n_mb/n_t,fill=line),size=3,shape=21,colour="black")+
+  xlab("Sexual dimorphism")+
+  ylab("Proportion of genes")+
+  ggtitle("Male-biased genes")+
+  scale_fill_manual("Selection line",
+                        values=c("navajowhite4",
+                                 "steelblue1", "steelblue4",
+                                 "olivedrab1", "olivedrab4",
+                                 "sienna1", "sienna4",
+                                 "plum1", "plum4"))+
+  facet_grid(chr_t~.,scales = "free_y")+
+  theme(axis.text=element_text(size=16),
+        axis.title=element_text(size=16),
+        strip.text.y = element_text(angle=0))
+
+cor.test(x=sb_dat$sd[sb_dat$chr_t=="A"],
+         y=sb_dat$n_mb[sb_dat$chr_t=="A"]/sb_dat$n_t[sb_dat$chr_t=="A"],method="spearman")
+
+    cor.test(x=sb_dat$sd[sb_dat$chr_t=="A"],
+         y=sb_dat$n_mb[sb_dat$chr_t=="A"],method="spearman")
+
+cor.test(x=sb_dat$sd[sb_dat$chr_t=="X"],
+         y=sb_dat$n_mb[sb_dat$chr_t=="X"]/sb_dat$n_t[sb_dat$chr_t=="X"],method="spearman")
+cor.test(x=sb_dat$sd[sb_dat$chr_t=="X"],
+         y=sb_dat$n_mb[sb_dat$chr_t=="X"],method="spearman")
+
+ggplot()+
+  geom_text(data=sb_dat,
+             aes(x=sd+0.07,y=(n_fb/n_t)+0.001,
+                 label=paste("n = ",n_fb,sep="")),size=3)+
+  geom_point(data=sb_dat,
+             aes(x=sd,y=n_fb/n_t,fill=line),size=3,shape=21,colour="black")+
+  xlab("Sexual dimorphism")+
+  ylab("Proportion of genes")+
+  ggtitle("Female-biased genes")+
+  scale_fill_manual("Selection line",
+                        values=c("navajowhite4",
+                                 "steelblue1", "steelblue4",
+                                 "olivedrab1", "olivedrab4",
+                                 "sienna1", "sienna4",
+                                 "plum1", "plum4"))+
+  facet_grid(chr_t~.,scales = "free_y")+
+  theme(axis.text=element_text(size=16),
+        axis.title=element_text(size=16),
+        strip.text.y = element_text(angle=0))
+
+cor.test(x=sb_dat$sd[sb_dat$chr_t=="A"],
+         y=sb_dat$n_fb[sb_dat$chr_t=="A"]/sb_dat$n_t[sb_dat$chr_t=="A"],method="spearman")
+cor.test(x=sb_dat$sd[sb_dat$chr_t=="A"],
+         y=sb_dat$n_fb[sb_dat$chr_t=="A"],method="spearman")
+
+cor.test(x=sb_dat$sd[sb_dat$chr_t=="X"],
+         y=sb_dat$n_fb[sb_dat$chr_t=="X"]/sb_dat$n_t[sb_dat$chr_t=="X"],method="spearman")
+cor.test(x=sb_dat$sd[sb_dat$chr_t=="X"],
+         y=sb_dat$n_fb[sb_dat$chr_t=="X"],method="spearman")
+
+```
+
+
+### 2.3.4 Compare the sets of male- and female-biased genes from each selection line, are they the same?
+```{r}
+names(sb_genes)
+d<-fromList(sb_genes[c("L1_A_male_biased","L1_A_female_biased",
+                   "L3_A_male_biased","L3_A_female_biased",
+                   "SA_A_male_biased","SA_A_female_biased",
+                   "L2_A_male_biased","L2_A_female_biased",
+                   "L1_B_male_biased","L1_B_female_biased",
+                   "L3_B_male_biased","L3_B_female_biased",
+                   "SA_B_male_biased","SA_B_female_biased",
+                   "L2_B_male_biased","L2_B_female_biased",
+                   "C_B_male_biased","C_B_female_biased")])
+names(d)
+UpSetR::upset(d,nsets = 20,nintersects = 100,order.by = "freq",
+              sets=c("L1_A_female_biased","L1_B_female_biased",
+                     "L2_A_female_biased","L2_B_female_biased",
+                     "L3_A_female_biased","L3_B_female_biased",
+                     "SA_A_female_biased","SA_B_female_biased","C_B_female_biased",
+                     "L1_A_male_biased","L1_B_male_biased",
+                     "L2_A_male_biased","L2_B_male_biased",
+                     "L3_A_male_biased","L3_B_male_biased",
+                     "SA_A_male_biased","SA_B_male_biased","C_B_male_biased"),keep.order = TRUE)
+
+# Male-biased
+UpSetR::upset(d,nsets = 20,nintersects = 132,order.by = "freq",
+              sets=c("L1_A_male_biased","L1_B_male_biased",
+                     "L2_A_male_biased","L2_B_male_biased",
+                     "L3_A_male_biased","L3_B_male_biased",
+                     "SA_A_male_biased","SA_B_male_biased","C_B_male_biased"),
+              keep.order = TRUE,number.angles = 0,set_size.show = TRUE,
+              queries=list(
+        # Male-biased in SA + at least 2 lines
+        list(query=intersects,
+             params=list("L1_A_male_biased","SA_A_male_biased","L3_A_male_biased","L2_A_male_biased",
+                         "L1_B_male_biased","SA_B_male_biased","L3_B_male_biased","L2_B_male_biased",
+                         "C_B_male_biased"),
+             color="grey",
+             active=TRUE),
+        list(query=intersects,
+             params=list("L1_A_male_biased","SA_A_male_biased","L3_A_male_biased","L2_A_male_biased",
+                         "L1_B_male_biased","SA_B_male_biased","L3_B_male_biased","L2_B_male_biased"),
+             color="grey",
+             active=TRUE),
+        list(query=intersects,
+             params=list("L1_A_male_biased","SA_A_male_biased","L2_A_male_biased",
+                         "L1_B_male_biased","SA_B_male_biased","L2_B_male_biased",
+                         "C_B_male_biased"),
+             color="grey",
+             active=TRUE)))
+
+# Female-biased
+UpSetR::upset(d,nsets = 20,nintersects = 92,order.by = "freq",
+              sets=c("L1_A_female_biased","L1_B_female_biased",
+                     "L2_A_female_biased","L2_B_female_biased",
+                     "L3_A_female_biased","L3_B_female_biased",
+                     "SA_A_female_biased","SA_B_female_biased","C_B_female_biased"),
+              keep.order = TRUE,number.angles = 0,set_size.show = TRUE,
+              queries=list(
+        # Female-biased in L1 + at least 2 lines
+        list(query=intersects,
+             params=list("L1_A_female_biased","SA_A_female_biased","L3_A_female_biased","L2_A_female_biased",
+                         "L1_B_female_biased","SA_B_female_biased","L3_B_female_biased","L2_B_female_biased",
+                         "C_B_female_biased"),
+             color="grey50",
+             active=TRUE),
+        list(query=intersects,
+             params=list("L1_A_female_biased","SA_A_female_biased","L3_A_female_biased","L2_A_female_biased",
+                         "L1_B_female_biased","SA_B_female_biased","L3_B_female_biased","L2_B_female_biased"),
+             color="grey50",
+             active=TRUE),
+        list(query=intersects,
+             params=list("L1_A_female_biased","SA_A_female_biased","L3_A_female_biased",
+                         "L1_B_female_biased","SA_B_female_biased","L3_B_female_biased",
+                         "C_B_female_biased"),
+             color="grey50",
+             active=TRUE)
+        ))
+```
+
+
+How many have changed sex-bias status from C
+```{r}
+male_biased<-names(sb_genes)[grepl("_male_biased",names(sb_genes))]
+female_biased<-names(sb_genes)[grepl("_female_biased",names(sb_genes))]
+for(i in c("L1","L2","L3","SA")){
+    A<-sb_genes[["C_B_male_biased"]][which(sb_genes[["C_B_male_biased"]] %in% sb_genes[[paste(i,"_A_female_biased",sep="")]])]
+    B<-sb_genes[["C_B_male_biased"]][which(sb_genes[["C_B_male_biased"]] %in% sb_genes[[paste(i,"_B_female_biased",sep="")]])]
+    n<-length(which(A %in% B))
+    cat("###\n")
+    cat(length(A)," C_male_biased ", " in ", i, "A \n")
+    cat(length(B)," C_male_biased ", " in ", i, "B \n")
+    cat(n," C_male_biased ", " in both ", i, "\n")
+} 
+for(i in c("L1","L2","L3","SA")){
+    A<-sb_genes[["C_B_female_biased"]][which(sb_genes[["C_B_female_biased"]] %in% sb_genes[[paste(i,"_A_male_biased",sep="")]])]
+    B<-sb_genes[["C_B_female_biased"]][which(sb_genes[["C_B_female_biased"]] %in% sb_genes[[paste(i,"_B_male_biased",sep="")]])]
+    n<-length(which(A %in% B))
+    cat("###\n")
+    cat(length(A)," C_female_biased ", " in ", i, "A \n")
+    cat(length(B)," C_female_biased ", " in ", i, "B \n")
+    cat(n," C_female_biased ", " in both ", i, "\n")
+}
+```
+
+What is repeatability: how many (%) of transcripts that are sex-biased in either replicate are shared across replicates
+```{r}
+for(i in c("L1","L2","L3","SA")){
+    n_ovlp_mb<-length(which(sb_genes[[paste(i,"_A_male_biased",sep="")]] %in% sb_genes[[paste(i,"_B_male_biased",sep="")]]))
+    n_mb<-length(sb_genes[[paste(i,"_A_male_biased",sep="")]])+length(sb_genes[[paste(i,"_B_male_biased",sep="")]])
+
+    n_ovlp_fb<-length(which(sb_genes[[paste(i,"_A_female_biased",sep="")]] %in% sb_genes[[paste(i,"_B_female_biased",sep="")]]))
+    n_fb<-length(sb_genes[[paste(i,"_A_female_biased",sep="")]])+length(sb_genes[[paste(i,"_B_female_biased",sep="")]])
+    
+    cat("###: ",i,"\n")
+    cat("of",n_mb,"male-bised transcripts in A and B,",n_ovlp_mb,"(",round((n_ovlp_mb/n_mb),3)*100,"%)are male-biased in both\n")
+    cat("of",n_fb,"female-bised transcripts in A and B,",n_ovlp_fb,"(",round((n_ovlp_fb/n_fb),3)*100,"%)are female-biased in both\n")
+    cat("\n")
+} 
+
+```
+
+
+
+### 2.3.5 Formal test of the degree of sex-bias compared to control.
+#### 2.3.5.1 Correlation of logFC between C and each selection line.
+```{r}
+all_res<-data.frame()
+for(sl_r in unique(sample_dat$line)){
+  res<-read.table(here::here("rdata/adults",paste(sl_r,"_all_sexbias.tab",sep="")),
+            header=TRUE,sep="\t")
+  res$sel_line_rep<-rep(sl_r,nrow(res))
+  all_res<-rbind(all_res,res)
+
+}
+head(all_res)
+all_res_wide<-reshape(all_res,idvar = "transcript",timevar = "sel_line_rep",direction = "wide")
+
+
+# Colour palette from Philipp
+#'navajowhite', ‘navajowhite4’		C
+#'plum1', ‘plum4’ 		        		SA
+#'steelblue1', 'steelblue4’, 	  	SL1
+#'sienna1', ‘sienna4’			        SL3
+#'olivedrab1', ‘olivedrab4’ 			SL2
+cor_res<-cor.test(x=all_res_wide$logFC.C_B,y=all_res_wide$logFC.SA_A,method="pearson")
+text1<-paste("cor = ",round(cor_res$estimate,2),
+                     " [",round(cor_res$conf.int[1],3),", ",round(cor_res$conf.int[2],3),"], p ",
+                     ifelse(cor_res$p.value<0.001,"< 0.001",
+                            paste("= ",as.character(round(cor_res$p.value,2)),sep="")),sep="")
+p1<-ggplot()+
+  geom_point(data=all_res_wide,aes(x=logFC.C_B,y=logFC.SA_A),fill="plum1",shape=21)+
+  geom_text(aes(x=-Inf,y=Inf,vjust=1.5,hjust=-0.1,
+                label=text1))+
+  xlab("log(FC) C")+
+  ylab("log(FC) SA A")+
+  theme(axis.text=element_text(size=16),
+      axis.title=element_text(size=16))
+
+cor_res<-cor.test(x=all_res_wide$logFC.C_B,y=all_res_wide$logFC.SA_B,method="pearson")
+text2<-paste("cor = ",round(cor_res$estimate,2),
+                     " [",round(cor_res$conf.int[1],3),", ",round(cor_res$conf.int[2],3),"], p ",
+                     ifelse(cor_res$p.value<0.001,"< 0.001",
+                            paste("= ",as.character(round(cor_res$p.value,2)),sep="")),sep="")
+p2<-ggplot()+
+  geom_point(data=all_res_wide,aes(x=logFC.C_B,y=logFC.SA_B),fill="plum4",shape=21)+
+  geom_text(aes(x=-Inf,y=Inf,vjust=1.5,hjust=-0.1,
+                label=text2))+
+  xlab("log(FC) C")+
+  ylab("log(FC) SA B")+
+  theme(axis.text=element_text(size=16),
+        axis.title=element_text(size=16))
+
+cor_res<-cor.test(x=all_res_wide$logFC.C_B,y=all_res_wide$logFC.L1_A,method="pearson")
+text3<-paste("cor = ",round(cor_res$estimate,2),
+                     " [",round(cor_res$conf.int[1],3),", ",round(cor_res$conf.int[2],3),"], p ",
+                     ifelse(cor_res$p.value<0.001,"< 0.001",
+                            paste("= ",as.character(round(cor_res$p.value,2)),sep="")),sep="")
+p3<-ggplot()+
+  geom_point(data=all_res_wide,aes(x=logFC.C_B,y=logFC.L1_A),fill="steelblue1",shape=21)+
+  geom_text(aes(x=-Inf,y=Inf,vjust=1.5,hjust=-0.1,
+                label=text3))+
+  xlab("log(FC) C")+
+  ylab("log(FC) L1 A")+
+  theme(axis.text=element_text(size=16),
+        axis.title=element_text(size=16))
+
+cor_res<-cor.test(x=all_res_wide$logFC.C_B,y=all_res_wide$logFC.L1_B,method="pearson")
+text4<-paste("cor = ",round(cor_res$estimate,2),
+                     " [",round(cor_res$conf.int[1],3),", ",round(cor_res$conf.int[2],3),"], p ",
+                     ifelse(cor_res$p.value<0.001,"< 0.001",
+                            paste("= ",as.character(round(cor_res$p.value,2)),sep="")),sep="")
+p4<-ggplot()+
+  geom_point(data=all_res_wide,aes(x=logFC.C_B,y=logFC.L1_B),fill="steelblue4",shape=21)+
+  geom_text(aes(x=-Inf,y=Inf,vjust=1.5,hjust=-0.1,
+                label=text4))+
+  xlab("log(FC) C")+
+  ylab("log(FC) L1 B")+
+  theme(axis.text=element_text(size=16),
+        axis.title=element_text(size=16))
+
+cor_res<-cor.test(x=all_res_wide$logFC.C_B,y=all_res_wide$logFC.L3_A,method="pearson")
+text5<-paste("cor = ",round(cor_res$estimate,2),
+                     " [",round(cor_res$conf.int[1],3),", ",round(cor_res$conf.int[2],3),"], p ",
+                     ifelse(cor_res$p.value<0.001,"< 0.001",
+                            paste("= ",as.character(round(cor_res$p.value,2)),sep="")),sep="")
+p5<-ggplot()+
+  geom_point(data=all_res_wide,aes(x=logFC.C_B,y=logFC.L3_A),fill="sienna1",shape=21)+
+  geom_text(aes(x=-Inf,y=Inf,vjust=1.5,hjust=-0.1,
+                label=text5))+
+  xlab("log(FC) C")+
+  ylab("log(FC) L3 A")+
+  theme(axis.text=element_text(size=16),
+        axis.title=element_text(size=16))
+
+cor_res<-cor.test(x=all_res_wide$logFC.C_B,y=all_res_wide$logFC.L3_B,method="pearson")
+text6<-paste("cor = ",round(cor_res$estimate,2),
+                     " [",round(cor_res$conf.int[1],3),", ",round(cor_res$conf.int[2],3),"], p ",
+                     ifelse(cor_res$p.value<0.001,"< 0.001",
+                            paste("= ",as.character(round(cor_res$p.value,2)),sep="")),sep="")
+p6<-ggplot()+
+  geom_point(data=all_res_wide,aes(x=logFC.C_B,y=logFC.L3_B),fill="sienna4",shape=21)+
+  geom_text(aes(x=-Inf,y=Inf,vjust=1.5,hjust=-0.1,
+                label=text6))+
+  xlab("log(FC) C")+
+  ylab("log(FC) L3 B")+
+  theme(axis.text=element_text(size=16),
+        axis.title=element_text(size=16))
+
+cor_res<-cor.test(x=all_res_wide$logFC.C_B,y=all_res_wide$logFC.L2_A,method="pearson")
+text7<-paste("cor = ",round(cor_res$estimate,2),
+                     " [",round(cor_res$conf.int[1],3),", ",round(cor_res$conf.int[2],3),"], p ",
+                     ifelse(cor_res$p.value<0.001,"< 0.001",
+                            paste("= ",as.character(round(cor_res$p.value,2)),sep="")),sep="")
+p7<-ggplot()+
+  geom_point(data=all_res_wide,aes(x=logFC.C_B,y=logFC.L2_A),fill="olivedrab1",shape=21)+
+  geom_text(aes(x=-Inf,y=Inf,vjust=1.5,hjust=-0.1,
+                label=text7))+
+  xlab("log(FC) C")+
+  ylab("log(FC) L2 A")+
+  theme(axis.text=element_text(size=16),
+        axis.title=element_text(size=16))
+
+cor_res<-cor.test(x=all_res_wide$logFC.C_B,y=all_res_wide$logFC.L2_B,method="pearson")
+text8<-paste("cor = ",round(cor_res$estimate,2),
+                     " [",round(cor_res$conf.int[1],3),", ",round(cor_res$conf.int[2],3),"], p ",
+                     ifelse(cor_res$p.value<0.001,"< 0.001",
+                            paste("= ",as.character(round(cor_res$p.value,2)),sep="")),sep="")
+p8<-ggplot()+
+  geom_point(data=all_res_wide,aes(x=logFC.C_B,y=logFC.L2_B),fill="olivedrab4",shape=21)+
+  geom_text(aes(x=-Inf,y=Inf,vjust=1.5,hjust=-0.1,
+                label=text8))+
+  xlab("log(FC) C")+
+  ylab("log(FC) L2 B")+
+  theme(axis.text=element_text(size=16),
+        axis.title=element_text(size=16))
+
+cowplot::plot_grid(p1,p2,p3,p4,p5,p6,p7,p8,align = "hv",nrow = 4)
+```
+
+
+#### 2.3.5.2 Test of sex, selection line, and the interaction for expression at each transcript
+This will identify sex-biased (SB) genes within each selection line.
+1. Which line has most SB genes?
+2. Does the number of SB genes very by sexual dimorphism?
+3. Are the SB genes the same across lines?
+```{r}
+head(big_all_quant_count)
+nrow(big_all_quant_count)
+
+sb_dat<-data.frame("sel_line"=rep(c("L1","L2","L3","SA"),each=8),
+                   "rep"=rep(unique(sample_dat$rep),16))
+sb_dat$line<-paste(sb_dat$sel_line,"_",sb_dat$rep,sep="")
+sb_dat$chr_t<-rep(c("<100kb","A","X","Y"),each=2)
+sb_dat$sd<-line_dat$SD[match(sb_dat$line,line_dat$line)]
+sb_dat$n<-vector(length=nrow(sb_dat))
+sb_dat$n_mb<-vector(length=nrow(sb_dat))
+sb_dat$n_fb<-vector(length=nrow(sb_dat))
+sb_dat$n_mb2fc<-vector(length=nrow(sb_dat))
+sb_dat$n_fb2fc<-vector(length=nrow(sb_dat))
+
+sb_genes<-list()
+all_sig_res<-data.frame()
+sl<-"L1"
+r<-"A"
+for(sl in c("L1","L2","L3","SA")){
+  col_data<-coldata[which(coldata$sel_line==sl),]
+  for(r in unique(col_data$rep)){
+    col_data_r<-col_data[which(col_data$rep==r),]
+    col_data_r<-rbind(col_data_r,coldata[which(coldata$sel_line=="C"),])
+    col_data_r$cross<-paste(col_data_r$sel_line,"_",col_data_r$cross,sep="")
+    samples_r<-row.names(col_data_r)
+    
+    # One way
+    # Define the model design
+    design<-model.matrix(~0+group,data = col_data_r)
+    colnames(design)<-c("groupC_F","groupC_M","groupSL_F","groupSL_M")
+    cat("~0+group\n")
+
+    # Collect the expression data for the samples
+    y<-DGEList(counts=big_all_quant_count[,samples_r])
+    
+    # Filter the data
+    # This uses default filtering criteria
+    keep<-filterByExpr(y,design = design)
+    y<-y[keep,,keep.lib.sizes=FALSE]
+    
+    # Save the number of genes being tested
+    tested_genes<-rownames(y)
+    N_tested<-tapply(
+      trans_dat$sequence_id[which(trans_dat$sequence_id %in% tested_genes)],
+      INDEX = list(trans_dat$chr_t[which(trans_dat$sequence_id %in% tested_genes)]),length)
+
+    sb_dat$n[which(sb_dat$sel_line==sl & sb_dat$rep==r)]<-N_tested[match(sb_dat$chr_t[
+      which(sb_dat$sel_line==sl & sb_dat$rep==r)], names(N_tested))]
+    
+    # Recalculate normalisation factors
+    y<-calcNormFactors(y)
+
+    # Estimate dispersions
+    y<-estimateDisp(y,design)
+    
+    # Fit the model and test the sex effect
+    fit <- glmQLFit(y, design)
+    my.contrasts <- makeContrasts(
+      sex_by_line=(groupC_F-groupSL_F)-(groupC_M-groupSL_M),
+      levels=design)
+    qlf <- glmQLFTest(fit,contrast = my.contrasts[,'sex_by_line'])
+    # Up: If logFC > 0, then difference between females is greater than differences between males
+    # Down: If logFC < 0, then difference between females is less than differences between males
+    res<-qlf$table
+    res$FDR<-p.adjust(res$PValue,method = "BH")
+    res$transcript<-rownames(res)
+    res$sel_line<-rep(sl,nrow(res))
+    sig_res<-res[which(res$FDR<0.05),]
+    cat("### ",sl,",",r," n sig = ",nrow(sig_res),"\n")
+    print(rownames(sig_res))
+    # Save the results
+    write.table(res,here::here("rdata/adults",paste("C_vs",sl,"_",r,"_sexbias.tab",sep="")),
+              col.names=TRUE,row.names=FALSE,quote=FALSE,sep="\t")
+    sb_genes[[paste("C_vs",sl,"_",r,"_sexbias",sep="")]]<-rownames(sig_res)
+    #write.table(sig_res,here::here("rdata/adults",paste("C_vs",sl,"_",r,"_sig_sexbias.tab",sep="")),
+    #          col.names=TRUE,row.names=FALSE,quote=FALSE,sep="\t")
+    
+    
+    
+    # Another way
+    # Define the model design
+    design<-model.matrix(~0+sex+line+sex:line,data = col_data_r)
+    colnames(design)<-make.names(colnames(design))
+    cat("~0+sex+line+sex:line\n")
+
+    # Collect the expression data for the samples
+    y<-DGEList(counts=big_all_quant_count[,samples_r])
+    
+    # Filter the data
+    # This uses default filtering criteria
+    keep<-filterByExpr(y,design = design)
+    y<-y[keep,,keep.lib.sizes=FALSE]
+    
+    # Save the number of genes being tested
+    tested_genes<-rownames(y)
+    N_tested<-tapply(
+      trans_dat$sequence_id[which(trans_dat$sequence_id %in% tested_genes)],
+      INDEX = list(trans_dat$chr_t[which(trans_dat$sequence_id %in% tested_genes)]),length)
+
+    sb_dat$n[which(sb_dat$sel_line==sl & sb_dat$rep==r)]<-N_tested[match(sb_dat$chr_t[
+      which(sb_dat$sel_line==sl & sb_dat$rep==r)], names(N_tested))]
+    
+    # Recalculate normalisation factors
+    y<-calcNormFactors(y)
+
+    # Estimate dispersions
+    y<-estimateDisp(y,design)
+    
+    # Fit the model and test the sex effect
+    fit <- glmQLFit(y, design)
+    qlf <- glmQLFTest(fit,coef = 4)
+    # Up: If logFC > 0, then difference between females is greater than differences between males
+    # Down: If logFC < 0, then difference between females is less than differences between males
+    res<-qlf$table
+    res$FDR<-p.adjust(res$PValue,method = "BH")
+    res$transcript<-rownames(res)
+    res$sel_line<-rep(sl,nrow(res))
+    sig_res<-res[which(res$FDR<0.05),]
+    cat("### ",sl,",",r," n sig = ",nrow(sig_res),"\n")
+    print(rownames(sig_res))
+  }
+}
+saveRDS(sb_genes,
+        file = here::here("rdata/adults","C_vs_lines_sb_diff_genes.RData"))
+
+```
+
+Load data
+```{r}
+sb_diff_genes<-readRDS(file = here::here("rdata/adults","C_vs_lines_sb_diff_genes.RData"))
+
+all_res<-data.frame()
+for(sl in c("L1","L2","L3","SA")){
+  col_data<-coldata[which(coldata$sel_line==sl),]
+  for(r in unique(col_data$rep)){
+    res<-read.table(here::here("rdata/adults",paste("C_vs",sl,"_",r,"_sexbias.tab",sep="")),
+            header=TRUE,sep="\t")
+    res$line<-rep(sl,nrow(res))
+    res$rep<-rep(r,nrow(res))
+    all_res<-rbind(all_res,res)
+  }
+}
+
+sb_genes<-readRDS(file = here::here("rdata/adults","sb_genes.RData"))
+d<-fromList(sb_genes[c("L1_A_male_biased",
+                   "L3_A_male_biased",
+                   "SA_A_male_biased",
+                   "L2_A_male_biased",
+                   "L1_B_male_biased",
+                   "L3_B_male_biased",
+                   "SA_B_male_biased",
+                   "L2_B_male_biased",
+                   "C_B_male_biased")])
+
+intersects<-row.names(get_intersect_members(d,c("L1_A_male_biased","L1_B_male_biased")))
+length(intersects)
+```
+
+
+Check a few genes manually
+```{r}
+names(sb_genes)
+lapply(sb_genes,FUN = length)
+
+sl<-"L1"
+col_data<-coldata[which(coldata$sel_line==sl),]
+col_data_r<-col_data[which(col_data$rep==r),]
+col_data_r<-rbind(col_data_r,coldata[which(coldata$sel_line=="C"),])
+col_data_r$cross<-paste(col_data_r$sel_line,"_",col_data_r$cross,sep="")
+samples_r<-row.names(col_data_r)
+design<-model.matrix(~0+sex+line+sex:line,data = col_data_r)
+colnames(design)<-c("sexF","sexM","line","sexM_line")
+
+g<-sb_diff_genes[["C_vsL1_A_sexbias"]][
+  sample(x = 1:length(sb_diff_genes[["C_vsL1_A_sexbias"]]),size = 1)]
+
+for(i in intersects){
+  cat("##",i,"\n")
+  print(all_res[which(all_res$transcript==i),])
+}
+
+g<-intersects[sample(1:length(intersects),1)]
+all_res[which(all_res$transcript==g),]
+
+g<-"cmac_gs1_g16745.t1"
+
+y<-DGEList(counts=big_all_quant_count)
+y<-calcNormFactors(y)
+norm <- edgeR::cpm(y)
+gd<-gene_data(norm,g,sample_dat)
+gdplot<-gd[which(gd$sel_line%in%c("L1","C","L3","SA")),]
+gdplot$sel_line<-factor(gdplot$sel_line,levels=c("L1","SA","C","L3"))
+    # Up: If logFC > 0, then sex effect in line C is greater than in L1
+    # Down: If logFC < 0, then sex effect in line C is smaller than in L1
+ggplot()+
+  geom_boxplot(data=gdplot,
+             aes(x=line,y=counts,colour=sex),width=0.5,outliers = FALSE)+
+  geom_point(data=gdplot,
+             aes(x=line,y=counts,colour=sex),position=position_jitter(0.1),size=3)
+
+fc_dat<-all_res[which(all_res$transcript=="cmac_gs1_g6166.t1"),]
+ggplot()+
+  geom_point(data=fc_dat,
+             aes(x=sel_line,y=logFC,colour=rep),position=position_jitter(0.1),size=3)
+
+```
+
+How many show interaction effects in both lines
+```{r}
+for(sl in c("L1","L2","L3","SA")){
+  inter<-intersect(sb_diff_genes[[paste("C_vs",sl,"_A_sexbias",sep="")]],
+            sb_diff_genes[[paste("C_vs",sl,"_B_sexbias",sep="")]])
+  cat(sl,",",length(inter),"\n")
+}
+```
+
+```{r}
+sl<-"L1"
+inter<-intersect(sb_diff_genes[[paste("C_vs",sl,"_A_sexbias",sep="")]],
+            sb_diff_genes[[paste("C_vs",sl,"_B_sexbias",sep="")]])
+
+which(inter %in% intersects)
+
+g<-inter[sample(1:length(inter),1)]
+all_res[which(all_res$transcript==g),]
+    # Up: If logFC > 0, then sex effect in line C is greater than in L1
+    # Down: If logFC < 0, then sex effect in line C is smaller than in L1
+y<-DGEList(counts=big_all_quant_count)
+y<-calcNormFactors(y)
+norm <- edgeR::cpm(y)
+gd<-gene_data(norm,g,sample_dat)
+gdplot<-gd[which(gd$sel_line%in%c("L1","C","L3","SA")),]
+gdplot$sel_line<-factor(gdplot$sel_line,levels=c("L1","SA","C","L3"))
+    # Up: If logFC > 0, then sex effect in line C is greater than in L1
+    # Down: If logFC < 0, then sex effect in line C is smaller than in L1
+gdplot$counts<-as.numeric(gdplot$counts)
+ggplot()+
+  geom_boxplot(data=gdplot,
+             aes(x=line,y=counts,colour=sex),width=0.5,outliers = FALSE)+
+  geom_point(data=gdplot,
+             aes(x=line,y=counts,colour=sex),position=position_jitter(0.1),size=3)
+
+```
+
+

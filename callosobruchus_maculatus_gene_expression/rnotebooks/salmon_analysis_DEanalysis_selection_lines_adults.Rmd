@@ -1,0 +1,2858 @@
+---
+title: "Analysis of expression differences across selection lines: adults"
+author: "R. Axel W. Wiberg"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+This notebook details the process of running DE analysis with edgeR
+
+#0. Load libraries and define functions
+```{r}
+library(here)
+library(ggplot2)
+library(plyr)
+library(reshape)
+library(edgeR)
+library(UpSetR)
+library(GO.db)
+library(ViSEAGO)
+
+source("rscripts/useful_functions.R")
+```
+
+
+
+#1. Read in data 
+First read in the salmon read counts
+```{r}
+big_all_quant_count<-read.table(here::here("rdata/adults/salmon","adults_big_all_quant_count.tab"),
+                                header=TRUE,sep="\t")
+big_all_quant_tpm<-read.table(here::here("rdata/adults/salmon","adults_big_all_quant_tpm.tab"),
+                              header=TRUE,sep="\t")
+```
+
+Here I read in the sample and read information
+```{r}
+rrna_removed<-read.table(here::here("rdata/adults/reads","rrna_removed_fastq_stats_mod.tab"),
+                         header = TRUE,sep="\t")
+rrna_removed<-rrna_removed[grep("_fwd",rrna_removed$file),]
+rrna_removed$sample<-gsub("_mrna.*","",rrna_removed$sample)
+
+
+adtr_reads<-read.table(here::here("rdata/adults/reads","adtr_fastq_stats.tab"),header=TRUE,sep="\t")
+adtr_reads<-adtr_reads[grep("_R1",adtr_reads$file),]
+adtr_reads$samp<-gsub("_adTr_.*","",adtr_reads$file)
+
+# Create a data.frame to store information about the RNA-seq samples.
+sample_dat<-do.call(rbind,strsplit(rrna_removed$sample,split = "-"))
+colnames(sample_dat)<-c("sel_line","rep","fam1","fam2","sex")
+sample_dat<-as.data.frame(sample_dat)
+sample_dat$sample<-paste(sample_dat$sel_line,
+                         sample_dat$rep,
+                         sample_dat$fam1,
+                         sample_dat$fam2,
+                         sample_dat$sex,sep="")
+rrna_removed$samp<-sample_dat$sample
+# Collect the number of sequences that remain after rRNA removal.
+sample_dat$num_seqs<-rrna_removed$num_seqs[match(sample_dat$sample,rrna_removed$samp)]
+
+# Collect the number of sequences that were originally in the sample after adapter trimming.
+sample_dat$raw_num_seqs<-adtr_reads$num_seqs[match(sample_dat$sample,adtr_reads$samp)]
+
+# The line is the combination of selection treatment and replicate
+sample_dat$line<-paste(sample_dat$sel_line,"_",sample_dat$rep,sep="")
+```
+
+Here I read in the the salmon mapping rates
+```{r}
+map_rates<-read.table(here::here("rdata/adults/salmon","salmon_mapping_rates.txt"),header=FALSE)
+colnames(map_rates)<-c("sample","map_perc")
+
+# Add mapping rates to the sample information
+sample_dat$map_rates<-map_rates$map_perc[match(sample_dat$samp,map_rates$sample)]
+```
+
+Here I read in some data about the selection lines
+```{r}
+line_dat<-read.table(here::here("rdata","lines.csv"),header=TRUE,sep=",")
+line_dat$line<-paste(line_dat$sel_line,"_",line_dat$rep,sep="")
+line_dat_summary<-ddply(line_dat,c("sel_line"),summarise,
+                "sd"=mean(SD),
+                "m_wt"=mean(m_body_wt),
+                "f_wt"=mean(f_body_wt))
+
+# Add sexual dimorphism data to the sample data
+sample_dat$sd<-line_dat$SD[match(sample_dat$line,line_dat$line)]
+```
+
+Here I produce a dataset of column names to allow DE analysis.
+```{r}
+coldata<-sample_dat[,c(1,2,5)]
+row.names(coldata)<-sample_dat$sample
+coldata$line<-paste(coldata$sel_line,"_",coldata$rep,sep="")
+coldata$group<-paste(coldata$sel_line,"_",coldata$sex,sep="")
+coldata$batch<-paste(coldata$sel_line,"_",coldata$rep,sep="")
+coldata$batch2<-as.numeric(as.factor(coldata$batch))
+coldata$sd<-line_dat$SD[match(coldata$line,line_dat$line)]
+```
+
+
+Next I read in the transcript and genome information.
+```{r}
+# Here I read in some basic statistics about the transcripts
+trans_dat<-read.table(here::here("rdata","p1.GS.annotation.v1.transcripts.fa.stats"),
+                      header=TRUE,sep="\t")
+trans_dat$gene<-gsub(".t.*","",trans_dat$sequence_id)
+
+# Obtain the transcript lengths for each transcript
+length_dat<-trans_dat$length[match(row.names(big_all_quant_count),trans_dat$sequence_id)]
+names(length_dat)<-trans_dat$sequence_id[match(row.names(big_all_quant_count),trans_dat$sequence_id)]
+
+# Read in the coordinate data for all genes.
+trans_coord_dat<-read.table(here::here("rdata","p1.GS.annotation.v1.genes.tab"),
+                      header=FALSE)
+colnames(trans_coord_dat)<-c("chrom","start","end","gene")
+# Now I combine the coordinates and transcript statistics
+trans_dat<-cbind(trans_dat,trans_coord_dat[match(trans_dat$gene,trans_coord_dat$gene),])
+
+# Here I read in the summary statistics for each contig/scaffold of the genome assembly
+genome_stats<-read.table(here::here("rdata","pt_036_001_hifiasm_20201223.primary.fasta.stats"),
+                         header=TRUE,sep="\t")
+# Define the X and Y contigs
+# See the paper: Kauffman et al. 2023. Mol. Biol. Evol. 40: msad167.
+
+X<-c("utg000057l_1","utg000114l_1","utg000139l_1","utg000191l_1",
+     "utg000326l_1","utg000359l_1","utg000532l_1","utg000602l_1")
+Y<-c("utg000322l_1","utg000312c_1","utg000610l_1","utg001235l_1")
+
+# Define the "short" contigs (i.e. any contig <100kb)
+# See the paper: Kauffman et al. 2023. Mol. Biol. Evol. 40: msad167.
+short<-genome_stats$sequence_id[which(genome_stats$length<100000)]
+
+# Here I label transcripts according to to which type of chromosome they are on.
+trans_dat$chr_t<-ifelse(trans_dat$chrom %in% X,"X",
+                        ifelse(trans_dat$chrom %in% Y,"Y",
+                               ifelse(trans_dat$chrom %in% short,"<100kb","A")))
+
+# aGet lists of transcripts from X and Y contigs
+X_transcripts<-trans_dat$sequence_id[which(trans_dat$chrom %in% X)]
+Y_transcripts<-trans_dat$sequence_id[which(trans_dat$chrom %in% Y)]
+length(Y_transcripts)
+```
+
+Here I load the data on which transcripts are sex biased in expression.
+(see the R script `salmon_analysis_DEanalysis_sexbias_adults.Rmd`)
+```{r}
+sb_genes<-readRDS(here::here("rdata/adults","sb_genes.RData"))
+names(sb_genes)
+d<-fromList(sb_genes[c("L1_A_male_biased","L1_A_female_biased",
+                   "L3_A_male_biased","L3_A_female_biased",
+                   "SA_A_male_biased","SA_A_female_biased",
+                   "L2_A_male_biased","L2_A_female_biased",
+                   "L1_B_male_biased","L1_B_female_biased",
+                   "L3_B_male_biased","L3_B_female_biased",
+                   "SA_B_male_biased","SA_B_female_biased",
+                   "L2_B_male_biased","L2_B_female_biased",
+                   "C_B_male_biased","C_B_female_biased")])
+trans_dat$c_bias<-ifelse(
+  trans_dat$sequence_id %in% sb_genes[["C_B_male_biased"]],"C:male-biased",
+  ifelse(trans_dat$sequence_id %in% sb_genes[["C_B_female_biased"]],"C:female-biased","C:unbiased"))
+
+```
+
+## 1.1 Subset the data
+I remove transcripts on short contigs (<100kb) and also transcripts on the Y.
+```{r}
+trans_dat<-trans_dat[which(!(trans_dat$chr_t%in%c("Y","<100kb"))),]
+big_all_quant_count<-big_all_quant_count[which(row.names(big_all_quant_count) %in% trans_dat$sequence_id),]
+big_all_quant_tpm<-big_all_quant_tpm[which(row.names(big_all_quant_tpm) %in% trans_dat$sequence_id),]
+nrow(big_all_quant_count)
+```
+
+
+#2. Some simple QC checks of the data
+How many reads were removed by rRNA removal
+```{r}
+# Number of reads removed in millions
+mean(sample_dat$raw_num_seqs-sample_dat$num_seqs)/1000000
+# The proportion of reads that were removed
+mean(1-(sample_dat$num_seqs/sample_dat$raw_num_seqs))
+min(1-(sample_dat$num_seqs/sample_dat$raw_num_seqs))
+max(1-(sample_dat$num_seqs/sample_dat$raw_num_seqs))
+```
+
+What is the distribution of the number of reads that were actually mapped by salmon.
+```{r}
+nrow(sample_dat)
+# A summary of the mapping rates
+summary((sample_dat$map_rates))
+
+# The number of reads that were mapped.
+summary((sample_dat$num_seqs*(sample_dat$map_rates/100))/1000000)
+# How many samples had mapping rates > 10
+sum(((sample_dat$num_seqs*(sample_dat$map_rates/100))/1000000) > 10)
+
+ggplot()+
+  geom_histogram(data=sample_dat,aes(x=(raw_num_seqs*(map_rates/100))/1000000))+
+  xlab("# reads mapped (x 1,000,000)")
+
+ggplot()+
+  geom_abline(slope=1,intercept = 0,linetype="dashed")+
+  geom_point(data=sample_dat,aes(x=(num_seqs/1000000),y=(raw_num_seqs/1000000),colour=sex))+
+  xlab("# of filtered reads (x 1,000,000)")+
+  ylab("# reads mapped (x 1,000,000)")
+```
+
+
+
+#3. Analyses of differential expression within and across selection lines.
+
+## 3.1 Comparison of expression across sexes and expression lines.
+In this analysis I use the selection_line/replicate as categorical variables and 
+define specific contrasts to test.
+
+Throughout in this analysis I am calling the sex-bias status of transcripts in C lines.
+```{r}
+# First separate the C line samples from the rest, we will only use them later to compare expression.
+C_samples<-sample_dat$sample[which(sample_dat$sel_line=="C")]
+
+C_big_all_quant_count<-big_all_quant_count[,which(colnames(big_all_quant_count) %in% C_samples)]
+
+# Define contrasts of interest
+contrast_lines<-data.frame(
+  "ex1"=c("L1","SA","L1"),
+  "ex2"=c("L3","L3","L2"))
+
+# Run through each contrast for both males (M) and females (F), save the results.
+cont<-1
+sex<-"M"
+
+# Place to store results
+qlf_results_tables<-list()
+genes<-list()
+
+for(cont in 1:nrow(contrast_lines)){
+  ex1<-contrast_lines$ex1[cont]
+  ex2<-contrast_lines$ex2[cont]
+  
+  # Get the samples that are relevant for this contrast
+  samples<-sample_dat$sample[
+    which(sample_dat$sel_line %in% c(ex1,ex2))]
+  
+  # Initialise a data.frame to store the results in.
+  qlf_results_tables[[paste(ex1,"v",ex2,sep="")]]<-data.frame("trans"=rownames(big_all_quant_count))
+
+  # Run the analysis separately for each sex
+  for(sex in c("M","F")){
+    
+    samples_cont<-samples[grep(sex,samples)]
+    
+    # Get the count data
+    big_all_quant_count_cont<-big_all_quant_count[,which((colnames(big_all_quant_count) %in% samples_cont))]
+    
+    # Make the edgeR object
+    y<-DGEList(counts=big_all_quant_count_cont)
+    
+    # Define the model design and the contrast
+    coldata_cont<-coldata[samples_cont,]
+    coldata_cont$batch<-gsub(pattern = ex1,"ex1",coldata_cont$batch)
+    coldata_cont$batch<-gsub(pattern = ex2,"ex2",coldata_cont$batch)
+    design<-model.matrix(~0+batch,data = coldata_cont)
+    
+    # Compare the average of the batches to the average of the other two batches
+    my.contrast<-makeContrasts(cont=((batchex1_A+batchex1_B)/2) - ((batchex2_A+batchex2_B)/2),
+                               levels=design)
+    
+    # recalculate normalisation factors
+    y<-calcNormFactors(y)
+
+    # estimate dispersions
+    y<-estimateDisp(y,design)
+
+    # Fit the model
+    fit <- glmQLFit(y,design)
+    
+    # Test the contrast
+    qlf <- glmQLFTest(fit, contrast=my.contrast)
+    
+    # Correct for multiple testing
+    qlf$table$FDR<-p.adjust(qlf$table$PValue,method="BH")
+    #qlf$table[grep("Tor",rownames(qlf$table)),]
+    nrow(qlf$table)
+    
+    # Re-format the column names
+    colnames(qlf$table)<-paste(sex,"_",colnames(qlf$table),sep="")
+    
+    qlf_results_tables[[paste(ex1,"v",ex2,sep="")]]<-cbind(
+      qlf_results_tables[[paste(ex1,"v",ex2,sep="")]],
+      qlf$table[
+        match(qlf_results_tables[[paste(ex1,"v",ex2,sep="")]]$trans,
+              rownames(qlf$table)),])
+    # Define the direction of difference
+    # Up: If logFC > 0, then ex1 > ex2
+    # Down: If logFC < 0, then ex1 < ex2
+    
+    # Here I use the nominal p-value to call DE
+    # I don't use logFC threshholds.
+    qlf_results_tables[[paste(ex1,"v",ex2,sep="")]][,paste(sex,"_sel_resp",sep="")]<-vector()
+    qlf_results_tables[[paste(ex1,"v",ex2,sep="")]][,paste(sex,"_sel_resp",sep="")]<-ifelse(
+      (qlf_results_tables[[paste(ex1,"v",ex2,sep="")]][,paste(sex,"_logFC",sep="")]>0 &
+         qlf_results_tables[[paste(ex1,"v",ex2,sep="")]][,paste(sex,"_PValue",sep="")]<0.05),
+      paste("up-in-",ex1,sep=""),
+      ifelse(
+        (qlf_results_tables[[paste(ex1,"v",ex2,sep="")]][,paste(sex,"_logFC",sep="")]<0 & 
+           qlf_results_tables[[paste(ex1,"v",ex2,sep="")]][,paste(sex,"_PValue",sep="")]<0.05),
+        paste("up-in-",ex2,sep=""),
+        paste(sex,"0",sep="")))
+    
+    # Here I use FDR correction at 0.1 to call DE
+    # I don't use logFC threshholds.
+    qlf_results_tables[[paste(ex1,"v",ex2,sep="")]][,paste(sex,"_sel_resp_fdr0.1",sep="")]<-vector()
+    qlf_results_tables[[paste(ex1,"v",ex2,sep="")]][,paste(sex,"_sel_resp_fdr0.1",sep="")]<-ifelse(
+      (qlf_results_tables[[paste(ex1,"v",ex2,sep="")]][,paste(sex,"_logFC",sep="")]>0 &
+         qlf_results_tables[[paste(ex1,"v",ex2,sep="")]][,paste(sex,"_FDR",sep="")]<0.1),
+      paste("up-in-",ex1,sep=""),
+      ifelse(
+        (qlf_results_tables[[paste(ex1,"v",ex2,sep="")]][,paste(sex,"_logFC",sep="")]<0 & 
+           qlf_results_tables[[paste(ex1,"v",ex2,sep="")]][,paste(sex,"_FDR",sep="")]<0.1),
+        paste("up-in-",ex2,sep=""),
+        paste(sex,"0",sep="")))
+
+    # Here I use FDR correction at 0.05 to call DE
+    # I don't use logFC threshholds.
+    qlf_results_tables[[paste(ex1,"v",ex2,sep="")]][,paste(sex,"_sel_resp_fdr0.05",sep="")]<-vector()
+    qlf_results_tables[[paste(ex1,"v",ex2,sep="")]][,paste(sex,"_sel_resp_fdr0.05",sep="")]<-ifelse(
+      (qlf_results_tables[[paste(ex1,"v",ex2,sep="")]][,paste(sex,"_logFC",sep="")]>0 &
+         qlf_results_tables[[paste(ex1,"v",ex2,sep="")]][,paste(sex,"_FDR",sep="")]<0.05),
+      paste("up-in-",ex1,sep=""),
+      ifelse(
+        (qlf_results_tables[[paste(ex1,"v",ex2,sep="")]][,paste(sex,"_logFC",sep="")]<0 & 
+           qlf_results_tables[[paste(ex1,"v",ex2,sep="")]][,paste(sex,"_FDR",sep="")]<0.05),
+        paste("up-in-",ex2,sep=""),
+        paste(sex,"0",sep="")))
+  }
+}
+```
+
+Add sex-bias information from adults in C lines.
+```{r}
+for (set in names(qlf_results_tables)){
+  qlf_results_tables[[set]]$c_bias<-vector(length=nrow(qlf_results_tables[[set]]))
+  qlf_results_tables[[set]]$c_bias[
+    which(rownames(qlf_results_tables[[set]]) %in% sb_genes[["C_B_male_biased"]])]<-"C:male-biased"
+  qlf_results_tables[[set]]$c_bias[
+    which(rownames(qlf_results_tables[[set]]) %in% sb_genes[["C_B_female_biased"]])]<-"C:female-biased"
+  qlf_results_tables[[set]]$c_bias[
+    which(qlf_results_tables[[set]]$c_bias == "FALSE")]<-"C:unbiased"
+}
+```
+
+Save these tables
+```{r}
+saveRDS(qlf_results_tables,
+        file = here::here("rdata/adults","selection_lines_de_results.RData"))
+```
+
+Here I do a small sanity check of the results
+```{r}
+top<-head(qlf_results_tables[["L1vL3"]][
+  which(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05=="up-in-L1"),])
+    #head(res)
+top[1,]
+top$trans[1]
+y<-DGEList(counts=big_all_quant_count)
+norm <- edgeR::cpm(y)
+gd<-gene_data(norm,top$trans[1],sample_dat)
+gd
+gdplot<-gd[which(gd$sel_line%in%c("L1","C","L3","SA")),]
+gdplot$sel_line<-factor(gdplot$sel_line,levels=c("L1","SA","C","L3"))
+ggplot()+
+  geom_point(data=gdplot,
+             aes(x=sel_line,y=counts,colour=rep),position=position_jitter(0.1),size=3)+
+  facet_grid(sex~.)
+```
+
+
+## 3.2 Exploring and further analysis of DE results
+```{r}
+qlf_results_tables<-readRDS(here::here("rdata/adults","selection_lines_de_results.RData"))
+# How many transcripts were tested.
+lapply(qlf_results_tables,nrow)
+```
+
+Add the chrome types to these data.
+```{r}
+# Proportion of genes across chromosome types
+n_genes_chroms<-table(trans_dat$chr_t)
+p_genes_chroms<-table(trans_dat$chr_t)/length(trans_dat$chr_t)
+
+qlf_results_tables[["L1vL3"]]$chr_t<-trans_dat$chr_t[
+  match(qlf_results_tables[["L1vL3"]]$trans,trans_dat$sequence_id)]
+qlf_results_tables[["SAvL3"]]$chr_t<-trans_dat$chr_t[
+  match(qlf_results_tables[["SAvL3"]]$trans,trans_dat$sequence_id)]
+qlf_results_tables[["L1vL2"]]$chr_t<-trans_dat$chr_t[
+  match(qlf_results_tables[["L1vL2"]]$trans,trans_dat$sequence_id)]
+```
+
+What proportion of genes are sex-biased?
+```{r}
+table(qlf_results_tables[["L1vL3"]]$c_bias)/sum(table(qlf_results_tables[["L1vL3"]]$c_bias))
+table(qlf_results_tables[["SAvL3"]]$c_bias)/sum(table(qlf_results_tables[["SAvL3"]]$c_bias))
+```
+
+The proportions are, as expected, the same in both, going forward I take L1 vs. L3 as the reference
+```{r}
+p_sb_genes<-table(qlf_results_tables[["L1vL3"]]$c_bias)/sum(table(qlf_results_tables[["L1vL3"]]$c_bias))
+```
+
+Label the transcripts that have correlated effects across males and females
+```{r}
+qlf_results_tables[["L1vL3"]]$corr_sex<-ifelse(
+  qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05==qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05,
+  "sexually-concordant","sexually-discordant")
+
+qlf_results_tables[["L1vL3"]]$resp<-paste(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05,
+                                          qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05,sep=",")
+
+qlf_results_tables[["SAvL3"]]$corr_sex<-ifelse(
+  qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05==qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05,
+  "sexually-concordant","sexually-discordant")
+
+qlf_results_tables[["SAvL3"]]$resp<-paste(qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05,
+                                          qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05,sep=",")
+```
+
+Label the transcripts that have correlated effects across contrasts: L1 vs. L3 and SA vs. L3
+
+For example, because L1 and SA have the same direction of male size evolution (smaller males)
+transcripts that are "up-in-SA" AND "up-in-L1" have a parallel expression evolution response.
+```{r}
+head(qlf_results_tables[["L1vL3"]])
+## Males
+qlf_results_tables[["L1vL3"]]$M_corr_sel_line<-vector(length=nrow(qlf_results_tables[["L1vL3"]]))
+
+qlf_results_tables[["L1vL3"]]$M_corr_sel_line<-ifelse(
+  (qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05=="up-in-SA" & qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05=="up-in-L1"),
+  "SAvL3:parallel-response",
+  ifelse((qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05=="up-in-L3" & qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05=="up-in-L3"),
+         "SAvL3:parallel-response",
+         ifelse((qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05=="up-in-SA" & qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05=="up-in-L3"),
+                "SAvL3:opposite response",ifelse((qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05=="up-in-L3" & qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05=="up-in-L1"),
+                "SAvL3:opposite response","SAvL3:no parallel-response"))))
+
+qlf_results_tables[["SAvL3"]]$M_corr_sel_line<-vector(length=nrow(qlf_results_tables[["SAvL3"]]))
+
+qlf_results_tables[["SAvL3"]]$M_corr_sel_line<-ifelse(
+  (qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05=="up-in-L1" & qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05=="up-in-SA"),
+  "L1vL3:parallel-response",
+  ifelse((qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05=="up-in-L3" & qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05=="up-in-L3"),
+         "L1vL3:parallel-response",
+         ifelse((qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05=="up-in-L1" & qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05=="up-in-L3"),
+                "L1vL3:opposite response",
+                ifelse((qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05=="up-in-L3" & qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05=="up-in-SA"),
+                "L1vL3:opposite response","L1vL3:no parallel-response"))))
+
+## Females
+qlf_results_tables[["L1vL3"]]$F_corr_sel_line<-vector(length=nrow(qlf_results_tables[["L1vL3"]]))
+
+qlf_results_tables[["L1vL3"]]$F_corr_sel_line<-ifelse(
+  (qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05=="up-in-SA" & qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05=="up-in-L1"),
+  "SAvL3:parallel-response",
+  ifelse((qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05=="up-in-L3" & qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05=="up-in-L3"),
+         "SAvL3:parallel-response",
+         ifelse((qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05=="up-in-SA" & qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05=="up-in-L3"),
+                "SAvL3:opposite response",ifelse((qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05=="up-in-L3" & qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05=="up-in-L1"),
+                "SAvL3:opposite response","SAvL3:no parallel-response"))))
+
+qlf_results_tables[["SAvL3"]]$F_corr_sel_line<-vector(length=nrow(qlf_results_tables[["SAvL3"]]))
+
+qlf_results_tables[["SAvL3"]]$F_corr_sel_line<-ifelse(
+  (qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05=="up-in-L1" & qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05=="up-in-SA"),
+  "L1vL3:parallel-response",
+  ifelse((qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05=="up-in-L3" & qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05=="up-in-L3"),
+         "L1vL3:parallel-response",
+         ifelse((qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05=="up-in-L1" & qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05=="up-in-L3"),
+                "L1vL3:opposite response",
+                ifelse((qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05=="up-in-L3" & qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05=="up-in-SA"),
+                "L1vL3:opposite response","L1vL3:no parallel-response"))))
+```
+
+
+### 3.2.1 How are these DE transcripts distributed?
+More for males/females?
+Distribution across sex-chromosomes?
+Sex-biased?
+```{r}
+# How many transcripts are DE
+length(which(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05!="M0"))
+length(which(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05!="F0"))
+length(which(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05!="M0"))/length(which(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05!="F0"))
+```
+
+
+For Table S1:
+Are DE transcripts over-represesnted on sex-chromosomes.
+```{r}
+tab<-table(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05,qlf_results_tables[["L1vL3"]]$chr_t)
+tab
+c_t<-chisq.test(tab[2,],p=p_genes_chroms)
+c_t
+tab[2,]
+tab[2,]/sum(tab[2,])
+c_t$expected
+c_t<-chisq.test(tab[3,],p=p_genes_chroms)
+c_t
+tab[3,]
+tab[3,]/sum(tab[3,])
+c_t$expected
+# 
+# Females
+tab<-table(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05,qlf_results_tables[["L1vL3"]]$chr_t)
+tab
+c_t<-chisq.test(tab[2,],p=p_genes_chroms)
+c_t
+tab[2,]
+tab[2,]/sum(tab[2,])
+c_t$expected
+c_t<-chisq.test(tab[3,],p=p_genes_chroms)
+c_t
+tab[3,]
+tab[3,]/sum(tab[3,])
+c_t$expected
+# 
+
+# Males
+tab<-table(qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05,qlf_results_tables[["SAvL3"]]$chr_t)
+c_t<-chisq.test(tab[2,],p=p_genes_chroms)
+c_t
+tab[2,]
+tab[2,]/sum(tab[2,])
+c_t$expected
+c_t<-chisq.test(tab[3,],p=p_genes_chroms)
+c_t
+tab[3,]
+tab[3,]/sum(tab[3,])
+c_t$expected
+# Females
+tab<-table(qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05,qlf_results_tables[["SAvL3"]]$chr_t)
+c_t<-chisq.test(tab[2,],p=p_genes_chroms)
+c_t
+tab[2,]
+tab[2,]/sum(tab[2,])
+c_t$expected
+c_t<-chisq.test(tab[3,],p=p_genes_chroms)
+c_t
+tab[3,]
+tab[3,]/sum(tab[3,])
+c_t$expected
+```
+
+For Table S2:
+Are the proportion of DE transcripts different between males and females?
+```{r}
+# L1 vs. L3
+prop.test(x=c(
+  sum(table(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05)[c(2,3)]),
+  sum(table(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05)[c(2,3)])),
+  n=c(19373,19373))
+
+table(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05)[c(2,3)]
+table(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05)[c(2,3)]/sum(table(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05)[c(2,3)])
+table(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05)[c(2,3)]
+table(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05)[c(2,3)]/sum(table(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05)[c(2,3)])
+
+
+# SA vs. L3
+length(which(qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05!="M0"))
+length(which(qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05!="F0"))
+length(which(qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05!="M0"))/length(which(qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05!="F0"))
+
+prop.test(x=c(
+  sum(table(qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05)[c(2,3)]),
+  sum(table(qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05)[c(2,3)])),
+  n=c(19373,19373))
+
+table(qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05)[c(2,3)]
+table(qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05)[c(2,3)]/sum(table(qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05)[c(2,3)])
+table(qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05)[c(2,3)]
+table(qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05)[c(2,3)]/sum(table(qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05)[c(2,3)])
+
+# Are there deviations from 50/50 in direction?
+chisq.test(table(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05)[c(2,3)])
+chisq.test(table(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05)[c(2,3)])
+
+chisq.test(table(qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05)[c(2,3)])
+chisq.test(table(qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05)[c(2,3)])
+```
+
+
+### 3.2.2 Identify and count the unique_L1, unique_SA, and parallel transcripts
+Which transcripts are DE between L1 v. L3 and SA v. L3?
+How many are DE *only* in the L1 v. L3 contrast? (unique_L1)
+How many are DE in both contrasts, in the same direction? (parallel)
+How many are DE *only* in the SA v. L3 contrast? (unique_SA)
+
+```{r}
+l<-c(tapply(qlf_results_tables[["L1vL3"]]$trans[
+  which(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05!="M0")],
+  INDEX = qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05[
+    which(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05!="M0")],unique),
+  tapply(qlf_results_tables[["SAvL3"]]$trans[
+  which(qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05!="M0")],
+  INDEX = qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05[
+    which(qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05!="M0")],unique),
+  tapply(qlf_results_tables[["L1vL3"]]$trans[
+  which(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05!="F0")],
+  INDEX = qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05[
+    which(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05!="F0")],unique),
+  tapply(qlf_results_tables[["SAvL3"]]$trans[
+  which(qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05!="F0")],
+  INDEX = qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05[
+    which(qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05!="F0")],unique))
+names(l)
+names(l)<-c("m-L1vL3:up-in-L1","m-L1vL3:up-in-L3","m-SAvL3:up-in-L3","m-SAvL3:up-in-SA",
+            "f-L1vL3:up-in-L1","f-L1vL3:up-in-L3","f-SAvL3:up-in-L3","f-SAvL3:up-in-SA")
+upset(fromList(l),sets = names(l),keep.order = TRUE,nsets = 6,
+      order.by = "freq")
+```
+
+
+```{r}
+# Q: Which and how many are only DE in L1 v. L3 (unique L1)?
+# Q: Which and how many are DE in both L1 v. L3 and SA v. L3 in the same direction (parallel)?
+# Q: Which and how many are only DE in SA v. L3 (unique SA)?
+trans_groups<-list(
+"unique_L1"=qlf_results_tables[["L1vL3"]]$trans[
+  which(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05!="M0" & 
+          qlf_results_tables[["L1vL3"]]$M_corr_sel_line=="SAvL3:no parallel-response")],
+"parallel"=qlf_results_tables[["L1vL3"]]$trans[
+  which(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05!="M0" & 
+          qlf_results_tables[["L1vL3"]]$M_corr_sel_line=="SAvL3:parallel-response")],
+"unique_SA"=qlf_results_tables[["SAvL3"]]$trans[
+  which(qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05!="M0" & 
+          qlf_results_tables[["SAvL3"]]$M_corr_sel_line=="L1vL3:no parallel-response")]
+)
+
+f_trans_groups<-list(
+"unique_L1"=qlf_results_tables[["L1vL3"]]$trans[
+  which(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05!="F0" & 
+          qlf_results_tables[["L1vL3"]]$F_corr_sel_line=="SAvL3:no parallel-response")],
+"parallel"=qlf_results_tables[["L1vL3"]]$trans[
+  which(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05!="F0" & 
+          qlf_results_tables[["L1vL3"]]$F_corr_sel_line=="SAvL3:parallel-response")],
+"unique_SA"=qlf_results_tables[["SAvL3"]]$trans[
+  which(qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05!="F0" & 
+          qlf_results_tables[["SAvL3"]]$M_corr_sel_line=="L1vL3:no parallel-response")]
+)
+```
+
+```{r}
+l<-c(trans_groups,f_trans_groups)
+names(l)<-c("m_unique_L1","m_parallel","m_unique_SA",
+            "f_unique_L1","f_parallel","f_unique_SA")
+upset(fromList(l),sets = names(l),keep.order = TRUE,nsets = 6,
+      order.by = "freq")
+```
+
+For Table S3
+Count the number of transcripts in these groups.
+```{r}
+lapply(trans_groups, length)
+lapply(f_trans_groups, length)
+
+# Males
+tab<-table(
+  qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05[
+  which(qlf_results_tables[["L1vL3"]]$trans %in% trans_groups[["unique_L1"]])])
+tab
+tab<-table(
+  qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05[
+  which(qlf_results_tables[["L1vL3"]]$trans %in% trans_groups[["parallel"]])])
+tab
+tab<-table(
+  qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05[
+  which(qlf_results_tables[["SAvL3"]]$trans %in% trans_groups[["parallel"]])])
+tab
+tab<-table(
+  qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05[
+  which(qlf_results_tables[["SAvL3"]]$trans %in% trans_groups[["unique_SA"]])])
+tab
+
+# Females
+tab<-table(
+  qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05[
+  which(qlf_results_tables[["L1vL3"]]$trans %in% f_trans_groups[["unique_L1"]])])
+tab
+tab<-table(
+  qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05[
+  which(qlf_results_tables[["L1vL3"]]$trans %in% f_trans_groups[["parallel"]])])
+tab
+tab<-table(
+  qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05[
+  which(qlf_results_tables[["SAvL3"]]$trans %in% f_trans_groups[["parallel"]])])
+tab
+tab<-table(
+  qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05[
+  which(qlf_results_tables[["SAvL3"]]$trans %in% f_trans_groups[["unique_SA"]])])
+tab
+
+```
+
+
+### 3.2.3 GO-term analysis of genes DE in L1 vs. L3 and SA vs. L3
+This analysis is to test for "functional paralallelism" in response to selection.
+
+For Table S4
+
+There are regular updates updates to ViSEAGO. Thus, some of the GO terms in the file are no longer recognised.
+I here first remove these. Then load a modified "C_mac_HiFi_customfile.txt" as the custom GO table.
+```{r}
+GOfil<-read.table(here::here("rdata","C_mac_HiFi_customfile.txt"),header=TRUE,sep="\t")
+org_n<-nrow(GOfil)
+org_n
+length(unique(GOfil$gene_id))
+GOfil<-GOfil[which(GOfil$GOID %in% keys(GO.db)),]
+new_n<-nrow(GOfil)
+new_n
+length(unique(GOfil$gene_id))
+# Looks like some genes are lost
+org_n-new_n
+# But 70044 GO terms are removed.
+write.table(GOfil,here::here("rdata","C_mac_HiFi_customfile.18-03-2025.txt"),
+            sep="\t",col.names=TRUE,row.names=FALSE,quote=FALSE)
+```
+
+```{r}
+# Load the new file as a custom GO term table
+Custom<-ViSEAGO::Custom2GO(file = here::here("rdata","C_mac_HiFi_customfile.18-03-2025.txt"))
+# Create GENE2GO
+myGENE2GO<-ViSEAGO::annotate(id="Cmac",object=Custom)
+
+
+# The background gene set is defined as all transcripts in the genome.
+# This is despite the fact that many did not have expression data.
+Transcripts <- read.table(here::here("rdata","Transcript_coords.bed"),
+                          header = FALSE, sep = "\t")
+colnames(Transcripts) <- c('contig','start_T','end_T','transcript_ID','gene_ID')
+nrow(Transcripts)
+```
+
+First I get the GO terms for genes DE in males in L1vL3, SAvL3, and L1vL2
+```{r}
+names(qlf_results_tables)
+lapply(qlf_results_tables,FUN = function(x){length(which(x$M_FDR<0.05))})
+go_results<-list()
+go_results_table<-list()
+for(cont in names(qlf_results_tables)){
+  Backgrund_GENES <- Transcripts$transcript_ID
+  sel_GENES <-  Transcripts$transcript_ID[which(
+    Transcripts$transcript_ID %in% qlf_results_tables[[cont]]$trans[which(qlf_results_tables[[cont]]$M_FDR<0.05)])]
+
+  # create topGOdata
+  BP<-ViSEAGO::create_topGOdata(allGenes = Backgrund_GENES, geneSel = sel_GENES,
+        gene2GO=myGENE2GO, 
+        ont="BP",
+        nodeSize=10)
+  # ViSEAGO says there are "13350 feasible genes" that can be used.
+  # How many of my "strict" genes are in these feasible sets
+  #str(BP)
+  feasible_genes<-BP@allGenes[BP@feasible]
+  n<-length(sel_GENES[which(sel_GENES %in% feasible_genes)])
+  tot<-length(sel_GENES)
+  cat("Genes w/ GO: ",n,", ",tot,", ",n/tot,"\n")
+
+  # perform TopGO test using clasic algorithm
+  classic<-topGO::runTest(
+      BP,
+      algorithm ="classic",
+      statistic = "fisher"
+  )
+  # merge results from topGO
+  BP_sResults<-ViSEAGO::merge_enrich_terms(
+      Input=list(
+          p.value=c("BP","classic")
+      )
+  )
+  # display the merged table
+  #BP_sResults
+  go_results[[cont]]<-BP_sResults
+  go_results_table[[cont]]<-BP_sResults@data[
+    order(BP_sResults@data$`p.value.-log10_pvalue`, decreasing = TRUE), c(1:2,4:6)]
+  # Save the results table
+  write.table(as.data.frame(BP_sResults@data[
+    order(BP_sResults@data$`p.value.-log10_pvalue`, decreasing = TRUE), c(1:2,4:6)]),
+              here::here("rdata",paste("go_results",cont,".txt",sep="")),
+                              col.names=TRUE,row.names=FALSE,quote = FALSE,sep="\t")
+}
+names(trans_groups)
+lapply(trans_groups,FUN = length)
+
+for(cont in names(trans_groups)){
+  Backgrund_GENES <- Transcripts$transcript_ID
+  sel_GENES <-  Transcripts$transcript_ID[which(
+    Transcripts$transcript_ID %in% trans_groups[[cont]])]
+
+  # create topGOdata
+  BP<-ViSEAGO::create_topGOdata(allGenes = Backgrund_GENES, geneSel = sel_GENES,
+        gene2GO=myGENE2GO, 
+        ont="BP",
+        nodeSize=10)
+  # ViSEAGO says there are "13350 feasible genes" that can be used.
+  # How many of my "strict" genes are in these feasible sets
+  #str(BP)
+  feasible_genes<-BP@allGenes[BP@feasible]
+  n<-length(sel_GENES[which(sel_GENES %in% feasible_genes)])
+  tot<-length(sel_GENES)
+  cat("Genes w/ GO: ",n,", ",tot,", ",n/tot,"\n")
+
+  # perform TopGO test using clasic algorithm
+  classic<-topGO::runTest(
+      BP,
+      algorithm ="classic",
+      statistic = "fisher"
+  )
+  # merge results from topGO
+  BP_sResults<-ViSEAGO::merge_enrich_terms(
+      Input=list(
+          p.value=c("BP","classic")
+      )
+  )
+  # display the merged table
+  #BP_sResults
+  go_results[[cont]]<-BP_sResults
+  go_results_table[[cont]]<-BP_sResults@data[
+    order(BP_sResults@data$`p.value.-log10_pvalue`, decreasing = TRUE), c(1:2,4:6)]
+  # Save the results table
+  write.table(as.data.frame(BP_sResults@data[
+    order(BP_sResults@data$`p.value.-log10_pvalue`, decreasing = TRUE), c(1:2,4:6)]),
+              here::here("rdata",paste("go_results",cont,".txt",sep="")),
+                              col.names=TRUE,row.names=FALSE,quote = FALSE,sep="\t")
+}
+save(go_results_table,file = here::here("rdata","go_results.RData"))
+names(go_results_table)
+```
+
+
+```{r}
+load(file = here::here("rdata","go_results.RData"))
+```
+
+
+Now I sample X genes at random, 100 times.
+Run GO term analysis for each random set.
+
+Then compute what proportion of these are overlapping with the GO terms in the different transcript sets.
+
+see the R scripts `go_overlaps_bootstrapping.R`
+```{r}
+
+```
+
+Compare overlap in GO terms between SAvL3 and L1vL3 to overlaps between random set of genes and SAvL3 and L1vL3.
+Compare overlap in GO terms between uniqueL1 and uniqueSA to overlaps between random set of genes and uniqueL1 and uniqueSA.
+Compare true overlaps with the distribution of overlaps from bootstrapping runs.
+```{r}
+load(file = here::here("rdata","go_results.RData"))
+boot_dat<-read.table(here::here("rdata",paste("go_boot_results_SAvL3-L1vL3_ovlap2.tab",sep="")),header=TRUE)
+
+p1<-ggplot()+
+  geom_histogram(data=boot_dat,aes(x=SAvL3_ovlp))+
+  xlab("Overlap w/ SA v. L3 DE transcripts")+
+  ylab("Count")+
+  geom_vline(xintercept=length(which(
+    go_results_table[["L1vL3"]]$GO.ID %in% go_results_table[["SAvL3"]]$GO.ID))/length(
+      go_results_table[["L1vL3"]]$GO.ID),
+    colour="red",linetype="dashed")+
+  theme(text=element_text(size=16))
+p2<-ggplot()+
+  geom_histogram(data=boot_dat,aes(x=L1vL3_ovlp))+
+  xlab("Overlap w/ L1 v. L3 DE transcripts")+
+  ylab("Count")+
+  geom_vline(xintercept=length(which(
+    go_results_table[["SAvL3"]]$GO.ID %in% go_results_table[["L1vL3"]]$GO.ID))/length(
+      go_results_table[["SAvL3"]]$GO.ID),
+    colour="red",linetype="dashed")+
+  theme(text=element_text(size=16))
+
+p3<-ggplot()+
+  geom_histogram(data=boot_dat,aes(x=unique_SA_ovlp))+
+  xlab("Overlap w/ unique SA transcripts")+
+  ylab("Count")+
+  geom_vline(xintercept=length(which(
+    go_results_table[["unique_L1"]]$GO.ID %in% go_results_table[["unique_SA"]]$GO.ID))/length(
+      go_results_table[["unique_L1"]]$GO.ID),
+    colour="red",linetype="dashed")+
+  theme(text=element_text(size=16))
+p4<-ggplot()+
+  geom_histogram(data=boot_dat,aes(x=unique_L1_ovlp))+
+  xlab("Overlap w/ unique L1 transcripts")+
+  ylab("Count")+
+  # What proportion of the unique SA GO terms are in the unique L1 GO terms
+  geom_vline(xintercept=length(which(
+    go_results_table[["unique_SA"]]$GO.ID %in% go_results_table[["unique_L1"]]$GO.ID))/length(
+      go_results_table[["unique_SA"]]$GO.ID),
+    colour="red",linetype="dashed")+
+  theme(text=element_text(size=16))
+
+cowplot::plot_grid(p1,p2,
+                   p3,p4,nrow = 2,align = "hv")
+```
+
+Write the table of true overlaps
+```{r}
+go_results_table[["unique_L1"]][which(go_results_table[["unique_L1"]]$GO.ID %in% go_results_table[["unique_SA"]]$GO.ID),]
+nrow(go_results_table[["unique_L1"]][
+  which(go_results_table[["unique_L1"]]$GO.ID %in% go_results_table[["unique_SA"]]$GO.ID),])
+nrow(go_results_table[["unique_SA"]][
+  which(go_results_table[["unique_SA"]]$GO.ID %in% go_results_table[["unique_L1"]]$GO.ID),])
+
+write.table(as.data.frame(
+    go_results_table[["unique_L1"]][which(go_results_table[["unique_L1"]]$GO.ID %in% go_results_table[["unique_SA"]]$GO.ID),]),
+              here::here("rdata",paste("go_results_uniqueL1-uniqueSA_ovlap.txt",sep="")),
+                              col.names=TRUE,row.names=FALSE,quote = FALSE,sep="\t")
+
+go_results_table[["L1vL3"]][which(go_results_table[["L1vL3"]]$GO.ID %in% go_results_table[["SAvL3"]]$GO.ID),]
+nrow(go_results_table[["L1vL3"]][
+  which(go_results_table[["L1vL3"]]$GO.ID %in% go_results_table[["SAvL3"]]$GO.ID),])
+nrow(go_results_table[["SAvL3"]][
+  which(go_results_table[["SAvL3"]]$GO.ID %in% go_results_table[["L1vL3"]]$GO.ID),])
+
+write.table(as.data.frame(
+    go_results_table[["L1vL3"]][which(go_results_table[["L1vL3"]]$GO.ID %in% go_results_table[["SAvL3"]]$GO.ID),]),
+              here::here("rdata",paste("go_results_L1vL3-SAvL3_ovlap.txt",sep="")),
+                              col.names=TRUE,row.names=FALSE,quote = FALSE,sep="\t")
+
+```
+
+
+### 3.2.4 What is the association between differentiatl expression and sex-bias status?
+For Table S5
+Are the DE transcripts sex-biased.
+```{r}
+p_sb_genes*19373
+p_sb_genes
+tab<-table(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05,qlf_results_tables[["L1vL3"]]$c_bias)
+c_t<-chisq.test(tab[2,],p=p_sb_genes)
+c_t
+tab[2,]
+tab[2,]/sum(tab[2,])
+c_t$expected
+
+c_t<-chisq.test(tab[3,],p=p_sb_genes)
+c_t
+tab[3,]
+tab[3,]/sum(tab[3,])
+c_t$expected
+# 
+# Females
+tab<-table(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05,qlf_results_tables[["L1vL3"]]$c_bias)
+c_t<-chisq.test(tab[2,],p=p_sb_genes)
+c_t
+tab[2,]
+tab[2,]/sum(tab[2,])
+c_t$expected
+
+c_t<-chisq.test(tab[3,],p=p_sb_genes)
+c_t
+tab[3,]
+tab[3,]/sum(tab[3,])
+c_t$expected
+# 
+
+# Males
+tab<-table(qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05,qlf_results_tables[["SAvL3"]]$c_bias)
+c_t<-chisq.test(tab[2,],p=p_sb_genes)
+c_t
+tab[2,]
+tab[2,]/sum(tab[2,])
+c_t$expected
+
+c_t<-chisq.test(tab[3,],p=p_sb_genes)
+c_t
+tab[3,]
+tab[3,]/sum(tab[3,])
+c_t$expected
+
+# Females
+tab<-table(qlf_results_tables[["SAvL3"]]$F_sel_resp_fdr0.05,qlf_results_tables[["SAvL3"]]$c_bias)
+c_t<-chisq.test(tab[2,],p=p_sb_genes)
+c_t
+tab[2,]
+tab[2,]/sum(tab[2,])
+c_t$expected
+
+c_t<-chisq.test(tab[3,],p=p_sb_genes)
+c_t
+tab[3,]
+tab[3,]/sum(tab[3,])
+c_t$expected
+```
+
+For Table 1
+in males
+```{r}
+all_tab_dat<-data.frame()
+tab<-table(
+  qlf_results_tables[["L1vL3"]]$c_bias[
+  which(qlf_results_tables[["L1vL3"]]$trans %in% trans_groups[["unique_L1"]])])
+tab
+sum(tab)
+tab_dat<-data.frame("set"=rep("unique_L1",length=length(tab)),
+                    "counts"=as.vector(tab),
+                    "prop"=round(as.vector(tab)/sum(as.vector(tab)),2),
+                    "sb"=names(tab))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+c_t<-chisq.test(tab,p=p_sb_genes)
+c_t
+c_t$expected
+c_t$residuals
+# Transcripts unique to L1 are disproportionately male-biased in expression
+tab<-table(
+  qlf_results_tables[["SAvL3"]]$c_bias[
+  which(qlf_results_tables[["SAvL3"]]$trans %in% trans_groups[["parallel"]])])
+tab
+tab<-table(
+  qlf_results_tables[["L1vL3"]]$c_bias[
+  which(qlf_results_tables[["L1vL3"]]$trans %in% trans_groups[["parallel"]])])
+tab
+sum(tab)
+tab_dat<-data.frame("set"=rep("parallel",length=length(tab)),
+                    "counts"=as.vector(tab),
+                    "prop"=round(as.vector(tab)/sum(as.vector(tab)),2),
+                    "sb"=names(tab))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+
+c_t<-chisq.test(tab,p=p_sb_genes)
+c_t
+c_t$expected
+c_t$residuals
+
+tab<-table(
+  qlf_results_tables[["SAvL3"]]$c_bias[
+  which(qlf_results_tables[["SAvL3"]]$trans %in% trans_groups[["unique_SA"]])])
+tab
+sum(tab)
+tab_dat<-data.frame("set"=rep("unique_SA",length=length(tab)),
+                    "counts"=as.vector(tab),
+                    "prop"=round(as.vector(tab)/sum(as.vector(tab)),2),
+                    "sb"=names(tab))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+
+c_t<-chisq.test(tab,p=p_sb_genes)
+c_t
+c_t$expected
+c_t$residuals
+
+# Transcripts unique to SA are not significantly deviating in sex-bias from expected.
+tab<-table(
+  qlf_results_tables[["SAvL3"]]$c_bias[
+  which(!(qlf_results_tables[["SAvL3"]]$trans %in% unlist(trans_groups)))])
+tab
+tab<-table(
+  qlf_results_tables[["L1vL3"]]$c_bias[
+  which(!(qlf_results_tables[["L1vL3"]]$trans %in% unlist(trans_groups)))])
+tab
+sum(tab)
+tab_dat<-data.frame("set"=rep("not-DE",length=length(tab)),
+                    "counts"=as.vector(tab),
+                    "prop"=as.vector(tab)/sum(as.vector(tab)),
+                    "sb"=names(tab))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+
+c_t<-chisq.test(matrix(
+  c(all_tab_dat$counts[which(all_tab_dat$set=="not-DE")],
+    all_tab_dat$counts[which(all_tab_dat$set=="unique_L1")],
+    all_tab_dat$counts[which(all_tab_dat$set=="parallel")],
+    all_tab_dat$counts[which(all_tab_dat$set=="unique_SA")]),byrow = TRUE,nrow = 4))
+c_t
+c_t$observed
+c_t$expected
+c_t$residuals
+
+#Add genome-wide proportions
+tab_dat<-data.frame("set"=rep("Genome-wide",length=length(p_sb_genes)),
+                    "counts"=as.vector(table(qlf_results_tables[["L1vL3"]]$c_bias)),
+                    "prop"=as.vector(p_sb_genes),
+                    "sb"=names(p_sb_genes))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+all_tab_dat$sb<-factor(all_tab_dat$sb,labels = c("Female-biased","Male-biased","Unbiased"))
+# Table 1
+all_tab_dat
+# Table 1 as plot
+# Plot all_tab_dat
+ggplot()+
+  geom_bar(data=all_tab_dat,aes(x=sb,y=prop,fill=set,colour=set),stat="identity",position="dodge")+
+  geom_text(data=all_tab_dat,
+            aes(x=sb,y=prop+0.02,label=paste("n = ",counts,sep="")))+
+  scale_fill_grey("")+
+  scale_colour_manual("",values=c("red","black","black","black","black"))+
+  xlab("Sex-bias category")+
+  ylab("Proportion")+
+  facet_grid(~set)+
+  theme(text=element_text(size=16),
+        axis.text.x = element_text(angle=45,hjust=1),
+        strip.text.y = element_text(angle=0))
+```
+
+What is the association with sex-bias status?
+For Table 2
+in females
+```{r}
+all_tab_dat<-data.frame()
+tab<-table(
+  qlf_results_tables[["L1vL3"]]$c_bias[
+  which(qlf_results_tables[["L1vL3"]]$trans %in% f_trans_groups[["unique_L1"]])])
+tab
+sum(tab)
+tab_dat<-data.frame("set"=rep("unique_L1",length=length(tab)),
+                    "counts"=as.vector(tab),
+                    "prop"=round(as.vector(tab)/sum(as.vector(tab)),2),
+                    "sb"=names(tab))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+c_t<-chisq.test(tab,p=p_sb_genes)
+c_t
+c_t$expected
+c_t$residuals
+# Transcripts unique to L1 are disproportionately female-biased and male-biased in expression
+tab<-table(
+  qlf_results_tables[["SAvL3"]]$c_bias[
+  which(qlf_results_tables[["SAvL3"]]$trans %in% f_trans_groups[["parallel"]])])
+tab
+tab<-table(
+  qlf_results_tables[["L1vL3"]]$c_bias[
+  which(qlf_results_tables[["L1vL3"]]$trans %in% f_trans_groups[["parallel"]])])
+tab
+sum(tab)
+tab_dat<-data.frame("set"=rep("parallel",length=length(tab)),
+                    "counts"=as.vector(tab),
+                    "prop"=round(as.vector(tab)/sum(as.vector(tab)),2),
+                    "sb"=names(tab))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+
+c_t<-chisq.test(tab,p=p_sb_genes)
+c_t
+c_t$expected
+c_t$residuals
+
+tab<-table(
+  qlf_results_tables[["SAvL3"]]$c_bias[
+  which(qlf_results_tables[["SAvL3"]]$trans %in% f_trans_groups[["unique_SA"]])])
+tab
+sum(tab)
+tab_dat<-data.frame("set"=rep("unique_SA",length=length(tab)),
+                    "counts"=as.vector(tab),
+                    "prop"=round(as.vector(tab)/sum(as.vector(tab)),2),
+                    "sb"=names(tab))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+
+c_t<-chisq.test(tab,p=p_sb_genes)
+c_t
+c_t$expected
+c_t$residuals
+
+# Transcripts unique to SA are not significantly deviating in sex-bias from expected.
+tab<-table(
+  qlf_results_tables[["SAvL3"]]$c_bias[
+  which(!(qlf_results_tables[["SAvL3"]]$trans %in% unlist(f_trans_groups)))])
+tab
+tab<-table(
+  qlf_results_tables[["L1vL3"]]$c_bias[
+  which(!(qlf_results_tables[["L1vL3"]]$trans %in% unlist(f_trans_groups)))])
+tab
+tab_dat<-data.frame("set"=rep("not-DE",length=length(tab)),
+                    "counts"=as.vector(tab),
+                    "prop"=round(as.vector(tab)/sum(as.vector(tab)),2),
+                    "sb"=names(tab))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+
+c_t<-chisq.test(matrix(
+  c(all_tab_dat$counts[which(all_tab_dat$set=="not-DE")],
+    all_tab_dat$counts[which(all_tab_dat$set=="unique_L1")],
+    all_tab_dat$counts[which(all_tab_dat$set=="parallel")],
+    all_tab_dat$counts[which(all_tab_dat$set=="unique_SA")]),byrow = TRUE,nrow = 4))
+c_t
+c_t$observed
+c_t$expected
+c_t$residuals
+
+#Add genome-wide proportions
+tab_dat<-data.frame("set"=rep("Genome-wide",length=length(p_sb_genes)),
+                    "counts"=as.vector(table(qlf_results_tables[["L1vL3"]]$c_bias)),
+                    "prop"=as.vector(p_sb_genes),
+                    "sb"=names(p_sb_genes))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+all_tab_dat$sb<-factor(all_tab_dat$sb,labels = c("Female-biased","Male-biased","Unbiased"))
+# Plot all_tab_dat
+ggplot()+
+  geom_bar(data=all_tab_dat,aes(x=sb,y=prop,fill=set,colour=set),stat="identity",position="dodge")+
+  geom_text(data=all_tab_dat,
+            aes(x=sb,y=prop+0.02,label=paste("n = ",counts,sep="")))+
+  scale_fill_grey("")+
+  scale_colour_manual("",values=c("red","black","black","black","black"))+
+  xlab("Sex-bias category")+
+  ylab("Proportion")+
+  facet_grid(~set)+
+  theme(text=element_text(size=16),
+        axis.text.x = element_text(angle=45,hjust=1),
+        strip.text.y = element_text(angle=0))
+```
+
+
+
+### 3.2.5 PCA of unique L1, parallel, and unique SA transcripts
+For Figure S5
+
+What does a PCA of expression of these transcripts look like. 
+Samples more similar to L1, L3, SA, or C?
+```{r}
+names(trans_groups)
+
+for(trans_set in names(trans_groups)){
+
+  big_all_quant_tpm_filtvar<-big_all_quant_tpm[
+    trans_groups[[trans_set]],
+    sample_dat$sample[which(sample_dat$sel_line %in% c("C","L1","L3","SA"))]]
+  # Remove transcripts with 0 variance across all samples, uninformative in PCA
+  non_zero_var_tpm<-which(apply(big_all_quant_tpm_filtvar,MARGIN = 1,function(x){var(x)>0}))
+  big_all_quant_tpm_filtvar<-big_all_quant_tpm_filtvar[
+    which(row.names(big_all_quant_tpm_filtvar) %in% names(non_zero_var_tpm)),]
+
+  # Run PCA
+  pca<-prcomp(t(big_all_quant_tpm_filtvar),center = TRUE,scale. = TRUE)
+  pca.sum<-summary(pca)
+  pc1_perc<-pca.sum$importance[2,"PC1"]*100
+  pc2_perc<-pca.sum$importance[2,"PC2"]*100
+  print(summary(pca))
+  # Save the PC scores, add sample information
+  scores<-as.data.frame(pca$x)
+  scores<-cbind(scores,sample_dat[match(row.names(scores),sample_dat$sample),])
+  cat(trans_set,"\n")
+  print(summary(lm(PC2~sel_line,data=scores[which(scores$sex=="M"),])))
+  print(summary(lm(PC2~sel_line,data=scores[which(scores$sex=="F"),])))
+
+  # Colour palette from Philipp
+  #'navajowhite', ‘navajowhite4’		C
+  #'plum1', ‘plum4’ 		        		SA
+  #'steelblue1', 'steelblue4’, 	  	SL1
+  #'sienna1', ‘sienna4’			        SL3
+  #'olivedrab1', ‘olivedrab4’ 			SL2
+
+  #Its always rep A, rep B.
+  # Plotting
+  p<-ggplot()+
+    geom_point(data=scores,
+               aes(x=PC1,y=PC2,shape=sex,colour=paste(sel_line,"_",rep,sep="")),size=4)+
+    scale_shape_discrete("Sex",labels=c("Females","Males"))+
+    scale_colour_manual("Selection line",
+                          values=c("navajowhite4",
+                                   "steelblue1", "steelblue4",
+                                   "sienna1", "sienna4",
+                                   "plum1", "plum4"))+
+    xlab(paste("PC1 (",round(pc1_perc,2),"%)",sep=""))+
+    ylab(paste("PC2 (",round(pc2_perc,2),"%)",sep=""))+
+    ggtitle(trans_set)+
+    theme(text=element_text(size=16))
+  print(p)
+  p<-ggplot()+
+    geom_boxplot(data=scores,
+                 aes(x=sel_line,y=PC2,fill=paste(sel_line,"_",rep,sep="")))+
+    scale_fill_manual("Selection line",
+                          values=c("navajowhite4",
+                                   "steelblue1", "steelblue4",
+                                   "sienna1", "sienna4",
+                                   "plum1", "plum4"))+
+
+    facet_grid(~sex)+
+    xlab("Selection line")+
+    ylab(paste("PC2 (",round(pc2_perc,2),"%)",sep=""))+
+    ggtitle(trans_set)+
+    theme(text=element_text(size=16))
+  print(p)
+}
+```
+
+
+### 3.2.6 Define and identify the strict_unique_L1, strict_unique_SA, and strict_parallel transcripts
+First we refine the DE patterns by comparing to C treatment.
+```{r}
+# Place to store results
+qlf_results_tables_C<-list()
+
+for(cont in c("L1","SA","L3","L2")){
+  samples<-sample_dat$sample[
+    which(sample_dat$sel_line %in% c("C",cont))]
+  
+  # Get the count data for all transcripts in the unique L1, parallel, and unique SA groups
+  big_all_quant_count_cont<-big_all_quant_count[unlist(trans_groups),
+                                                which((colnames(big_all_quant_count) %in% samples))]
+  
+  qlf_results_tables_C[[paste("Cv",cont,sep="")]]<-data.frame("trans"=rownames(big_all_quant_count_cont))  
+  
+  # Make the edgeR object
+  y<-DGEList(counts=big_all_quant_count_cont)
+    
+  # Define the model design and the contrast
+  coldata_cont<-coldata[samples,]
+  coldata_cont$batch<-gsub(cont,"Sel",coldata_cont$batch)
+  coldata_cont$line_sex<-paste(coldata_cont$batch,"_",coldata_cont$sex,sep="")
+  design<-model.matrix(~0+line_sex,data = coldata_cont)
+    
+  # Compare the average of the batches to the average of the other two batches
+  my.contrast<-makeContrasts(contM=(line_sexC_B_M) - (((line_sexSel_A_M)+(line_sexSel_B_M))/2),
+                             contF=(line_sexC_B_F) - (((line_sexSel_A_F)+(line_sexSel_B_F))/2),
+                             levels=design)
+    
+  # recalculate normalisation factors
+  y<-calcNormFactors(y)
+  # estimate dispersions
+  y<-estimateDisp(y,design)
+    # Fit the model
+  fit <- glmQLFit(y,design)
+    
+  # Test the contrasts
+  # Males
+  qlfM <- glmQLFTest(fit, contrast=my.contrast[,"contM"])
+  # Correct for multiple testing
+  qlfM$table$FDR<-p.adjust(qlfM$table$PValue,method="BH")
+  # Females
+  qlfF <- glmQLFTest(fit, contrast=my.contrast[,"contF"])
+  # Correct for multiple testing
+  qlfF$table$FDR<-p.adjust(qlfF$table$PValue,method="BH")
+  #cor.test(x=qlfM$table$logFC,y=qlfF$table$logFC)
+  #qlf$table[grep("Tor",rownames(qlf$table)),]
+  #nrow(qlf$table)
+  
+  # Re-format the column names
+  colnames(qlfM$table)<-paste("M_",colnames(qlfM$table),sep="")
+  # Define the direction of difference
+  # Up: If logFC > 0, then C > Sel
+  # Down: If logFC < 0, then C < Sel  
+  
+  # Here I use the nominal p-value to call DE
+  # I don't use logFC threshholds.
+  qlfM$table$M_sel_resp<-vector(length=nrow(qlfM$table))
+  qlfM$table$M_sel_resp<-ifelse(
+    (qlfM$table$M_logFC>0 &
+       qlfM$table$M_PValue<0.05),
+    paste("up-in-C",sep=""),
+    ifelse(
+      (qlfM$table$M_logFC<0 &
+       qlfM$table$M_PValue<0.05),
+      paste("up-in-",cont,sep=""),"M0"))
+
+  colnames(qlfF$table)<-paste("F_",colnames(qlfF$table),sep="")
+  qlfF$table$F_sel_resp<-vector(length=nrow(qlfF$table))
+  qlfF$table$F_sel_resp<-ifelse(
+    (qlfF$table$F_logFC>0 &
+       qlfF$table$F_PValue<0.05),
+    paste("up-in-C",sep=""),
+    ifelse(
+      (qlfF$table$F_logFC<0 &
+       qlfF$table$F_PValue<0.05),
+      paste("up-in-",cont,sep=""),"F0"))
+
+  # Here I use the FDR corrected at 0.1 to call DE
+  # I don't use logFC threshholds.
+  qlfM$table$M_sel_resp_fdr0.1<-vector(length=nrow(qlfM$table))
+  qlfM$table$M_sel_resp_fdr0.1<-ifelse(
+    (qlfM$table$M_logFC>0 &
+       qlfM$table$M_FDR<0.1),
+    paste("up-in-C",sep=""),
+    ifelse(
+      (qlfM$table$M_logFC<0 &
+       qlfM$table$M_FDR<0.1),
+      paste("up-in-",cont,sep=""),"M0"))
+  
+  qlfF$table$F_sel_resp_fdr0.1<-vector(length=nrow(qlfF$table))
+  qlfF$table$F_sel_resp_fdr0.1<-ifelse(
+    (qlfF$table$F_logFC>0 &
+       qlfF$table$F_FDR<0.1),
+    paste("up-in-C",sep=""),
+    ifelse(
+      (qlfF$table$F_logFC<0 &
+       qlfF$table$F_FDR<0.1),
+      paste("up-in-",cont,sep=""),"F0"))
+  
+  # Here I use the FDR corrected at 0.05 to call DE
+  # I don't use logFC threshholds.
+  qlfM$table$M_sel_resp_fdr0.05<-vector(length=nrow(qlfM$table))
+  qlfM$table$M_sel_resp_fdr0.05<-ifelse(
+    (qlfM$table$M_logFC>0 &
+       qlfM$table$M_FDR<0.05),
+    paste("up-in-C",sep=""),
+    ifelse(
+      (qlfM$table$M_logFC<0 &
+       qlfM$table$M_FDR<0.05),
+      paste("up-in-",cont,sep=""),"M0"))
+  
+  qlfF$table$F_sel_resp_fdr0.05<-vector(length=nrow(qlfF$table))
+  qlfF$table$F_sel_resp_fdr0.05<-ifelse(
+    (qlfF$table$F_logFC>0 &
+       qlfF$table$F_FDR<0.05),
+    paste("up-in-C",sep=""),
+    ifelse(
+      (qlfF$table$F_logFC<0 &
+       qlfF$table$F_FDR<0.05),
+      paste("up-in-",cont,sep=""),"F0"))
+  
+  # Combine male and female data
+  qlf_results_tables_C[[paste("Cv",cont,sep="")]]<-cbind(qlf_results_tables_C[[paste("Cv",cont,sep="")]],
+                                                         qlfF$table,qlfM$table)
+}
+
+#Add sex-bias and chromosome information
+for (set in names(qlf_results_tables_C)){
+  qlf_results_tables_C[[set]]$c_bias<-vector(length=nrow(qlf_results_tables_C[[set]]))
+  qlf_results_tables_C[[set]]$c_bias[
+    which(rownames(qlf_results_tables_C[[set]]) %in% sb_genes[["C_B_male_biased"]])]<-"C:male-biased"
+  qlf_results_tables_C[[set]]$c_bias[
+    which(rownames(qlf_results_tables_C[[set]]) %in% sb_genes[["C_B_female_biased"]])]<-"C:female-biased"
+  qlf_results_tables_C[[set]]$c_bias[
+    which(qlf_results_tables_C[[set]]$c_bias == "FALSE")]<-"C:unbiased"
+}
+
+```
+
+Save these tables
+```{r}
+saveRDS(qlf_results_tables_C,
+        file = here::here("rdata/adults","selection_lines_de_results_C_contrast.RData"))
+```
+
+```{r}
+qlf_results_tables_C<-readRDS(here::here("rdata/adults","selection_lines_de_results_C_contrast.RData"))
+```
+
+Define strict sets:
+  C vs L1,    C vs. L3,     C vs. SA
+
+from unique L1: up-in-L1, up-in-C
+  up-in-L1 *AND* !(DE in L3 v C) *AND* !(DE in C v SA)
+  *OR*
+    up-in-L1 *AND* up-in-C *AND* !(DE in C v SA)
+    *OR*
+    up-in-C *AND* up-in-L3 *AND* !(DE in C v SA)
+  *OR*
+  up-in-C *AND* !(DE in L3 v C) *AND* !(DE in C v SA)
+*AND* in unique_L1  
+  
+from parallel: up-in-L1/SA, up-in-C,
+  up-in-L1 *AND* up-in-SA *AND* !(DE in C v L3)
+  *OR*
+  up-in-C *AND* up-in-C *AND* !(DE in C v L3)
+*AND* in parallel
+
+from unique SA: up-in SA, up-in-C
+  !(DE in C v L1) *AND* !(DE in C v L3) *AND* up-in-SA
+  *OR*
+    !(DE in C v L1) *AND* up-in-C *AND* up-in-SA
+    *OR*
+    !(DE in C v L1) *AND* up-in-L3 *AND* up-in-C
+  *OR*
+  !(DE in C v L1) *AND* !(DE in L3 v C) *AND* up-in-C
+*AND* in unique_SA
+  
+```{r}
+strict_trans_groups<-list(
+"strict_unique_L1"=c(Reduce(intersect,
+                            list(
+                              qlf_results_tables_C[["CvL1"]]$trans[
+                                which(qlf_results_tables_C[["CvL1"]]$M_sel_resp_fdr0.05=="up-in-L1")],
+                              qlf_results_tables_C[["CvSA"]]$trans[
+                                which(qlf_results_tables_C[["CvSA"]]$M_sel_resp_fdr0.05=="M0")],
+                              qlf_results_tables_C[["CvL3"]]$trans[
+                                which(qlf_results_tables_C[["CvL3"]]$M_sel_resp_fdr0.05=="M0")])),
+                     Reduce(intersect,
+                            list(
+                              qlf_results_tables_C[["CvL1"]]$trans[
+                                which(qlf_results_tables_C[["CvL1"]]$M_sel_resp_fdr0.05=="up-in-L1")],
+                              qlf_results_tables_C[["CvSA"]]$trans[
+                                which(qlf_results_tables_C[["CvSA"]]$M_sel_resp_fdr0.05=="M0")],
+                              qlf_results_tables_C[["CvL3"]]$trans[
+                                which(qlf_results_tables_C[["CvL3"]]$M_sel_resp_fdr0.05=="up-in-C")])),
+                     Reduce(intersect,
+                            list(
+                              qlf_results_tables_C[["CvL1"]]$trans[
+                                which(qlf_results_tables_C[["CvL1"]]$M_sel_resp_fdr0.05=="up-in-C")],
+                              qlf_results_tables_C[["CvSA"]]$trans[
+                                which(qlf_results_tables_C[["CvSA"]]$M_sel_resp_fdr0.05=="M0")],
+                              qlf_results_tables_C[["CvL3"]]$trans[
+                                which(qlf_results_tables_C[["CvL3"]]$M_sel_resp_fdr0.05=="up-in-L3")])),
+                     Reduce(intersect,
+                            list(
+                              qlf_results_tables_C[["CvL1"]]$trans[
+                                which(qlf_results_tables_C[["CvL1"]]$M_sel_resp_fdr0.05=="up-in-C")],
+                              qlf_results_tables_C[["CvSA"]]$trans[
+                                which(qlf_results_tables_C[["CvSA"]]$M_sel_resp_fdr0.05=="M0")],
+                              qlf_results_tables_C[["CvL3"]]$trans[
+                                which(qlf_results_tables_C[["CvL3"]]$M_sel_resp_fdr0.05=="M0")]))),
+
+"strict_parallel"=c(Reduce(intersect,
+                           list(
+                             qlf_results_tables_C[["CvL1"]]$trans[
+                               which(qlf_results_tables_C[["CvL1"]]$M_sel_resp_fdr0.05=="up-in-L1")],
+                             qlf_results_tables_C[["CvSA"]]$trans[
+                               which(qlf_results_tables_C[["CvSA"]]$M_sel_resp_fdr0.05=="up-in-SA")],
+                             qlf_results_tables_C[["CvL3"]]$trans[
+                               which(qlf_results_tables_C[["CvL3"]]$M_sel_resp_fdr0.05=="M0")])),
+                     Reduce(intersect,
+                            list(
+                              qlf_results_tables_C[["CvL1"]]$trans[
+                                which(qlf_results_tables_C[["CvL1"]]$M_sel_resp_fdr0.05=="up-in-C")],
+                              qlf_results_tables_C[["CvSA"]]$trans[
+                                which(qlf_results_tables_C[["CvSA"]]$M_sel_resp_fdr0.05=="up-in-C")],
+                              qlf_results_tables_C[["CvL3"]]$trans[
+                                which(qlf_results_tables_C[["CvL3"]]$M_sel_resp_fdr0.05=="M0")]))),
+
+"strict_unique_SA"=c(Reduce(intersect,
+                            list(
+                              qlf_results_tables_C[["CvL1"]]$trans[
+                                which(qlf_results_tables_C[["CvL1"]]$M_sel_resp_fdr0.05=="M0")],
+                              qlf_results_tables_C[["CvSA"]]$trans[
+                                which(qlf_results_tables_C[["CvSA"]]$M_sel_resp_fdr0.05=="up-in-SA")],
+                              qlf_results_tables_C[["CvL3"]]$trans[
+                                which(qlf_results_tables_C[["CvL3"]]$M_sel_resp_fdr0.05=="M0")])),
+                     Reduce(intersect,
+                            list(
+                              qlf_results_tables_C[["CvL1"]]$trans[
+                                which(qlf_results_tables_C[["CvL1"]]$M_sel_resp_fdr0.05=="M0")],
+                              qlf_results_tables_C[["CvSA"]]$trans[
+                                which(qlf_results_tables_C[["CvSA"]]$M_sel_resp_fdr0.05=="up-in-C")],
+                              qlf_results_tables_C[["CvL3"]]$trans[
+                                which(qlf_results_tables_C[["CvL3"]]$M_sel_resp_fdr0.05=="M0")])),
+                     Reduce(intersect,
+                            list(
+                              qlf_results_tables_C[["CvL1"]]$trans[
+                                which(qlf_results_tables_C[["CvL1"]]$M_sel_resp_fdr0.05=="M0")],
+                              qlf_results_tables_C[["CvSA"]]$trans[
+                                which(qlf_results_tables_C[["CvSA"]]$M_sel_resp_fdr0.05=="up-in-SA")],
+                              qlf_results_tables_C[["CvL3"]]$trans[
+                                which(qlf_results_tables_C[["CvL3"]]$M_sel_resp_fdr0.05=="up-in-C")])),
+                     Reduce(intersect,
+                            list(
+                              qlf_results_tables_C[["CvL1"]]$trans[
+                                which(qlf_results_tables_C[["CvL1"]]$M_sel_resp_fdr0.05=="M0")],
+                              qlf_results_tables_C[["CvSA"]]$trans[
+                                which(qlf_results_tables_C[["CvSA"]]$M_sel_resp_fdr0.05=="up-in-C")],
+                              qlf_results_tables_C[["CvL3"]]$trans[
+                                which(qlf_results_tables_C[["CvL3"]]$M_sel_resp_fdr0.05=="up-in-L3")])))
+)
+```
+
+Keep only those transcripts in each strict group that were also in the more liberal groups
+```{r}
+for(name in names(trans_groups)){
+  strict_trans_groups[[paste("strict_",name,sep="")]]<-strict_trans_groups[[paste("strict_",name,sep="")]][
+    which(strict_trans_groups[[paste("strict_",name,sep="")]]%in%trans_groups[[name]])]
+}
+```
+
+How many of each transcript class are in the strict set
+```{r}
+for(name in names(trans_groups)){
+  cat(length(trans_groups[[name]]),", ",
+      length(strict_trans_groups[[paste("strict_",name,sep="")]]),", ",
+      length(which(trans_groups[[name]] %in% strict_trans_groups[[paste("strict_",name,sep="")]])),"\n")
+}
+```
+
+How many are DE to C
+```{r}
+length(which(qlf_results_tables_C[["CvL1"]]$M_sel_resp_fdr0.05!="M0"))
+length(which(qlf_results_tables_C[["CvSA"]]$M_sel_resp_fdr0.05!="M0"))
+```
+
+
+What is the association with sex-bias status?
+```{r}
+all_tab_dat<-data.frame()
+tab<-table(
+  qlf_results_tables_C[["CvL1"]]$c_bias[
+  which(qlf_results_tables_C[["CvL1"]]$trans %in% strict_trans_groups[["strict_unique_L1"]])])
+sum(tab)
+tab_dat<-data.frame("set"=rep("strict_unique_L1",length=length(tab)),
+                    "counts"=as.vector(tab),
+                    "prop"=round(as.vector(tab)/sum(as.vector(tab)),2),
+                    "sb"=names(tab))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+c_t<-chisq.test(tab,p=p_sb_genes)
+c_t
+c_t$expected
+c_t$residuals
+# Transcripts unique to L1 are disproportionately male-biased in expression
+tab<-table(
+  qlf_results_tables_C[["CvSA"]]$c_bias[
+  which(qlf_results_tables_C[["CvSA"]]$trans %in% strict_trans_groups[["strict_parallel"]])])
+tab<-table(
+  qlf_results_tables_C[["CvL1"]]$c_bias[
+  which(qlf_results_tables_C[["CvL1"]]$trans %in% strict_trans_groups[["strict_parallel"]])])
+sum(tab)
+tab_dat<-data.frame("set"=rep("strict_parallel",length=length(tab)),
+                    "counts"=as.vector(tab),
+                    "prop"=round(as.vector(tab)/sum(as.vector(tab)),2),
+                    "sb"=names(tab))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+
+c_t<-chisq.test(tab,p=p_sb_genes)
+c_t
+c_t$expected
+c_t$residuals
+
+tab<-table(
+  qlf_results_tables_C[["CvSA"]]$c_bias[
+  which(qlf_results_tables_C[["CvSA"]]$trans %in% strict_trans_groups[["strict_unique_SA"]])])
+sum(tab)
+tab_dat<-data.frame("set"=rep("strict_unique_SA",length=length(tab)),
+                    "counts"=as.vector(tab),
+                    "prop"=round(as.vector(tab)/sum(as.vector(tab)),2),
+                    "sb"=names(tab))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+
+c_t<-chisq.test(tab,p=p_sb_genes)
+c_t
+c_t$expected
+c_t$residuals
+
+# Transcripts unique to SA are not significantly deviating in sex-bias from expected.
+tab<-table(
+  qlf_results_tables_C[["CvSA"]]$c_bias[
+  which(!(qlf_results_tables_C[["CvSA"]]$trans %in% unlist(strict_trans_groups)))])
+tab
+tab<-table(
+  qlf_results_tables_C[["CvL1"]]$c_bias[
+  which(!(qlf_results_tables_C[["CvL1"]]$trans %in% unlist(strict_trans_groups)))])
+sum(tab)
+tab_dat<-data.frame("set"=rep("not-DE",length=length(tab)),
+                    "counts"=as.vector(tab),
+                    "prop"=round(as.vector(tab)/sum(as.vector(tab)),2),
+                    "sb"=names(tab))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+
+c_t<-chisq.test(matrix(
+  c(all_tab_dat$counts[which(all_tab_dat$set=="not-DE")],
+    all_tab_dat$counts[which(all_tab_dat$set=="strict_unique_L1")],
+    all_tab_dat$counts[which(all_tab_dat$set=="strict_parallel")],
+    all_tab_dat$counts[which(all_tab_dat$set=="strict_unique_SA")]),byrow = TRUE,nrow = 4))
+c_t
+c_t$observed
+c_t$expected
+c_t$residuals
+
+#Add genome-wide proportions
+tab_dat<-data.frame("set"=rep("Genome-wide",length=length(p_sb_genes)),
+                    "counts"=as.vector(table(qlf_results_tables[["L1vL3"]]$c_bias)),
+                    "prop"=as.vector(p_sb_genes),
+                    "sb"=names(p_sb_genes))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+all_tab_dat$sb<-factor(all_tab_dat$sb,labels = c("Female-biased","Male-biased","Unbiased"))
+# Plot all_tab_dat
+ggplot()+
+  geom_bar(data=all_tab_dat,aes(x=sb,y=prop,fill=set,colour=set),stat="identity",position="dodge")+
+  geom_text(data=all_tab_dat,
+            aes(x=sb,y=prop+0.02,label=paste("n = ",counts,sep=""),angle=90,hjust=0))+
+  scale_fill_grey("")+
+  scale_colour_manual("",values=c("red","black","black","black","black"))+
+  xlab("Sex-bias category")+
+  ylab("Proportion")+
+  facet_grid(~set)+
+  theme(text=element_text(size=16),
+        axis.text.x = element_text(angle=45,hjust=1),
+        strip.text.y = element_text(angle=0))
+```
+
+
+Do PCA of these strict genes
+```{r}
+for(trans_set in names(strict_trans_groups)){
+  big_all_quant_tpm_filtvar<-big_all_quant_tpm[strict_trans_groups[[trans_set]],
+                                               sample_dat$sample[which(sample_dat$sel_line%in%c("C","L1","L3","SA"))]]
+  # Remove transcripts with 0 variance across all samples, uninformative in PCA
+  non_zero_var_tpm<-which(apply(big_all_quant_tpm_filtvar,MARGIN = 1,function(x){var(x)>0}))
+  big_all_quant_tpm_filtvar<-big_all_quant_tpm_filtvar[
+    which(row.names(big_all_quant_tpm_filtvar) %in% names(non_zero_var_tpm)),]
+
+  # Run PCA
+  pca<-prcomp(t(big_all_quant_tpm_filtvar),center = TRUE,scale. = TRUE)
+  
+  # Save the PC scores, add sample information
+  scores<-as.data.frame(pca$x)
+  scores<-cbind(scores,sample_dat[match(row.names(scores),sample_dat$sample),])
+
+  # Colour palette from Philipp
+  #'navajowhite', ‘navajowhite4’		C
+  #'plum1', ‘plum4’ 		        		SA
+  #'steelblue1', 'steelblue4’, 	  	SL1
+  #'sienna1', ‘sienna4’			        SL3
+  #'olivedrab1', ‘olivedrab4’ 			SL2
+
+  #Its always rep A, rep B.
+  # Plotting
+  p<-ggplot()+
+    geom_point(data=scores,
+               aes(x=PC1,y=PC2,shape=sex,colour=paste(sel_line,"_",rep,sep="")),size=4)+
+    scale_shape_discrete("Sex",labels=c("Females","Males"))+
+    scale_colour_manual("Selection line",
+                          values=c("navajowhite4",
+                                   "steelblue1", "steelblue4",
+                                   "sienna1", "sienna4",
+                                   "plum1", "plum4"))+
+    ggtitle(trans_set)+
+    theme(text=element_text(size=16))
+  print(p)
+  p<-ggplot()+
+    geom_boxplot(data=scores,
+                 aes(x=sel_line,y=PC2,fill=paste(sel_line,"_",rep,sep="")))+
+    scale_fill_manual("Selection line",
+                          values=c("navajowhite4",
+                                   "steelblue1", "steelblue4",
+                                   "sienna1", "sienna4",
+                                   "plum1", "plum4"))+
+
+    facet_grid(~sex)+
+    ggtitle(trans_set)+
+    theme(text=element_text(size=16))
+  print(p)
+}
+```
+
+These strict sets transcripts look like they are behaving as we expect.
+
+### 3.2.7 GO-term analysis of strict males genes
+
+These files are created in 3.2.3
+```{r}
+# Load the new file as a custom GO term table
+Custom<-ViSEAGO::Custom2GO(file = here::here("rdata","C_mac_HiFi_customfile.18-03-2025.txt"))
+# Create GENE2GO
+myGENE2GO<-ViSEAGO::annotate(id="Cmac",object=Custom)
+
+# The background gene set is defined as all transcripts in the genome.
+# This is despite the fact that many did not have expression data.
+Transcripts <- read.table(here::here("rdata","Transcript_coords.bed"),
+                          header = FALSE, sep = "\t")
+colnames(Transcripts) <- c('contig','start_T','end_T','transcript_ID','gene_ID')
+nrow(Transcripts)
+Transcripts
+```
+
+```{r}
+names(strict_trans_groups)
+
+go_results<-list()
+go_results_table<-list()
+# Loop through all gene sets
+for(i in names(strict_trans_groups)){
+  # Loop through sex-bias categories
+  for(bias in c("C:unbiased","C:male-biased","C:female-biased")){
+  Backgrund_GENES <- Transcripts$transcript_ID
+  sel_GENES <-  Transcripts$transcript_ID[which(
+    Transcripts$transcript_ID %in% strict_trans_groups[[i]] & 
+      Transcripts$transcript_ID %in% qlf_results_tables_C[["CvL1"]]$trans[
+        which(qlf_results_tables_C[["CvL1"]]$c_bias==bias)])]
+
+  # create topGOdata
+  BP<-ViSEAGO::create_topGOdata(allGenes = Backgrund_GENES, geneSel = sel_GENES,
+      gene2GO=myGENE2GO, 
+      ont="BP",
+      nodeSize=10
+  )
+  # How many of my "strict" genes are in these feasible sets
+  #str(BP)
+  cat("#-------------------#\n",i,"\n",bias,"\n")
+  feasible_genes<-BP@allGenes[BP@feasible]
+  n_feasible_genes<-length(feasible_genes)
+  total_n_genes<-length(unique(Transcripts$gene_ID))
+  n<-length(sel_GENES[which(sel_GENES %in% feasible_genes)])
+  tot<-length(sel_GENES)
+  cat("Feasible genes: ",n_feasible_genes,"(of ",total_n_genes,") - Genes w/ GO: ",n,", ",tot,", ",n/tot,"\n")
+
+  # perform TopGO test using clasic algorithm
+  classic<-topGO::runTest(
+      BP,
+      algorithm ="classic",
+      statistic = "fisher"
+  )
+  # merge results from topGO
+  BP_sResults<-ViSEAGO::merge_enrich_terms(
+      Input=list(
+          p.value=c("BP","classic")
+      )
+  )
+  # display the merged table
+  go_results[[paste(i,"_",bias,sep="")]]<-BP_sResults
+  go_results_table[[paste(i,"_",bias,sep="")]]<-BP_sResults@data[
+    order(BP_sResults@data$`p.value.-log10_pvalue`, decreasing = TRUE), c(1:2,4:6)]
+  }  
+}
+
+for(name in names(go_results_table)){
+  write.table(as.data.frame(go_results_table[[name]]),here::here("rdata",paste(name,"_go_results.txt",sep="")),
+                            col.names=TRUE,row.names=FALSE,quote = FALSE,sep="\t")
+}
+```
+
+
+
+### 3.2.7 Correlations in gene expression differences between lines across males and females
+For Figure 2, S6, S/, and S8
+
+Run the correlations in logFC between treatments for males and females
+```{r}
+for(bias in unique(qlf_results_tables[["L1vL3"]]$c_bias)){
+  cor_data<-qlf_results_tables[["L1vL3"]][which(qlf_results_tables[["L1vL3"]]$c_bias==bias),]
+  cat("#----------------#\n",bias,"\n")
+  c_t<-cor.test(
+    x=cor_data$M_logFC[
+  which(cor_data$trans %in% trans_groups[["unique_L1"]])],
+    y=cor_data$F_logFC[
+  which(cor_data$trans %in% trans_groups[["unique_L1"]])],method="pearson")
+  print(c_t)
+  c_t<-cor.test(
+    x=cor_data$M_logFC[
+  which(cor_data$trans %in% trans_groups[["parallel"]])],
+    y=cor_data$F_logFC[
+  which(cor_data$trans %in% trans_groups[["parallel"]])],method="pearson")
+  print(c_t)
+}
+# These transcripts also have lower correlations across sexes in their DE patterns (L1 v. L3)
+
+for(bias in unique(qlf_results_tables[["SAvL3"]]$c_bias)){
+  cor_data<-qlf_results_tables[["SAvL3"]][which(qlf_results_tables[["SAvL3"]]$c_bias==bias),]
+  cat("#----------------#\n",bias,"\n")
+  c_t<-cor.test(
+    x=cor_data$M_logFC[
+  which(cor_data$trans %in% trans_groups[["unique_SA"]])],
+    y=cor_data$F_logFC[
+  which(cor_data$trans %in% trans_groups[["unique_SA"]])],method="pearson")
+  print(c_t)
+  c_t<-cor.test(
+    x=cor_data$M_logFC[
+  which(cor_data$trans %in% trans_groups[["parallel"]])],
+    y=cor_data$F_logFC[
+  which(cor_data$trans %in% trans_groups[["parallel"]])],method="pearson")
+  print(c_t)
+}
+```
+
+Plot the correlations
+```{r}
+ggplot()+
+  geom_point(data=qlf_results_tables[["L1vL3"]][
+    which(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05!="M0" & 
+            qlf_results_tables[["L1vL3"]]$M_corr_sel_line!="SAvL3:opposite response"),],
+             aes(x=M_logFC,y=F_logFC,fill=corr_sex),shape=21)+
+  scale_fill_manual(values=c("white","grey70"),guide="none")+
+  xlab("logFC L1 vs. L3 (males)")+
+  ylab("logFC L1 vs. L3 (females)")+
+  facet_grid(c_bias~M_corr_sel_line)+
+  theme(text=element_text(size=16),
+        strip.text.y=element_text(angle=0))
+
+ggplot()+
+  geom_point(data=qlf_results_tables[["SAvL3"]][
+    which(qlf_results_tables[["SAvL3"]]$M_sel_resp_fdr0.05!="M0" & 
+            qlf_results_tables[["SAvL3"]]$M_corr_sel_line!="L1vL3:opposite response"),],
+             aes(x=M_logFC,y=F_logFC,fill=corr_sex),shape=21)+
+  scale_fill_manual(values=c("white","grey70"),guide="none")+
+  xlab("logFC SA vs. L3 (males)")+
+  ylab("logFC SA vs. L3 (females)")+
+  facet_grid(c_bias~M_corr_sel_line)+
+  theme(text=element_text(size=16),
+        strip.text.y=element_text(angle=0))
+```
+
+Same for strict sets
+```{r}
+# These transcripts also have lower inter-sex correlations in logFC(L1vL3)
+for(i in names(strict_trans_groups)){
+  cat("#----------------#\n",i,"\n")
+  for(bias in unique(qlf_results_tables_C[["CvL1"]]$c_bias)){
+    cat("#----------------#\n",bias,"\n")
+    cat("#----------------#\nCvL1\n")
+    cor_data<-qlf_results_tables_C[["CvL1"]][which(qlf_results_tables_C[["CvL1"]]$c_bias==bias & 
+                                                      qlf_results_tables_C[["CvL1"]]$trans %in% strict_trans_groups[[i]]),]
+    c_t<-cor.test(
+      x=cor_data$M_logFC,
+      y=cor_data$F_logFC,method="pearson")
+    print(c_t)
+    cat("#----------------#\nCvSA\n")
+    cor_data<-qlf_results_tables_C[["CvSA"]][which(qlf_results_tables_C[["CvSA"]]$c_bias==bias & 
+                                                      qlf_results_tables_C[["CvSA"]]$trans %in% strict_trans_groups[[i]]),]
+    c_t<-cor.test(
+      x=cor_data$M_logFC,
+      y=cor_data$F_logFC,method="pearson")
+    print(c_t)
+  }
+}
+```
+
+```{r}
+p1<-ggplot()+
+  geom_point(data=qlf_results_tables_C[["CvL1"]][
+    which(qlf_results_tables_C[["CvL1"]]$trans %in% strict_trans_groups[["strict_unique_L1"]]),],
+             aes(x=M_logFC,y=F_logFC))+
+  geom_hline(yintercept = 0,linetype="dashed")+
+  geom_vline(xintercept = 0,linetype="dashed")+
+  facet_wrap(~c_bias,scales="free",nrow = 3,strip.position = "right")+
+  scale_x_continuous("logFC C vs. L1 (males)")+
+  scale_y_continuous("logFC C vs. L1 (females)")+
+  ggtitle("strict_unique_L1")+
+  theme(strip.text.y = element_text(angle=270,size=16),
+        text=element_text(size=16))
+
+p2<-ggplot()+
+  geom_point(data=qlf_results_tables_C[["CvL1"]][
+    which(qlf_results_tables_C[["CvL1"]]$trans %in% strict_trans_groups[["strict_parallel"]]),],
+             aes(x=M_logFC,y=F_logFC))+
+  geom_hline(yintercept = 0,linetype="dashed")+
+  geom_vline(xintercept = 0,linetype="dashed")+
+  facet_wrap(~c_bias,scales="free",nrow = 3,strip.position = "right")+
+  scale_x_continuous("logFC C vs. L1 (males)")+
+  scale_y_continuous("logFC C vs. L1 (females)")+
+  ggtitle("strict_parallel")+
+  theme(strip.text.y = element_text(angle=270,size=16),
+        text=element_text(size=16))
+
+p3<-ggplot()+
+  geom_point(data=qlf_results_tables_C[["CvSA"]][
+    which(qlf_results_tables_C[["CvSA"]]$trans %in% strict_trans_groups[["strict_parallel"]]),],
+             aes(x=M_logFC,y=F_logFC))+
+  geom_hline(yintercept = 0,linetype="dashed")+
+  geom_vline(xintercept = 0,linetype="dashed")+
+  facet_wrap(~c_bias,scales="free",nrow = 3,strip.position = "right")+
+  scale_x_continuous("logFC C vs. SA (males)")+
+  scale_y_continuous("logFC C vs. SA (females)")+
+  ggtitle("strict_parallel")+
+  theme(strip.text.y = element_text(angle=270,size=16),
+        text=element_text(size=16))
+
+p4<-ggplot()+
+  geom_point(data=qlf_results_tables_C[["CvSA"]][
+    which(qlf_results_tables_C[["CvSA"]]$trans %in% strict_trans_groups[["strict_unique_SA"]]),],
+             aes(x=M_logFC,y=F_logFC))+
+  geom_hline(yintercept = 0,linetype="dashed")+
+  geom_vline(xintercept = 0,linetype="dashed")+
+  facet_wrap(~c_bias,scales="free",nrow = 3,strip.position = "right")+
+  scale_x_continuous("logFC C vs. SA (males)")+
+  scale_y_continuous("logFC C vs. SA (females)")+
+  ggtitle("strict_unique_SA")+
+  theme(strip.text.y = element_text(angle=270,size=16),
+        text=element_text(size=16))
+
+cowplot::plot_grid(p1,p2,p3,p4,ncol = 4)
+```
+
+
+### 3.2.8 Effects when females are the targeted sex.
+
+For females, the relevant contrasts are L1 v. L2 and L1 v. L3.
+In L1 v. L2, the phenotypic response is opposite, but in L2 selection was applied to females.
+In L1 v L3, the phenotypic response is also opposite but in L3 selection was applied to males.
+L2 and L3 have the same response.
+
+unique_L2: genes only DE in L1 v L2
+parallel: genes DE in the same direction in L1 v L2 and L1 v L3
+unique_L3: genes only DE in L1 v L3
+```{r}
+# Females
+names(qlf_results_tables)
+qlf_results_tables[["L1vL2"]]$F_corr_sel_line<-vector(length=nrow(qlf_results_tables[["L1vL2"]]))
+
+qlf_results_tables[["L1vL2"]]$F_corr_sel_line<-ifelse(
+  (qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05=="up-in-L1" & qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05=="up-in-L1"),
+  "L1vL3:parallel-response",
+  ifelse((qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05=="up-in-L2" & qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05=="up-in-L3"),
+         "L1vL3:parallel-response",
+         ifelse((qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05=="up-in-L1" & qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05=="up-in-L3"),
+                "L1vL3:opposite response",
+                ifelse((qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05=="up-in-L2" & qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05=="up-in-L1"),
+                "L1vL3:opposite response","L1vL3:no parallel-response"))))
+
+qlf_results_tables[["L1vL3"]]$F_corr_sel_line<-vector(length=nrow(qlf_results_tables[["L1vL3"]]))
+
+qlf_results_tables[["L1vL3"]]$F_corr_sel_line<-ifelse(
+  (qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05=="up-in-L1" & qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05=="up-in-L1"),
+  "L1vL2:parallel-response",
+  ifelse((qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05=="up-in-L3" & qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05=="up-in-L2"),
+         "L1vL2:parallel-response",
+         ifelse((qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05=="up-in-L1" & qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05=="up-in-L2"),
+                "L1vL2:opposite response",
+                ifelse((qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05=="up-in-L3" & qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05=="up-in-L1"),
+                "L1vL2:opposite response","L1vL2:no parallel-response"))))
+# Males
+qlf_results_tables[["L1vL2"]]$M_corr_sel_line<-vector(length=nrow(qlf_results_tables[["L1vL2"]]))
+
+qlf_results_tables[["L1vL2"]]$M_corr_sel_line<-ifelse(
+  (qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05=="up-in-L1" & qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05=="up-in-L1"),
+  "L1vL3:parallel-response",
+  ifelse((qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05=="up-in-L2" & qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05=="up-in-L3"),
+         "L1vL3:parallel-response",
+         ifelse((qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05=="up-in-L1" & qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05=="up-in-L3"),
+                "L1vL3:opposite response",
+                ifelse((qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05=="up-in-L2" & qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05=="up-in-L1"),
+                "L1vL3:opposite response","L1vL3:no parallel-response"))))
+
+qlf_results_tables[["L1vL3"]]$M_corr_sel_line<-vector(length=nrow(qlf_results_tables[["L1vL3"]]))
+
+qlf_results_tables[["L1vL3"]]$M_corr_sel_line<-ifelse(
+  (qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05=="up-in-L1" & qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05=="up-in-L1"),
+  "L1vL2:parallel-response",
+  ifelse((qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05=="up-in-L3" & qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05=="up-in-L2"),
+         "L1vL2:parallel-response",
+         ifelse((qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05=="up-in-L1" & qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05=="up-in-L2"),
+                "L1vL2:opposite response",
+                ifelse((qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05=="up-in-L3" & qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05=="up-in-L1"),
+                "L1vL2:opposite response","L1vL2:no parallel-response"))))
+```
+
+```{r}
+qlf_results_tables[["L1vL2"]]$corr_sex<-ifelse(
+  qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05==qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05,
+  "sexually-concordant","sexually-discordant")
+
+qlf_results_tables[["L1vL2"]]$resp<-paste(qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05,
+                                          qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05,sep=",")
+```
+
+For table S6
+```{r}
+table(qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05)
+table(qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05)
+
+# Proportion of DE transcripts different between males and females?
+prop.test(x=c(
+  sum(table(qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05)[c(2,3)]),
+  sum(table(qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05)[c(2,3)])),
+  n=c(19373,19373))
+
+
+table(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05)
+table(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05)
+
+# Proportion of DE transcripts different between males and females?
+prop.test(x=c(
+  sum(table(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05)[c(2,3)]),
+  sum(table(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05)[c(2,3)])),
+  n=c(19373,19373))
+
+```
+
+```{r}
+f_trans_groups<-list(
+"unique_L2"=qlf_results_tables[["L1vL2"]]$trans[
+  which(qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05!="F0" & 
+          qlf_results_tables[["L1vL2"]]$F_corr_sel_line=="L1vL3:no parallel-response")],
+"parallel"=qlf_results_tables[["L1vL2"]]$trans[
+  which(qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05!="F0" & 
+          qlf_results_tables[["L1vL2"]]$F_corr_sel_line=="L1vL3:parallel-response")],
+"unique_L3"=qlf_results_tables[["L1vL3"]]$trans[
+  which(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05!="F0" & 
+          qlf_results_tables[["L1vL3"]]$F_corr_sel_line=="L1vL2:no parallel-response")]
+)
+
+m_trans_groups<-list(
+"unique_L2"=qlf_results_tables[["L1vL2"]]$trans[
+  which(qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05!="M0" & 
+          qlf_results_tables[["L1vL2"]]$M_corr_sel_line=="L1vL3:no parallel-response")],
+"parallel"=qlf_results_tables[["L1vL2"]]$trans[
+  which(qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05!="M0" & 
+          qlf_results_tables[["L1vL2"]]$M_corr_sel_line=="L1vL3:parallel-response")],
+"unique_L3"=qlf_results_tables[["L1vL3"]]$trans[
+  which(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05!="M0" & 
+          qlf_results_tables[["L1vL3"]]$M_corr_sel_line=="L1vL2:no parallel-response")]
+)
+```
+
+
+```{r}
+l<-c(tapply(qlf_results_tables[["L1vL3"]]$trans[
+  which(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05!="M0")],
+  INDEX = qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05[which(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05!="M0")],unique),
+  tapply(qlf_results_tables[["L1vL2"]]$trans[
+  which(qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05!="M0")],
+  INDEX = qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05[which(qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05!="M0")],unique),
+  tapply(qlf_results_tables[["L1vL3"]]$trans[
+  which(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05!="F0")],
+  INDEX = qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05[which(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05!="F0")],unique),
+  tapply(qlf_results_tables[["L1vL2"]]$trans[
+  which(qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05!="F0")],
+  INDEX = qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05[which(qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05!="F0")],unique))
+names(l)
+names(l)<-c("m-L1vL3:up-in-L1","m-L1vL3:up-in-L3","m-L1vL2:up-in-L1","m-L1vL2:up-in-L2",
+            "f-L1vL3:up-in-L1","f-L1vL3:up-in-L3","f-L1vL2:up-in-L1","f-L1vL2:up-in-L2")
+upset(fromList(l),sets = names(l),keep.order = TRUE,nsets = 6,
+      order.by = "freq")
+```
+
+For table S7
+What numbers are DE for males and females
+```{r}
+# Females
+tab<-table(
+  qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05[
+  which(qlf_results_tables[["L1vL2"]]$trans %in% f_trans_groups[["unique_L2"]])])
+tab
+tab<-table(
+  qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05[
+  which(qlf_results_tables[["L1vL2"]]$trans %in% f_trans_groups[["parallel"]])])
+tab
+tab<-table(
+  qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05[
+  which(qlf_results_tables[["L1vL3"]]$trans %in% f_trans_groups[["parallel"]])])
+tab
+tab<-table(
+  qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05[
+  which(qlf_results_tables[["L1vL3"]]$trans %in% f_trans_groups[["unique_L3"]])])
+tab
+
+# Males
+tab<-table(
+  qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05[
+  which(qlf_results_tables[["L1vL2"]]$trans %in% m_trans_groups[["unique_L2"]])])
+tab
+tab<-table(
+  qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05[
+  which(qlf_results_tables[["L1vL2"]]$trans %in% m_trans_groups[["parallel"]])])
+tab
+tab<-table(
+  qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05[
+  which(qlf_results_tables[["L1vL3"]]$trans %in% m_trans_groups[["parallel"]])])
+tab
+tab<-table(
+  qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05[
+  which(qlf_results_tables[["L1vL3"]]$trans %in% m_trans_groups[["unique_L3"]])])
+tab
+```
+
+```{r}
+l<-c(f_trans_groups,m_trans_groups)
+names(l)<-c("f_unique_L2","f_parallel","f_unique_L3",
+            "m_unique_L2","m_parallel","m_unique_L3")
+upset(fromList(l),sets=names(l),keep.order = TRUE,nsets = 6,
+      order.by = "freq")
+```
+
+
+How many are sex-biased
+```{r}
+table(trans_dat$c_bias[which(trans_dat$chr_t %in% c("X","A"))])
+table(trans_dat$c_bias[
+  which(trans_dat$chr_t %in% c("X","A"))])/sum(table(trans_dat$c_bias[
+    which(trans_dat$chr_t %in% c("X","A"))]))
+p_sb_genes
+
+for(name in names(strict_f_trans_groups)){
+  cat(name,":",table(trans_dat$c_bias[which(trans_dat$sequence_id %in% strict_f_trans_groups[[name]])]),"\n")
+}
+
+f_qlf_results_tables_C[["CvL2"]][
+    which(f_qlf_results_tables_C[["CvL2"]]$trans %in% strict_f_trans_groups[["strict_unique_L2"]] &
+            f_qlf_results_tables_C[["CvL2"]]$c_bias == "C:female-biased"),]
+
+chisq.test(table(trans_dat$c_bias[which(trans_dat$sequence_id %in% strict_f_trans_groups[["strict_unique_L2"]])]),
+           p = p_sb_genes)
+```
+
+For table S8
+```{r}
+# Are they sex-biased.
+p_sb_genes*19373
+p_sb_genes
+# Females
+tab<-table(qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05,qlf_results_tables[["L1vL2"]]$c_bias)
+c_t<-chisq.test(tab[2,],p=p_sb_genes)
+c_t
+tab[2,]
+tab[2,]/sum(tab[2,])
+c_t$expected
+
+c_t<-chisq.test(tab[3,],p=p_sb_genes)
+c_t
+tab[3,]
+tab[3,]/sum(tab[3,])
+c_t$expected
+# 
+# Males
+tab<-table(qlf_results_tables[["L1vL2"]]$M_sel_resp_fdr0.05,qlf_results_tables[["L1vL2"]]$c_bias)
+c_t<-chisq.test(tab[2,],p=p_sb_genes)
+c_t
+tab[2,]
+tab[2,]/sum(tab[2,])
+c_t$expected
+
+c_t<-chisq.test(tab[3,],p=p_sb_genes)
+c_t
+tab[3,]
+tab[3,]/sum(tab[3,])
+c_t$expected
+# 
+
+# Females
+tab<-table(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05,qlf_results_tables[["L1vL3"]]$c_bias)
+c_t<-chisq.test(tab[2,],p=p_sb_genes)
+c_t
+tab[2,]
+tab[2,]/sum(tab[2,])
+c_t$expected
+
+c_t<-chisq.test(tab[3,],p=p_sb_genes)
+c_t
+tab[3,]
+tab[3,]/sum(tab[3,])
+c_t$expected
+
+# Males
+tab<-table(qlf_results_tables[["L1vL3"]]$M_sel_resp_fdr0.05,qlf_results_tables[["L1vL3"]]$c_bias)
+c_t<-chisq.test(tab[2,],p=p_sb_genes)
+c_t
+tab[2,]
+tab[2,]/sum(tab[2,])
+c_t$expected
+
+c_t<-chisq.test(tab[3,],p=p_sb_genes)
+c_t
+tab[3,]
+tab[3,]/sum(tab[3,])
+c_t$expected
+```
+
+
+PCA of transcript sets
+```{r}
+names(f_trans_groups)
+
+for(trans_set in names(f_trans_groups)){
+
+  big_all_quant_tpm_filtvar<-big_all_quant_tpm[f_trans_groups[[trans_set]],
+                                               sample_dat$sample[which(sample_dat$sel_line %in% c("C","L1","L3","L2"))]]
+  # Remove transcripts with 0 variance across all samples, uninformative in PCA
+  non_zero_var_tpm<-which(apply(big_all_quant_tpm_filtvar,MARGIN = 1,function(x){var(x)>0}))
+  big_all_quant_tpm_filtvar<-big_all_quant_tpm_filtvar[
+    which(row.names(big_all_quant_tpm_filtvar) %in% names(non_zero_var_tpm)),]
+
+  # Run PCA
+  pca<-prcomp(t(big_all_quant_tpm_filtvar),center = TRUE,scale. = TRUE)
+  pca.sum<-summary(pca)
+  pc1_perc<-pca.sum$importance[2,"PC1"]*100
+  pc2_perc<-pca.sum$importance[2,"PC2"]*100
+  print(summary(pca))
+  # Save the PC scores, add sample information
+  scores<-as.data.frame(pca$x)
+  scores<-cbind(scores,sample_dat[match(row.names(scores),sample_dat$sample),])
+  cat(trans_set,"\n")
+  print(summary(lm(PC2~sel_line,data=scores[which(scores$sex=="M"),])))
+  print(summary(lm(PC2~sel_line,data=scores[which(scores$sex=="F"),])))
+
+  # Colour palette from Philipp
+  #'navajowhite', ‘navajowhite4’		C
+  #'plum1', ‘plum4’ 		        		SA
+  #'steelblue1', 'steelblue4’, 	  	SL1
+  #'sienna1', ‘sienna4’			        SL3
+  #'olivedrab1', ‘olivedrab4’ 			SL2
+
+  #Its always rep A, rep B.
+  # Plotting
+  p<-ggplot()+
+    geom_point(data=scores,
+               aes(x=PC1,y=PC2,shape=sex,colour=paste(sel_line,"_",rep,sep="")),size=4)+
+    scale_shape_discrete("Sex",labels=c("Females","Males"))+
+    scale_colour_manual("Selection line",
+                          values=c("navajowhite4",
+                                   "steelblue1", "steelblue4",
+                                   "olivedrab1", "olivedrab4",
+                                   "sienna1", "sienna4"))+
+    xlab(paste("PC1 (",round(pc1_perc,2),"%)",sep=""))+
+    ylab(paste("PC2 (",round(pc2_perc,2),"%)",sep=""))+
+    ggtitle(trans_set)+
+    theme(text=element_text(size=16))
+  print(p)
+  p<-ggplot()+
+    geom_boxplot(data=scores,
+                 aes(x=sel_line,y=PC2,fill=paste(sel_line,"_",rep,sep="")))+
+    scale_fill_manual("Selection line",
+                          values=c("navajowhite4",
+                                   "steelblue1", "steelblue4",
+                                   "olivedrab1", "olivedrab4",
+                                   "sienna1", "sienna4"))+
+
+    facet_grid(~sex)+
+    xlab(paste("PC1 (",round(pc1_perc,2),"%)",sep=""))+
+    ylab(paste("PC2 (",round(pc2_perc,2),"%)",sep=""))+
+    ggtitle(trans_set)+
+    theme(text=element_text(size=16))
+  print(p)
+}
+```
+
+
+For Table S9
+```{r}
+names(f_trans_groups)
+all_tab_dat<-data.frame()
+tab<-table(
+  qlf_results_tables[["L1vL2"]]$c_bias[
+  which(qlf_results_tables[["L1vL2"]]$trans %in% f_trans_groups[["unique_L2"]])])
+tab
+sum(tab)
+tab_dat<-data.frame("set"=rep("unique_L2",length=length(tab)),
+                    "counts"=as.vector(tab),
+                    "prop"=round(as.vector(tab)/sum(as.vector(tab)),2),
+                    "sb"=names(tab))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+c_t<-chisq.test(tab,p=p_sb_genes)
+c_t
+c_t$expected
+c_t$residuals
+# Transcripts unique to L1 are disproportionately male-biased in expression
+tab<-table(
+  qlf_results_tables[["L1vL2"]]$c_bias[
+  which(qlf_results_tables[["L1vL2"]]$trans %in% f_trans_groups[["parallel"]])])
+tab
+tab<-table(
+  qlf_results_tables[["L1vL3"]]$c_bias[
+  which(qlf_results_tables[["L1vL3"]]$trans %in% f_trans_groups[["parallel"]])])
+tab
+sum(tab)
+tab_dat<-data.frame("set"=rep("parallel",length=length(tab)),
+                    "counts"=as.vector(tab),
+                    "prop"=round(as.vector(tab)/sum(as.vector(tab)),2),
+                    "sb"=names(tab))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+
+c_t<-chisq.test(tab,p=p_sb_genes)
+c_t
+c_t$expected
+c_t$residuals
+
+tab<-table(
+  qlf_results_tables[["L1vL3"]]$c_bias[
+  which(qlf_results_tables[["L1vL3"]]$trans %in% f_trans_groups[["unique_L3"]])])
+tab
+sum(tab)
+tab_dat<-data.frame("set"=rep("unique_L3",length=length(tab)),
+                    "counts"=as.vector(tab),
+                    "prop"=round(as.vector(tab)/sum(as.vector(tab)),2),
+                    "sb"=names(tab))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+
+# c_t<-chisq.test(tab,p=p_sb_genes)
+c_t
+c_t$expected
+c_t$residuals
+
+# Transcripts unique to SA are not significantly deviating in sex-bias from expected.
+tab<-table(
+  qlf_results_tables[["SAvL3"]]$c_bias[
+  which(!(qlf_results_tables[["SAvL3"]]$trans %in% unlist(trans_groups)))])
+tab
+tab<-table(
+  qlf_results_tables[["L1vL3"]]$c_bias[
+  which(!(qlf_results_tables[["L1vL3"]]$trans %in% unlist(trans_groups)))])
+tab
+sum(tab)
+tab_dat<-data.frame("set"=rep("not-DE",length=length(tab)),
+                    "counts"=as.vector(tab),
+                    "prop"=round(as.vector(tab)/sum(as.vector(tab)),2),
+                    "sb"=names(tab))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+
+c_t<-chisq.test(matrix(
+  c(all_tab_dat$counts[which(all_tab_dat$set=="not-DE")],
+    all_tab_dat$counts[which(all_tab_dat$set=="unique_L2")],
+    all_tab_dat$counts[which(all_tab_dat$set=="parallel")],
+    all_tab_dat$counts[which(all_tab_dat$set=="unique_L3")]),byrow = TRUE,nrow = 4))
+c_t
+c_t$observed
+c_t$expected
+c_t$residuals
+
+#Add genome-wide proportions
+tab_dat<-data.frame("set"=rep("Genome-wide",length=length(p_sb_genes)),
+                    "counts"=as.vector(table(qlf_results_tables[["L1vL3"]]$c_bias)),
+                    "prop"=as.vector(p_sb_genes),
+                    "sb"=names(p_sb_genes))
+all_tab_dat<-rbind(all_tab_dat,tab_dat)
+all_tab_dat$sb<-factor(all_tab_dat$sb,labels = c("Female-biased","Male-biased","Unbiased"))
+```
+
+
+Now for all transcripts in the female transcript categories I run analyses comparing expression to C lines.
+Just as I did for males.
+```{r}
+# Place to store results
+f_qlf_results_tables_C<-list()
+for(cont in c("L1","SA","L3","L2")){
+  samples<-sample_dat$sample[
+    which(sample_dat$sel_line %in% c("C",cont))]
+  # Get the count data for all transcripts in the unique L1, parallel, and unique SA groups
+  big_all_quant_count_cont<-big_all_quant_count[unlist(f_trans_groups),
+                                                which((colnames(big_all_quant_count) %in% samples))]
+  
+  f_qlf_results_tables_C[[paste("Cv",cont,sep="")]]<-data.frame(
+    "trans"=rownames(big_all_quant_count_cont))  
+  
+  # Make the edgeR object
+  y<-DGEList(counts=big_all_quant_count_cont)
+    
+  # Define the model design and the contrast
+  coldata_cont<-coldata[samples,]
+  coldata_cont$batch<-gsub(cont,"Sel",coldata_cont$batch)
+  coldata_cont$line_sex<-paste(coldata_cont$batch,"_",coldata_cont$sex,sep="")
+  design<-model.matrix(~0+line_sex,data = coldata_cont)
+    
+  # Compare the average of the batches to the average of the other two batches
+  my.contrast<-makeContrasts(contM=(line_sexC_B_M) - (((line_sexSel_A_M)+(line_sexSel_B_M))/2),
+                             contF=(line_sexC_B_F) - (((line_sexSel_A_F)+(line_sexSel_B_F))/2),
+                             levels=design)
+    
+  # recalculate normalisation factors
+  y<-calcNormFactors(y)
+  # estimate dispersions
+  y<-estimateDisp(y,design)
+    # Fit the model
+  fit <- glmQLFit(y,design)
+    
+  # Test the contrasts
+  # Males
+  qlfM <- glmQLFTest(fit, contrast=my.contrast[,"contM"])
+  # Correct for multiple testing
+  qlfM$table$FDR<-p.adjust(qlfM$table$PValue,method="BH")
+  # Females
+  qlfF <- glmQLFTest(fit, contrast=my.contrast[,"contF"])
+  # Correct for multiple testing
+  qlfF$table$FDR<-p.adjust(qlfF$table$PValue,method="BH")
+  #cor.test(x=qlfM$table$logFC,y=qlfF$table$logFC)
+  #qlf$table[grep("Tor",rownames(qlf$table)),]
+  #nrow(qlf$table)
+  
+  # Re-format the column names
+  colnames(qlfM$table)<-paste("M_",colnames(qlfM$table),sep="")
+  # Define the direction of difference
+  # Up: If logFC > 0, then C > Sel
+  # Down: If logFC < 0, then C < Sel  
+  
+  # Here I use the nominal p-value to call DE
+  # I don't use logFC threshholds.
+  qlfM$table$M_sel_resp<-vector(length=nrow(qlfM$table))
+  qlfM$table$M_sel_resp<-ifelse(
+    (qlfM$table$M_logFC>0 &
+       qlfM$table$M_PValue<0.05),
+    paste("up-in-C",sep=""),
+    ifelse(
+      (qlfM$table$M_logFC<0 &
+       qlfM$table$M_PValue<0.05),
+      paste("up-in-",cont,sep=""),"M0"))
+
+  colnames(qlfF$table)<-paste("F_",colnames(qlfF$table),sep="")
+  qlfF$table$F_sel_resp<-vector(length=nrow(qlfF$table))
+  qlfF$table$F_sel_resp<-ifelse(
+    (qlfF$table$F_logFC>0 &
+       qlfF$table$F_PValue<0.05),
+    paste("up-in-C",sep=""),
+    ifelse(
+      (qlfF$table$F_logFC<0 &
+       qlfF$table$F_PValue<0.05),
+      paste("up-in-",cont,sep=""),"F0"))
+
+  # Here I use the FDR corrected at 0.1 to call DE
+  # I don't use logFC threshholds.
+  qlfM$table$M_sel_resp_fdr0.1<-vector(length=nrow(qlfM$table))
+  qlfM$table$M_sel_resp_fdr0.1<-ifelse(
+    (qlfM$table$M_logFC>0 &
+       qlfM$table$M_FDR<0.1),
+    paste("up-in-C",sep=""),
+    ifelse(
+      (qlfM$table$M_logFC<0 &
+       qlfM$table$M_FDR<0.1),
+      paste("up-in-",cont,sep=""),"M0"))
+  
+  qlfF$table$F_sel_resp_fdr0.1<-vector(length=nrow(qlfF$table))
+  qlfF$table$F_sel_resp_fdr0.1<-ifelse(
+    (qlfF$table$F_logFC>0 &
+       qlfF$table$F_FDR<0.1),
+    paste("up-in-C",sep=""),
+    ifelse(
+      (qlfF$table$F_logFC<0 &
+       qlfF$table$F_FDR<0.1),
+      paste("up-in-",cont,sep=""),"F0"))
+  
+  # Here I use the FDR corrected at 0.05 to call DE
+  # I don't use logFC threshholds.
+  qlfM$table$M_sel_resp_fdr0.05<-vector(length=nrow(qlfM$table))
+  qlfM$table$M_sel_resp_fdr0.05<-ifelse(
+    (qlfM$table$M_logFC>0 &
+       qlfM$table$M_FDR<0.05),
+    paste("up-in-C",sep=""),
+    ifelse(
+      (qlfM$table$M_logFC<0 &
+       qlfM$table$M_FDR<0.05),
+      paste("up-in-",cont,sep=""),"M0"))
+  
+  qlfF$table$F_sel_resp_fdr0.05<-vector(length=nrow(qlfF$table))
+  qlfF$table$F_sel_resp_fdr0.05<-ifelse(
+    (qlfF$table$F_logFC>0 &
+       qlfF$table$F_FDR<0.05),
+    paste("up-in-C",sep=""),
+    ifelse(
+      (qlfF$table$F_logFC<0 &
+       qlfF$table$F_FDR<0.05),
+      paste("up-in-",cont,sep=""),"F0"))
+  
+  # Combine male and female data
+  f_qlf_results_tables_C[[paste("Cv",cont,sep="")]]<-cbind(f_qlf_results_tables_C[[paste("Cv",cont,sep="")]],
+                                                         qlfF$table,qlfM$table)
+}
+
+#Add sex-bias and chromosome information
+for (set in names(f_qlf_results_tables_C)){
+  f_qlf_results_tables_C[[set]]$c_bias<-vector(length=nrow(f_qlf_results_tables_C[[set]]))
+  f_qlf_results_tables_C[[set]]$c_bias[
+    which(rownames(f_qlf_results_tables_C[[set]]) %in% 
+            sb_genes[["C_B_male_biased"]])]<-"C:male-biased"
+  f_qlf_results_tables_C[[set]]$c_bias[
+    which(rownames(f_qlf_results_tables_C[[set]]) %in% 
+            sb_genes[["C_B_female_biased"]])]<-"C:female-biased"
+  f_qlf_results_tables_C[[set]]$c_bias[
+    which(f_qlf_results_tables_C[[set]]$c_bias == "FALSE")]<-"C:unbiased"
+}
+```
+
+Save these tables
+```{r}
+saveRDS(f_qlf_results_tables_C,
+        file = here::here("rdata/adults","selection_lines_f_de_results_C_contrast.RData"))
+```
+
+```{r}
+f_qlf_results_tables_C<-readRDS(here::here("rdata/adults",
+                                           "selection_lines_f_de_results_C_contrast.RData"))
+```
+
+```{r}
+f_qlf_results_tables_C[["CvL2"]]$F_corr_sel_line<-vector(
+  length=nrow(f_qlf_results_tables_C[["CvL2"]]))
+
+f_qlf_results_tables_C[["CvL2"]]$F_corr_sel_line<-ifelse(
+  (f_qlf_results_tables_C[["CvL2"]]$F_sel_resp_fdr0.05=="up-in-C" & 
+     f_qlf_results_tables_C[["CvL1"]]$F_sel_resp_fdr0.05=="up-in-C"),
+  "CvL1:parallel-response",
+  ifelse((f_qlf_results_tables_C[["CvL2"]]$F_sel_resp_fdr0.05=="up-in-L2" & 
+            f_qlf_results_tables_C[["CvL1"]]$F_sel_resp_fdr0.05=="up-in-L1"),
+         "CvL1:parallel-response","CvL1:no parallel-response"))
+```
+
+unique_L1
+  C v L2            C v L3                C v L1
+  up-in-L2 *AND* !(DE in L3 v C) *AND* !(DE in C v L1)
+  *OR*
+    up-in-L2 *AND* up-in-C *AND* !(DE in C v L1)
+    *OR*
+    up-in-C *AND* up-in-L3 *AND* !(DE in C v L1)
+  *OR*
+  up-in-C *AND* !(DE in L3 v C) *AND* !(DE in C v L1)
+*AND* in unique_L1
+
+strict_parallel
+  C v L2            C v L3                C v L1
+  up-in-L2 *AND* up-in-L3 *AND* !(DE in C v L1)
+  *OR*
+  up-in-C *AND* up-in-C *AND* !(DE in C v L1)
+*AND* in parallel
+
+strict_unique L3
+  C v L2            C v L3                C v L1
+  !(DE in C v L2) *AND* up-in-L3 *AND* !(DE in C v L1)
+  *OR*
+    up-in-C *AND* up-in-L3 *AND* !(DE in C v L1)
+    *OR*
+    up-in-L2 *AND* up-in-C *AND* !(DE in C v L1)
+  *OR*
+  !(DE in C v L2) *AND* up-in-C *AND* !(DE in C v L1)
+*AND* in unique_SA
+
+```{r}
+# Here I am finding those transcripts with no or "opposite" expression patterns in CvL1 for females.
+strict_f_trans_groups<-list(
+"strict_unique_L2"=c(Reduce(intersect,
+                            list(
+                              f_qlf_results_tables_C[["CvL2"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL2"]]$F_sel_resp_fdr0.05=="up-in-L2")],
+                              f_qlf_results_tables_C[["CvL3"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL3"]]$F_sel_resp_fdr0.05=="F0")],
+                              f_qlf_results_tables_C[["CvL1"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL1"]]$F_sel_resp_fdr0.05=="F0")])),
+                     Reduce(intersect,
+                            list(
+                              f_qlf_results_tables_C[["CvL2"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL2"]]$F_sel_resp_fdr0.05=="up-in-L2")],
+                              f_qlf_results_tables_C[["CvL3"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL3"]]$F_sel_resp_fdr0.05=="up-in-C")],
+                              f_qlf_results_tables_C[["CvL1"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL1"]]$F_sel_resp_fdr0.05=="F0")])),
+                     Reduce(intersect,
+                            list(
+                              f_qlf_results_tables_C[["CvL2"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL2"]]$F_sel_resp_fdr0.05=="up-in-C")],
+                              f_qlf_results_tables_C[["CvL3"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL3"]]$F_sel_resp_fdr0.05=="up-in-L3")],
+                              f_qlf_results_tables_C[["CvL1"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL1"]]$F_sel_resp_fdr0.05=="F0")])),
+                     Reduce(intersect,
+                            list(
+                              f_qlf_results_tables_C[["CvL2"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL2"]]$F_sel_resp_fdr0.05=="up-in-C")],
+                              f_qlf_results_tables_C[["CvL3"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL3"]]$F_sel_resp_fdr0.05=="F0")],
+                              f_qlf_results_tables_C[["CvL1"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL1"]]$F_sel_resp_fdr0.05=="F0")]))),
+
+"strict_parallel"=c(Reduce(intersect,
+                           list(
+                             f_qlf_results_tables_C[["CvL2"]]$trans[
+                               which(f_qlf_results_tables_C[["CvL2"]]$F_sel_resp_fdr0.05=="up-in-L2")],
+                             f_qlf_results_tables_C[["CvL3"]]$trans[
+                               which(f_qlf_results_tables_C[["CvL3"]]$F_sel_resp_fdr0.05=="up-in-L3")],
+                             f_qlf_results_tables_C[["CvL1"]]$trans[
+                               which(f_qlf_results_tables_C[["CvL1"]]$F_sel_resp_fdr0.05=="F0")])),
+                     Reduce(intersect,
+                            list(
+                              f_qlf_results_tables_C[["CvL2"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL2"]]$F_sel_resp_fdr0.05=="up-in-C")],
+                              f_qlf_results_tables_C[["CvL3"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL3"]]$F_sel_resp_fdr0.05=="up-in-C")],
+                              f_qlf_results_tables_C[["CvL1"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL1"]]$F_sel_resp_fdr0.05=="F0")]))),
+
+"strict_unique_L3"=c(Reduce(intersect,
+                            list(
+                              f_qlf_results_tables_C[["CvL2"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL2"]]$F_sel_resp_fdr0.05=="F0")],
+                              f_qlf_results_tables_C[["CvL3"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL3"]]$F_sel_resp_fdr0.05=="up-in-L3")],
+                              f_qlf_results_tables_C[["CvL1"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL1"]]$F_sel_resp_fdr0.05=="F0")])),
+                     Reduce(intersect,
+                            list(
+                              f_qlf_results_tables_C[["CvL2"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL2"]]$F_sel_resp_fdr0.05=="up-in-L2")],
+                              f_qlf_results_tables_C[["CvL3"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL3"]]$F_sel_resp_fdr0.05=="up-in-C")],
+                              f_qlf_results_tables_C[["CvL1"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL1"]]$F_sel_resp_fdr0.05=="F0")])),
+                     Reduce(intersect,
+                            list(
+                              f_qlf_results_tables_C[["CvL2"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL2"]]$F_sel_resp_fdr0.05=="up-in-C")],
+                              f_qlf_results_tables_C[["CvL3"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL3"]]$F_sel_resp_fdr0.05=="up-in-L3")],
+                              f_qlf_results_tables_C[["CvL1"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL1"]]$F_sel_resp_fdr0.05=="F0")])),
+                     Reduce(intersect,
+                            list(
+                              f_qlf_results_tables_C[["CvL2"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL2"]]$F_sel_resp_fdr0.05=="F0")],
+                              f_qlf_results_tables_C[["CvL3"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL3"]]$F_sel_resp_fdr0.05=="up-in-C")],
+                              f_qlf_results_tables_C[["CvL1"]]$trans[
+                                which(f_qlf_results_tables_C[["CvL1"]]$F_sel_resp_fdr0.05=="F0")])))
+)
+```
+
+
+Keep only those transcripts in each strict group that were also in the more liberal groups
+```{r}
+for(name in names(f_trans_groups)){
+  strict_f_trans_groups[[paste("strict_",name,sep="")]]<-strict_f_trans_groups[[
+    paste("strict_",name,sep="")]][
+    which(strict_f_trans_groups[[paste("strict_",name,sep="")]]%in%f_trans_groups[[name]])]
+}
+```
+
+How many of each transcript class are in the strict set
+```{r}
+for(name in names(f_trans_groups)){
+  cat(name,":",length(f_trans_groups[[name]]),", ",
+      length(strict_f_trans_groups[[paste("strict_",name,sep="")]]),", ",
+      length(which(f_trans_groups[[name]] %in% strict_f_trans_groups[[paste("strict_",name,sep="")]])),"\n")
+}
+```
+Very few are in the strict set for females.
+
+
+How many are sex-biased
+```{r}
+table(trans_dat$c_bias[which(trans_dat$chr_t %in% c("X","A"))])
+table(trans_dat$c_bias[
+  which(trans_dat$chr_t %in% c("X","A"))])/sum(table(trans_dat$c_bias[
+    which(trans_dat$chr_t %in% c("X","A"))]))
+p_sb_genes
+
+for(name in names(strict_f_trans_groups)){
+  cat(name,":",table(trans_dat$c_bias[which(trans_dat$sequence_id %in% strict_f_trans_groups[[name]])]),"\n")
+}
+
+f_qlf_results_tables_C[["CvL2"]][
+    which(f_qlf_results_tables_C[["CvL2"]]$trans %in% strict_f_trans_groups[["strict_unique_L2"]] &
+            f_qlf_results_tables_C[["CvL2"]]$c_bias == "C:female-biased"),]
+
+f_qlf_results_tables_C[["CvL2"]][
+    which(f_qlf_results_tables_C[["CvL2"]]$trans %in% strict_f_trans_groups[["strict_unique_L2"]] &
+            f_qlf_results_tables_C[["CvL2"]]$c_bias == "C:male-biased"),]
+
+chisq.test(table(trans_dat$c_bias[which(trans_dat$sequence_id %in% strict_f_trans_groups[["strict_unique_L2"]])]),
+           p = p_sb_genes)
+```
+Very few of the strict unique transcripts are male or female biased (at fdr < 0.05).
+
+If want to set FDR to < 0.1, need to go back to start of 3.3.7 and change throughout.
+
+Run the correlations in logFC between treatments for males and females
+```{r}
+for(bias in unique(qlf_results_tables[["L1vL2"]]$c_bias)){
+  cor_data<-qlf_results_tables[["L1vL2"]][which(qlf_results_tables[["L1vL2"]]$c_bias==bias),]
+  cat("#----------------#\n",bias,"\n")
+  c_t<-cor.test(
+    x=cor_data$M_logFC[
+  which(cor_data$trans %in% f_trans_groups[["unique_L2"]])],
+    y=cor_data$F_logFC[
+  which(cor_data$trans %in% f_trans_groups[["unique_L2"]])],method="pearson")
+  print(c_t)
+  c_t<-cor.test(
+    x=cor_data$M_logFC[
+  which(cor_data$trans %in% f_trans_groups[["parallel"]])],
+    y=cor_data$F_logFC[
+  which(cor_data$trans %in% f_trans_groups[["parallel"]])],method="pearson")
+  print(c_t)
+}
+# These transcripts also have lower correlations across sexes in their DE patterns (L1 v. L3)
+
+for(bias in unique(qlf_results_tables[["L1vL3"]]$c_bias)){
+  cor_data<-qlf_results_tables[["L1vL3"]][which(qlf_results_tables[["L1vL3"]]$c_bias==bias),]
+  cat("#----------------#\n",bias,"\n")
+  c_t<-cor.test(
+    x=cor_data$M_logFC[
+  which(cor_data$trans %in% f_trans_groups[["unique_L3"]])],
+    y=cor_data$F_logFC[
+  which(cor_data$trans %in% f_trans_groups[["unique_L3"]])],method="pearson")
+  print(c_t)
+  c_t<-cor.test(
+    x=cor_data$M_logFC[
+  which(cor_data$trans %in% f_trans_groups[["parallel"]])],
+    y=cor_data$F_logFC[
+  which(cor_data$trans %in% f_trans_groups[["parallel"]])],method="pearson")
+  print(c_t)
+}
+```
+
+Plot the correlations
+```{r}
+ggplot()+
+  geom_point(data=qlf_results_tables[["L1vL2"]][
+    which(qlf_results_tables[["L1vL2"]]$F_sel_resp_fdr0.05!="F0" & 
+            qlf_results_tables[["L1vL2"]]$F_corr_sel_line!="L1vL3:opposite response"),],
+             aes(x=M_logFC,y=F_logFC,fill=corr_sex),shape=21)+
+  scale_fill_manual(values=c("white","grey70"),guide="none")+
+  xlab("logFC L1 vs. L2 (males)")+
+  ylab("logFC L1 vs. L2 (females)")+
+  facet_grid(c_bias~F_corr_sel_line)+
+  theme(text=element_text(size=16),
+        strip.text.y=element_text(angle=0))
+
+ggplot()+
+  geom_point(data=qlf_results_tables[["L1vL3"]][
+    which(qlf_results_tables[["L1vL3"]]$F_sel_resp_fdr0.05!="F0" & 
+            qlf_results_tables[["L1vL3"]]$F_corr_sel_line!="L1vL2:opposite response"),],
+             aes(x=M_logFC,y=F_logFC,fill=corr_sex),shape=21)+
+  scale_fill_manual(values=c("white","grey70"),guide="none")+
+  xlab("logFC L1 vs. L3 (males)")+
+  ylab("logFC L1 vs. L3 (females)")+
+  facet_grid(c_bias~F_corr_sel_line)+
+  theme(text=element_text(size=16),
+        strip.text.y=element_text(angle=0))
+```
+
+Same for strict sets
+```{r}
+# These transcripts also have lower inter-sex correlations in logFC(L1vL3)
+for(i in names(strict_trans_groups)){
+  cat("#----------------#\n",i,"\n")
+  for(bias in unique(qlf_results_tables_C[["CvL1"]]$c_bias)){
+    cat("#----------------#\n",bias,"\n")
+    cat("#----------------#\nCvL1\n")
+    cor_data<-qlf_results_tables_C[["CvL1"]][which(qlf_results_tables_C[["CvL1"]]$c_bias==bias & 
+                                                      qlf_results_tables_C[["CvL1"]]$trans %in% strict_trans_groups[[i]]),]
+    c_t<-cor.test(
+      x=cor_data$M_logFC,
+      y=cor_data$F_logFC,method="pearson")
+    print(c_t)
+    cat("#----------------#\nCvSA\n")
+    cor_data<-qlf_results_tables_C[["CvSA"]][which(qlf_results_tables_C[["CvSA"]]$c_bias==bias & 
+                                                      qlf_results_tables_C[["CvSA"]]$trans %in% strict_trans_groups[[i]]),]
+    c_t<-cor.test(
+      x=cor_data$M_logFC,
+      y=cor_data$F_logFC,method="pearson")
+    print(c_t)
+  }
+}
+```
+
+```{r}
+p1<-ggplot()+
+  geom_point(data=qlf_results_tables_C[["CvL1"]][
+    which(qlf_results_tables_C[["CvL1"]]$trans %in% strict_trans_groups[["strict_unique_L1"]]),],
+             aes(x=M_logFC,y=F_logFC))+
+  geom_hline(yintercept = 0,linetype="dashed")+
+  geom_vline(xintercept = 0,linetype="dashed")+
+  facet_wrap(~c_bias,scales="free",nrow = 3,strip.position = "right")+
+  scale_x_continuous("logFC C vs. L1 (males)")+
+  scale_y_continuous("logFC C vs. L1 (females)")+
+  ggtitle("strict_unique_L1")+
+  theme(strip.text.y = element_text(angle=270,size=16),
+        text=element_text(size=16))
+
+p2<-ggplot()+
+  geom_point(data=qlf_results_tables_C[["CvL1"]][
+    which(qlf_results_tables_C[["CvL1"]]$trans %in% strict_trans_groups[["strict_parallel"]]),],
+             aes(x=M_logFC,y=F_logFC))+
+  geom_hline(yintercept = 0,linetype="dashed")+
+  geom_vline(xintercept = 0,linetype="dashed")+
+  facet_wrap(~c_bias,scales="free",nrow = 3,strip.position = "right")+
+  scale_x_continuous("logFC C vs. L1 (males)")+
+  scale_y_continuous("logFC C vs. L1 (females)")+
+  ggtitle("strict_parallel")+
+  theme(strip.text.y = element_text(angle=270,size=16),
+        text=element_text(size=16))
+
+p3<-ggplot()+
+  geom_point(data=qlf_results_tables_C[["CvSA"]][
+    which(qlf_results_tables_C[["CvSA"]]$trans %in% strict_trans_groups[["strict_parallel"]]),],
+             aes(x=M_logFC,y=F_logFC))+
+  geom_hline(yintercept = 0,linetype="dashed")+
+  geom_vline(xintercept = 0,linetype="dashed")+
+  facet_wrap(~c_bias,scales="free",nrow = 3,strip.position = "right")+
+  scale_x_continuous("logFC C vs. SA (males)")+
+  scale_y_continuous("logFC C vs. SA (females)")+
+  ggtitle("strict_parallel")+
+  theme(strip.text.y = element_text(angle=270,size=16),
+        text=element_text(size=16))
+
+p4<-ggplot()+
+  geom_point(data=qlf_results_tables_C[["CvSA"]][
+    which(qlf_results_tables_C[["CvSA"]]$trans %in% strict_trans_groups[["strict_unique_SA"]]),],
+             aes(x=M_logFC,y=F_logFC))+
+  geom_hline(yintercept = 0,linetype="dashed")+
+  geom_vline(xintercept = 0,linetype="dashed")+
+  facet_wrap(~c_bias,scales="free",nrow = 3,strip.position = "right")+
+  scale_x_continuous("logFC C vs. SA (males)")+
+  scale_y_continuous("logFC C vs. SA (females)")+
+  ggtitle("strict_unique_SA")+
+  theme(strip.text.y = element_text(angle=270,size=16),
+        text=element_text(size=16))
+
+cowplot::plot_grid(p1,p2,p3,p4,ncol = 4)
+```
+
+
+
